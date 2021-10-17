@@ -1,3 +1,3 @@
 # glowing-palm-tree
 
-#### This project use django crispy forms, please use the vitual provided environment or "pip install django-crispy-forms"
+#### This project uses django crispy forms, please use the provided virtual environment or install it by using "pip install django-crispy-forms"
