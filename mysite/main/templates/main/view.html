@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+View
+{% endblock %}
+
+{% block content %}
+    {% for pl in user.postlist.all %}
+        <p><a href="/{{pl.id}}">{{pl.name}}</a></p>
+    {% endfor %}
+{% endblock %}

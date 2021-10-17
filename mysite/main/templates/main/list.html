@@ -1,0 +1,34 @@
+{% extends "main/base.html" %}
+
+{% block title %}
+View List
+{% endblock %}
+
+{% block content %}
+    <h1>{{ls.name}}</h1>
+    <form method="post" action="#">
+        {% csrf_token %}
+        {% for post in ls.post_set.all %}
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <div class="input-group-text">
+                    {% if post.complete == True %}
+                        <input type="checkbox", value="clicked", name="c{{post.id}}" checked>
+                    {% else %}
+                        <input type="checkbox", value="clicked", name="c{{post.id}}">
+                    {% endif %}
+                </div>
+            </div>
+            <input type="text", value="{{post.text}}" class="form-control">
+        </div>
+        {% endfor %}
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <button type="submit", name="newPost", value="newPost", class="btn btn-success">New Post</button>
+            </div>
+            <input type="text", name="new">
+        </div>
+        <button type="submit", name="save", value="save", class="btn btn-success">Save</button>
+    </form>
+{% endblock %}
