@@ -1,8 +1,10 @@
 from django.http.response import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import PostList, Post
 from .forms import CreateNewPostList
+from .forms import RegisterForm
+from django.views.decorators.csrf import csrf_protect
 # Create your views here.
 
 def index(response, id):
@@ -46,3 +48,16 @@ def create(response):
 
 def view(response):
     return render(response, "main/view.html", {})
+
+@csrf_protect
+def register(response):
+    if response.method == "POST":
+        form = RegisterForm(response.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("/")
+        else:
+            print(form.errors)
+    else:
+        form = RegisterForm()
+    return render(response, "register/register.html", {"form":form})
