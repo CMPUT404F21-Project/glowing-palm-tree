@@ -5,27 +5,27 @@ View List
 {% endblock %}
 
 {% block content %}
-    <h1>{{ls.name}}</h1>
+    <h1>{{ls.content}}</h1>
     <form method="post" action="#">
         {% csrf_token %}
-        {% for post in ls.post_set.all %}
+        {% for comment in ls.comment_set.all %}
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <div class="input-group-text">
-                    {% if post.complete == True %}
-                        <input type="checkbox", value="clicked", name="c{{post.id}}" checked>
+                    {% if comment.complete == True %}
+                        <input type="checkbox", value="clicked", name="c{{comment.id}}" checked>
                     {% else %}
-                        <input type="checkbox", value="clicked", name="c{{post.id}}">
+                        <input type="checkbox", value="clicked", name="c{{comment.id}}">
                     {% endif %}
                 </div>
             </div>
-            <input type="text", value="{{post.text}}" class="form-control">
+            <input type="text", value="{{comment.content}}" class="form-control">
         </div>
         {% endfor %}
 
         <div class="input-group mb-3">
             <div class="input-group-prepend">
-                <button type="submit", name="newPost", value="newPost", class="btn btn-success">New Post</button>
+                <button type="submit", name="newPost", value="newPost", class="btn btn-success">New Comment</button>
             </div>
             <input type="text", name="new">
         </div>

@@ -1,28 +1,28 @@
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import PostList, Post
-from .forms import CreateNewPostList
+from .models import Moment, Comment
+from .forms import CreateNewMoment
 from .forms import RegisterForm
 from django.views.decorators.csrf import csrf_protect
 # Create your views here.
 
 def index(response, id):
-    ls = PostList.objects.get(id=id)
-    if ls in response.user.postlist.all():
+    ls = Moment.objects.get(id=id)
+    if ls in response.user.moment.all():
         if response.method == "POST" :
             # print(response.POST)
             if response.POST.get("save"):
-                for post in ls.post_set.all():
-                    if response.POST.get("c"+ str(post.id)) == "clicked":
-                        post.complete = True
+                for comment in ls.comment_set.all():
+                    if response.POST.get("c"+ str(comment.id)) == "clicked":
+                        comment.complete = True
                     else:
-                        post.complete = False
-                    post.save()
+                        comment.complete = False
+                    comment.save()
             elif response.POST.get("newPost"):
                 txt = response.POST.get("new")
                 if len(txt) > 2:
-                    ls.post_set.create(text=txt, complete=False)
+                    ls.comment_set.create(content=txt, complete=False)
                 else:
                     print("invalid")
 
@@ -34,16 +34,17 @@ def home(response):
 
 def create(response):
     if response.method == "POST":
-        form = CreateNewPostList(response.POST)
+        form = CreateNewMoment(response.POST)
         if form.is_valid():
-            n = form.cleaned_data["name"]
-            p = PostList(name=n)
+            n = form.cleaned_data["content"]
+            p = Moment(content=n)
             p.save()
-            response.user.postlist.add(p)
-
-        return HttpResponseRedirect("/%i" %p.id)
+            response.user.moment.add(p)
+            return HttpResponseRedirect("/%i" %p.id)
+        else:
+            print(form.errors)
     else:
-        form = CreateNewPostList()
+        form = CreateNewMoment()
     return render(response, "main/create.html", {"form":form})
 
 def view(response):

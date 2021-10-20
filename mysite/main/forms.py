@@ -3,8 +3,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from .models import User
 
-class CreateNewPostList(forms.Form):
-    name = forms.CharField(label="title", max_length=2000)
+class CreateNewMoment(forms.Form):
+    content = forms.CharField(label="title", max_length=2000)
     public = forms.BooleanField(required=False)
 
 class RegisterForm(UserCreationForm):

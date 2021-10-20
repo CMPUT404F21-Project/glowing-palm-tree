@@ -6,7 +6,7 @@ View
 {% endblock %}
 
 {% block content %}
-    {% for pl in user.postlist.all %}
-        <p><a href="/{{pl.id}}">{{pl.name}}</a></p>
+    {% for pl in user.moment.all %}
+        <p><a href="/{{pl.id}}">{{pl.content}}</a></p>
     {% endfor %}
 {% endblock %}
