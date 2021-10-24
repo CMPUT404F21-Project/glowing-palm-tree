@@ -1,10 +1,39 @@
 {% extends 'main/base.html' %}
 
+{% block style %}
+
+{% endblock %}
 
 {% block title %}
 Glowing Palm Tree Home
 {% endblock %}
 
+
 {% block content %}
-<h1>This is the home page</h1>
+<div class="container">
+    <form>
+      <div class="form-group">
+        <textarea class="form-control" rows="5" id="moment"></textarea>
+      </div>
+      <div class="row">
+        <div class="col-sm-6">
+            <input type="file" id="myFile" name="filename">
+        </div>
+        <div class="col-sm-3">
+        <input type="checkbox" id="scales" name="scales" checked>
+        <label for="scales">CommonMark</label>
+        </div>
+        <div class="col-sm-3">
+        <select class="form-control" id="publicity">
+            <option>Public</option>
+            <option>Private</option>
+        </select>
+        <label for="publicity"></label>
+        </div>
+        
+      </div>
+      <button style="float: right;" type="submit" class="btn btn-success">Register</button>
+      
+    </form>
+  </div>
 {% endblock %}

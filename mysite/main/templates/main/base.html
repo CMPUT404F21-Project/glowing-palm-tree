@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
     <head>
+        {% block style %}{% endblock %}
         <style type="text/css">
+            
             .sidenav {
                overflow: hidden;
                background-color: #333;
@@ -45,6 +47,7 @@
             <a href="/">Home</a>
             <a href="/create">Create</a>
             <a href="/view">Post</a>
+            <a href="/login">Login</a>
         </div>
         <div id="content", name="content", class="main"> 
             <div class="row justify-content-center">

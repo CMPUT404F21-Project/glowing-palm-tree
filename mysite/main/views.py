@@ -30,6 +30,12 @@ def index(response, id):
     return render(response, "main/view.html", {})
 
 def home(response):
+    if response.method == "POST":
+        form = CreateNewMoment(response.POST)
+        if form.is_valid():
+            n = form.cleaned_data["content"]
+            p = form.cleaned_data["public"]
+            
     return render(response, "main/home.html", {})
 
 def create(response):
