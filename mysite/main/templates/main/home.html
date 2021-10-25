@@ -1,39 +1,38 @@
 {% extends 'main/base.html' %}
 
 {% block style %}
-
+<style>
+  a{
+    float: right;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+</style>
 {% endblock %}
-
 {% block title %}
-Glowing Palm Tree Home
+Create new post
 {% endblock %}
 
+{% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
-    <form>
-      <div class="form-group">
-        <textarea class="form-control" rows="5" id="moment"></textarea>
-      </div>
-      <div class="row">
-        <div class="col-sm-6">
-            <input type="file" id="myFile" name="filename">
-        </div>
-        <div class="col-sm-3">
-        <input type="checkbox" id="scales" name="scales" checked>
-        <label for="scales">CommonMark</label>
-        </div>
-        <div class="col-sm-3">
-        <select class="form-control" id="publicity">
-            <option>Public</option>
-            <option>Private</option>
-        </select>
-        <label for="publicity"></label>
-        </div>
-        
-      </div>
-      <button style="float: right;" type="submit" class="btn btn-success">Register</button>
-      
-    </form>
+<h3>Create Post</h3>
+<form method="post" action="/create/" class="form-group">
+    {% csrf_token %}
+    {{form|crispy}}
+    <input class="btn-primary" type="submit" value="post" style="float: right; margin-top: 0px;">
+</form><br>
+<div>
+  {% for pl in user.moment.all %}
+  <div class="moment">
+    <h1>{{pl.title}}</h1>
+    <p>{{pl.content}}</p>
+    <a href="#" type="Share">Share</a>
+    <a href="#" type="Share">Comment</a>
+    <a href="#" type="Share">Like</a>    
   </div>
+    
+  {% endfor %}
+</div>
+
 {% endblock %}

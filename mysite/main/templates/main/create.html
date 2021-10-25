@@ -5,15 +5,13 @@
 Create new post
 {% endblock %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 <h3>Create Page</h3>
 <form method="post" action="/create/" class="form-group">
     {% csrf_token %}
-    <div class="input-group mb-3">
-        <div class="input-group-prepend">
-            <button type="submit", name="save" class="btn btn-success">Create New</button>
-        </div>
-        {{form.content}}
-    </div>
+    {{form|crispy}}
+    <input id="post" type="submit" value="submit">
 </form>
 {% endblock %}

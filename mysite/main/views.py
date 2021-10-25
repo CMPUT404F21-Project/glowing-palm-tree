@@ -33,15 +33,7 @@ def home(response):
     if response.method == "POST":
         form = CreateNewMoment(response.POST)
         if form.is_valid():
-            n = form.cleaned_data["content"]
-            p = form.cleaned_data["public"]
-            
-    return render(response, "main/home.html", {})
-
-def create(response):
-    if response.method == "POST":
-        form = CreateNewMoment(response.POST)
-        if form.is_valid():
+            #raise Exception
             n = form.cleaned_data["content"]
             p = Moment(content=n)
             p.save()
@@ -51,7 +43,7 @@ def create(response):
             print(form.errors)
     else:
         form = CreateNewMoment()
-    return render(response, "main/create.html", {"form":form})
+    return render(response, "main/home.html", {"form":form})
 
 def view(response):
     return render(response, "main/view.html", {})
