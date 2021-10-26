@@ -7,6 +7,10 @@
     padding-left: 10px;
     padding-right: 10px;
   }
+  .form-check-label {
+    margin-bottom: 0;
+    margin-left: 10pt;
+}
 </style>
 {% endblock %}
 {% block title %}
@@ -20,19 +24,23 @@ Create new post
 <form method="post" action="/create/" class="form-group">
     {% csrf_token %}
     {{form|crispy}}
-    <input class="btn-primary" type="submit" value="post" style="float: right; margin-top: 0px;">
-</form><br>
-<div>
+    <input class="btn-lg" type="submit" value="post" style="float: right;">
+</form>
+<br>
+<br>
+
   {% for pl in user.moment.all %}
-  <div class="moment">
-    <h1>{{pl.title}}</h1>
-    <p>{{pl.content}}</p>
-    <a href="#" type="Share">Share</a>
-    <a href="#" type="Share">Comment</a>
-    <a href="#" type="Share">Like</a>    
-  </div>
+    <div class="moment" style="margin-top:40pt;">
+      <div class="panel panel-default">
+        <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
+        <div class="panel-body">{{pl.content}}</div>
+      </div>
+      <a href="#" type="Share">Share</a>
+      <a href="#" type="Share">Comment</a>
+      <a href="#" type="Share">Like</a>    
+    </div>
     
   {% endfor %}
-</div>
+
 
 {% endblock %}

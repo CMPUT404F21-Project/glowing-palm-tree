@@ -1,0 +1,46 @@
+
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    
+                    
+                        
+                        
+    <h4 style="text-align: center;"> Message Box </h4>                    
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-3" >
+             </div>
+            
+            <div class="col-sm-6">
+                
+                {% for pl in user.moment.all %}
+                <div class="moment">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="font-size:large"></div>
+                        <div class="panel-body" style="font-size:medium">{{pl.content}} followed you <a href="#">View</a><br>
+                        <div style="font-size: xx-small;">time: </div>
+                    </div>
+                </div>
+                {% endfor %}   
+        
+            </div>
+            <div class="col-sm-3" >
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

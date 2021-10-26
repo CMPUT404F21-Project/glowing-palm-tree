@@ -5,6 +5,7 @@ from .models import Moment, Comment
 from .forms import CreateNewMoment
 from .forms import RegisterForm
 from django.views.decorators.csrf import csrf_protect
+import random
 # Create your views here.
 
 def index(response, id):
@@ -35,7 +36,9 @@ def home(response):
         if form.is_valid():
             #raise Exception
             n = form.cleaned_data["content"]
-            p = Moment(content=n)
+            t = form.cleaned_data["title"]
+            v = form.cleaned_data["visibility"]
+            p = Moment(content=n, title=t,visibility=v)
             p.save()
             response.user.moment.add(p)
             return HttpResponseRedirect("/%i" %p.id)
@@ -47,6 +50,23 @@ def home(response):
 
 def view(response):
     return render(response, "main/view.html", {})
+
+def userCenter(response):
+    user = response.user
+
+    return render(response, "main/userCenter.html", {"user":user})
+
+def otherUser(response):
+    user = response.user
+    return render(response, "main/otherUser.html", {"user":user})
+
+def messageBox(response):
+    user = response.user
+    return render(response, "main/messageBox.html", {"user":user})
+
+def following(response):
+    user = response.user
+    return render(response, "main/following.html", {"user":user})
 
 @csrf_protect
 def register(response):

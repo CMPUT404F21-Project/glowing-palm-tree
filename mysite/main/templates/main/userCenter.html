@@ -1,0 +1,67 @@
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    <div class="container"></div>
+        <img style=" width: 25%; border-radius: 50%; 
+                    margin-bottom: 30pt;display: block;
+                    margin-left: auto;
+                    margin-right: auto;" 
+                    src="https://freedomwire.com/wp-content/uploads/2020/08/Biden-Communism.jpg"> 
+                    
+                        
+                        
+                        
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-2" ></div>
+            <div class="col-sm-8">
+                <table class="table table-striped">
+                    <tbody>
+                    <tr>
+                        <td>Email</td>
+                        <td>{{user.email}}</td>
+                    </tr>
+                    <tr>
+                        <td>User Name</td>
+                        <td>{{user.username}}</td>
+                    </tr>
+                    <tr>
+                        <td>Github</td>
+                        <td>{{user.github}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <a href="#" style="float: right;">[edit]</a>
+                {% for pl in user.moment.all %}
+                    <div class="moment" style="margin-top:40pt;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
+                        <div class="panel-body">{{pl.content}}</div>
+                    </div>
+                    <a href="#">Share</a>
+                    <a href="#">Comment</a>
+                    <a href="#">Like</a>    
+                    </div>
+                
+                {% endfor %}
+            </div>
+            <div class="col-sm-2"></div> 
+        </div>
+        
+    </div>
+    
+    
+{% endblock %}
