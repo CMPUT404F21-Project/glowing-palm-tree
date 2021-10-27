@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db.models import constraints
 # from django.conf import settings
 
 # Create your models here.
@@ -62,6 +63,15 @@ class Likes(models.Model):
 class Liked(models.Model):
     type = models.CharField(max_length=2000)
     itmes = models.JSONField()
+
+class Following(models.Model):
+    user_id = models.ForeignKey("User", on_delete=models.CASCADE, related_name="following")
+    following_user_id = models.ForeignKey("User", on_delete=models.CASCADE, related_name="followers")
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields= ['user_id','following_user_id'], name="follow constraint")
+        ]
 
 class Inbox(models.Model):
     type = models.CharField(max_length=2000)

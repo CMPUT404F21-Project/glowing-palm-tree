@@ -1,12 +1,13 @@
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Moment, Comment
+from .models import Moment, Comment, Following
 from .forms import *
 import datetime
 from django.views.decorators.csrf import csrf_protect
 import random
 import json
+from django.db import IntegrityError
 # Create your views here.
 
 def index(response, id):
@@ -70,14 +71,8 @@ def otherUser(response,id):
         return HttpResponseRedirect("/userCenter/")
     otherUser = User.objects.get(id=id)
     user = response.user
-    followList = user.followList
-    print(id)
-    if(followList):
-        followList = json.loads(followList)
-        following = (str(id) in followList.keys())
-        print(following)
-    else:
-        following = False
+    followList = Following.objects.filter(user_id__exact=user, following_user_id__exact=otherUser)
+    following = followList.exists()
 
     return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following})
 
@@ -104,32 +99,21 @@ def register(response):
 
 
 def friendRequest(response, selfId, otherId):
-    user = User.objects.get(id=selfId)
-    #print(id)
-    followList = user.followList
-    if(followList):
-        followers = json.loads(followList)
-        followers[otherId] = True
-    else:
-        followers = {}
-        followers[otherId] = True
-    followList = json.dumps(followers)
-    user.followList = followList
-    user.save()
-    print(followList)
+    otherUser = User.objects.get(id=otherId)
+    try:
+        Following.objects.create(user_id=response.user, following_user_id=otherUser)
+    except IntegrityError:
+        print("Already followed")
+
     return HttpResponseRedirect("/otherUser/%i" %otherId)
 
 def unfollow(response, otherId):
-    #print(id)
+    otherUser = User.objects.get(id=otherId)
     user =  response.user
-    followList = user.followList
-    print('here')
-    followers = json.loads(followList)
-    followers.pop(str(otherId))
-    followList = json.dumps(followers)
-    user.followList = followList
-    user.save()
-    print(followList)
+    quertSet = Following.objects.filter(user_id__exact=user, following_user_id__exact=otherUser)
+    if quertSet.exists():
+        quertSet.delete()
+    
     return HttpResponseRedirect("/otherUser/%i" %otherId)
 
     
