@@ -59,7 +59,7 @@
             {%if user.is_authenticated%}
             <a href="/messageBox" >Inbox</a>
             <a href="/logout/" style="float: right;">Logout</a>
-            <a href="/userCenter" style="float: right;">{{user.username}}</a>
+            <a href="/author/{{user.localId}}" style="float: right;">{{user.username}}</a>
             {%else%}
             <a href="/login" style="float: right;">Login</a>
             {%endif%}

@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 import random
 import json
 from django.db import IntegrityError
+from urllib.parse import quote_plus as quote
 # Create your views here.
 
 def index(response, id):
@@ -48,10 +49,15 @@ def home(response):
 def view(response):
     return render(response, "main/view.html", {})
 
-def userCenter(response):
-    user = response.user
-
-    return render(response, "main/userCenter.html", {"user":user})
+def userCenter(response, id):
+    if(response.user.localId == id):
+        return render(response, "main/userCenter.html", {"user":response.user})
+    else:
+        otherUser = User.objects.get(localId=id)
+        user = response.user
+        followList = Following.objects.filter(user_id__exact=user, following_user_id__exact=otherUser)
+        following = followList.exists()
+        return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following})
 
 def userCenterEdit(response):
     if response.method == "POST":
@@ -59,23 +65,12 @@ def userCenterEdit(response):
         if form.is_valid():
             #raise Exception         
             form.save()
-            return HttpResponseRedirect("/userCenter/")
+            return HttpResponseRedirect("/author/%s" %response.user.localId)
     else:
         form = UserProfileEdit(instance=response.user)
         
     return render(response, "main/userCenterEdit.html", {"form":form})
-
-
-def otherUser(response,id):
-    if(response.user.id == id):
-        return HttpResponseRedirect("/userCenter/")
-    otherUser = User.objects.get(id=id)
-    user = response.user
-    followList = Following.objects.filter(user_id__exact=user, following_user_id__exact=otherUser)
-    following = followList.exists()
-
-    return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following})
-
+  
 def messageBox(response):
     user = response.user
     return render(response, "main/messageBox.html", {"user":user})
@@ -89,7 +84,16 @@ def register(response):
     if response.method == "POST":
         form = RegisterForm(response.POST)
         if form.is_valid():
-            form.save()
+            createdUser = form.save(commit=False)
+            userId = quote(response.build_absolute_uri('/author/')) + createdUser.id
+            host = quote(response.build_absolute_uri('/'))
+            localId = createdUser.id
+            createdUser.host = host
+            createdUser.id = userId
+            createdUser.url = userId
+            createdUser.localId = localId
+            print(userId)
+            createdUser.save()
             return redirect("/login/")
         else:
             print(form.errors)
@@ -99,21 +103,21 @@ def register(response):
 
 
 def friendRequest(response, selfId, otherId):
-    otherUser = User.objects.get(id=otherId)
+    otherUser = User.objects.get(localId=otherId)
     try:
         Following.objects.create(user_id=response.user, following_user_id=otherUser)
     except IntegrityError:
         print("Already followed")
 
-    return HttpResponseRedirect("/otherUser/%i" %otherId)
+    return HttpResponseRedirect("/author/%s" %otherId)
 
 def unfollow(response, otherId):
-    otherUser = User.objects.get(id=otherId)
+    otherUser = User.objects.get(localId=otherId)
     user =  response.user
     quertSet = Following.objects.filter(user_id__exact=user, following_user_id__exact=otherUser)
     if quertSet.exists():
         quertSet.delete()
     
-    return HttpResponseRedirect("/otherUser/%i" %otherId)
+    return HttpResponseRedirect("/author/%s" %otherId)
 
     

@@ -1,19 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db.models import constraints
+import uuid
 # from django.conf import settings
-
+def createUUID():
+    return str(uuid.uuid4())
 # Create your models here.
 
 class User(AbstractUser):
     type = models.CharField(max_length=2000, null=True)
-    userId = models.CharField(max_length=2000, null=True)
+    id = models.CharField(max_length=2000, primary_key=True, default=createUUID)
+    localId = models.CharField(max_length=2000, null=True)
     host = models.CharField(max_length=2000, null=True)
     displayName = models.CharField(max_length=2000, null=True)
     url = models.URLField(max_length=2000, null=True)
     github = models.URLField(max_length=2000, null=True)
     profileImage = models.URLField(max_length=2000, null=True)
-    followList = models.JSONField(null=True)
 
     
 
