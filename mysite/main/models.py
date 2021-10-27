@@ -30,8 +30,8 @@ class Moment(models.Model):
     count = models.PositiveIntegerField(null=True)
     comments = models.URLField(null=True)
     commentsSrc = models.JSONField(null=True)
-    published = models.TimeField(null=True)
-    visibility = models.JSONField(null=True)
+    published = models.DateTimeField(null=True)
+    visibility = models.CharField(max_length=2000,null=True)
     unlisted = models.BooleanField(null=True)
 
     def __str__(self):
@@ -43,7 +43,7 @@ class Comment(models.Model):
     author =  models.JSONField(null=True)
     content = models.CharField(max_length=2000, null=True)
     contentType = models.CharField(max_length=2000, null=True)
-    published = models.TimeField(null=True)
+    published = models.DateTimeField(null=True)
     commentId = models.CharField(max_length=2000, null=True)
     
     complete = models.BooleanField(null=True)

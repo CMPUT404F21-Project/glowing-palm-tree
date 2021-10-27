@@ -9,7 +9,10 @@ urlpatterns = [
     path("view/", views.view, name="view"),
     path("register/", views.register, name="register"),
     path("userCenter/", views.userCenter, name="userCenter"),
-    path("otherUser/", views.otherUser, name="otherUser"),
+    path("otherUser/<int:id>", views.otherUser, name="otherUser"),
     path("messageBox/", views.messageBox, name="messageBox"),
     path("following/", views.following, name="following"),
+    path("userCenterEdit/", views.userCenterEdit, name="userCenterEdit"),
+    path("friendRequest/<int:selfId>/<int:otherId>", views.friendRequest, name="friendRequest"),
+    path("unfollow/<int:otherId>", views.unfollow, name="unfollow"),
 ]

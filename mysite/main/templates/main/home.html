@@ -2,10 +2,15 @@
 
 {% block style %}
 <style>
-  a{
+  a.buttons{
     float: right;
     padding-left: 10px;
     padding-right: 10px;
+  }
+  a.username{
+    
+    padding-left: 0;
+    padding-right: 0;
   }
   .form-check-label {
     margin-bottom: 0;
@@ -24,20 +29,31 @@ Create new post
 <form method="post" action="/create/" class="form-group">
     {% csrf_token %}
     {{form|crispy}}
-    <input class="btn-lg" type="submit" value="post" style="float: right;">
+    {%if user.is_authenticated%}
+      <input class="btn-lg" type="submit" value="post" style="float: right;">
+    {%else%}
+      <a class="buttons" href="/login/" class="btn btn-success">Post</a>
+    {%endif%}
+    
 </form>
 <br>
 <br>
 
-  {% for pl in user.moment.all %}
+  {% for pl in moments%}
     <div class="moment" style="margin-top:40pt;">
       <div class="panel panel-default">
-        <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
+        <div class="panel-heading">
+          Posted by  <a href="otherUser/{{pl.user.id}}">{{pl.user.username}}</a>
+          <br>
+          At:{{pl.published}}
+          <br>
+          Title:{{pl.title}}
+        </div>
         <div class="panel-body">{{pl.content}}</div>
       </div>
-      <a href="#" type="Share">Share</a>
-      <a href="#" type="Share">Comment</a>
-      <a href="#" type="Share">Like</a>    
+      <a class="buttons" href="#" type="Share">Share</a>
+      <a class="buttons" href="#" type="Share">Comment</a>
+      <a class="buttons" href="#" type="Share">Like</a>    
     </div>
     
   {% endfor %}

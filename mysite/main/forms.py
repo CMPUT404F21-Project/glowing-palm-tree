@@ -6,6 +6,10 @@ from .models import User, Moment
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 
+
+
+
+
 class CreateNewMoment(forms.Form):
 
     
@@ -21,8 +25,8 @@ class CreateNewMoment(forms.Form):
                                 }), required=True)
     markDown = forms.BooleanField(required=False)
     CHOICES= (
-    ('1','Public'),
-    ('2','Private'),
+    ('Public','Public'),
+    ('Friend','Friend'),
     )
     visibility = forms.ChoiceField(widget=forms.Select, choices=CHOICES)
     
@@ -38,3 +42,14 @@ class RegisterForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
+
+
+class UserProfileEdit(forms.ModelForm):
+    
+    username = forms.CharField()
+    email = forms.EmailField()
+    github = forms.CharField()
+    class Meta:
+        model = User
+        fields = ["username", "email", "github"]
+
