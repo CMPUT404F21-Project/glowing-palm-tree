@@ -27,12 +27,13 @@ User Center
             
             <div class="col-sm-6">
                 
-                {% for pl in user.moment.all %}
+                {% for lp in items %}
                 <div class="moment">
                     <div class="panel panel-default">
                         <div class="panel-heading" style="font-size:large"></div>
-                        <div class="panel-body" style="font-size:medium">{{pl.content}} followed you <a href="#">View</a><br>
-                        <div style="font-size: xx-small;">time: </div>
+                        {%if lp.type == "Like"%}
+                        <div class="panel-body" style="font-size:medium">{{lp.summary}} <a href="{{lp.object}}">View</a><br>
+                        {%endif%}
                     </div>
                 </div>
                 {% endfor %}   

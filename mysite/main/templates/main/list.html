@@ -12,11 +12,14 @@ View List
           <div class="panel-body">{{ls.content}}</div>
           <div style="padding-bottom: 50pt;">   </div>
         </div>
-
+        <form action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
         <div class="btn-group btn-group-justified">
-            <a href="#" class="btn btn-default " type="Share">Share</a>
-            <a href="#" class="btn btn-default " type="Share">Like</a>   
+            {% csrf_token %}
+            <button  class="btn btn-default " type="submit">Share</button>
+            
+            <button  value="{{ls.id | stringformat:'s'}}" name="like" class="btn btn-default " type="submit">Like</button>   
         </div>  
+        </form>>
       
     </div>
 

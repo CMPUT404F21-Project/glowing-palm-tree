@@ -56,23 +56,27 @@ class Comment(models.Model):
 
 
 class Likes(models.Model):
+
     context = models.URLField()
     summary = models.CharField(max_length=2000)
     type = models.CharField(max_length=2000)
     author = models.JSONField()
     object = models.URLField()
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields= ['summary','object'], name="like constraint")
+        ]
 
 class Liked(models.Model):
     type = models.CharField(max_length=2000)
     itmes = models.JSONField()
 
 class Following(models.Model):
-    user_id = models.ForeignKey("User", on_delete=models.CASCADE, related_name="following")
-    following_user_id = models.ForeignKey("User", on_delete=models.CASCADE, related_name="followers")
-
+    user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="following")
+    following_user = models.ForeignKey("User", on_delete=models.CASCADE, related_name="followed")
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields= ['user_id','following_user_id'], name="follow constraint")
+            models.UniqueConstraint(fields= ['user','following_user'], name="follow constraint")
         ]
 
 class Inbox(models.Model):

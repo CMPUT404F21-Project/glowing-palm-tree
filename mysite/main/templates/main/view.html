@@ -6,24 +6,27 @@ View
 {% endblock %}
 
 {% block content %}
-    {% for pl in user.moment.all %}
+    {% for pl in showList %}
     <div class="moment" style="margin-top:40pt;">
-        <a href="/{{pl.id}}">
+        
         <div class="panel panel-default">
-          <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
-          <div class="panel-body">{{pl.content}}</div>
+            <div class="panel-heading">
+                Posted by  <a href="/{{pl.user.id|cut:pl.user.host}}">{{pl.user.username}}</a>
+                <br>
+                At:{{pl.published}}
+                <br>
+                Title:{{pl.title}}
+            </div>
+            
+          <div class="panel-body"><a href="/{{pl.id}}">{{pl.content}}</a></div>
         </div>
-         
-     
-    </a>
         <div class="btn-group btn-group-justified">
             <a href="#" class="btn btn-default " type="Share">Share</a>
             <a href="/{{pl.id}}" class="btn btn-default " type="Share">Comment</a>
             <a href="#" class="btn btn-default " type="Share">Like</a>   
         </div>  
       
-    </div>
-    
+    </div> 
     {% endfor %}
     
     
