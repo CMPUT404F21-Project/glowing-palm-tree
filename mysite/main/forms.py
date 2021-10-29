@@ -5,12 +5,12 @@ from django.db.models import fields
 from .models import User, Moment
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
+import datetime
 
 
 
 
-
-class CreateNewMoment(forms.Form):
+class CreateNewMoment(forms.ModelForm):
 
     
     title = forms.CharField(label="title", max_length=2000, 
@@ -23,16 +23,18 @@ class CreateNewMoment(forms.Form):
                                     'class':'form-control',
                                     'placeholder':'Content'
                                 }), required=True)
-    markDown = forms.BooleanField(required=False)
     CHOICES= (
     ('Public','Public'),
     ('Friend','Friend'),
+    ('Unlisted','Unlisted')
     )
     visibility = forms.ChoiceField(widget=forms.Select, choices=CHOICES)
     
     class Meta:
         model = Moment
-        fields = {"title", 'content', 'markdown', 'visibility'}
+        fields = {"title", 'content',  'visibility'}
+    
+    
 
     
 

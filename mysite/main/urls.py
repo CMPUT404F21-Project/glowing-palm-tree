@@ -3,7 +3,7 @@ from django.urls.resolvers import URLPattern
 from . import views
 
 urlpatterns = [
-    path("<int:id>", views.index, name = "index"),
+    path("author/<str:authorId>/posts/<str:postId>", views.userMoment, name = "userMoment"),
     path("home/", views.home, name = "home"),
     path("create/", views.home, name = "create"),
     path("view/", views.view, name="view"),
@@ -15,4 +15,5 @@ urlpatterns = [
     path("friendRequest/<str:selfId>/<str:otherId>", views.friendRequest, name="friendRequest"),
     path("unfollow/<str:otherId>", views.unfollow, name="unfollow"),
     path("author/<str:id>/inbox/", views.inbox, name="inbox"),
+    path("momentEdit/<str:postId>", views.momentEdit, name="MomentEdit"),
 ]

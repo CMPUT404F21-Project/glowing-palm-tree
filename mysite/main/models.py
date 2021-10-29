@@ -22,7 +22,7 @@ class User(AbstractUser):
 class Moment(models.Model):
     type = models.CharField(max_length=2000, null=True)
     title = models.CharField(max_length=2000, null=True)
-    momentId = models.CharField(max_length=2000, null=True)
+    id = models.CharField(max_length=2000, primary_key=True)
     source = models.CharField(max_length=2000, null=True)
     origin = models.CharField(max_length=2000, null=True)
     description = models.CharField(max_length=2000, null=True)
@@ -36,7 +36,7 @@ class Moment(models.Model):
     published = models.DateTimeField(null=True)
     visibility = models.CharField(max_length=2000,null=True)
     unlisted = models.BooleanField(null=True)
-
+    markDown = models.BooleanField(null=True)
     def __str__(self):
         return self.content
 
@@ -62,9 +62,11 @@ class Likes(models.Model):
     type = models.CharField(max_length=2000)
     author = models.JSONField()
     object = models.URLField()
+    userId = models.CharField(max_length=2000)
+    itemId = models.CharField(max_length=2000)
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields= ['summary','object'], name="like constraint")
+            models.UniqueConstraint(fields= ['userId','itemId'], name="like constraint")
         ]
 
 class Liked(models.Model):

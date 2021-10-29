@@ -15,11 +15,14 @@ View List
         <form action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
         <div class="btn-group btn-group-justified">
             {% csrf_token %}
-            <button  class="btn btn-default " type="submit">Share</button>
-            
-            <button  value="{{ls.id | stringformat:'s'}}" name="like" class="btn btn-default " type="submit">Like</button>   
+            <button  class="btn btn-default " type="submit" disabled>Share</button>
+            {% if liked %}
+            <button  value="{{ls.id}}" name="like" class="btn btn-default " type="submit" disabled>Like</button>    
+            {% else %}
+            <button  value="{{ls.id}}" name="like" class="btn btn-default " type="submit">Like</button>
+            {% endif %}   
         </div>  
-        </form>>
+        </form>
       
     </div>
 

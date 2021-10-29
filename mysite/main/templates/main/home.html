@@ -3,7 +3,8 @@
 {% block style %}
 <style>
   a.buttons{
-    float: right;
+    margin-left: 35%;
+    font-size: x-large;
     padding-left: 10px;
     padding-right: 10px;
   }
@@ -25,20 +26,21 @@ Create new post
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% block content %}
-<h3>Create Post</h3>
-<form method="post" action="/create/" class="form-group">
-    {% csrf_token %}
-    {{form|crispy}}
-    {%if user.is_authenticated%}
-      <input class="btn-lg" type="submit" value="post" style="float: right;">
-    {%else%}
-      <a class="buttons" href="/login/" class="btn btn-success">Post</a>
-    {%endif%}
-    
-</form>
-<br>
-<br>
 
+
+  {% if user.is_authenticated%}
+  <h3>Create Post</h3>
+  <form method="post" action="../{{user.id|cut:user.host}}/posts/{% createuuid postId %}" class="form-group">
+      <input type="hidden" name="_METHOD" value="PUT"/>
+      {% csrf_token %}
+      {{form|crispy}}
+        <input class="btn-lg" type="submit" value="put" style="float: right;"> 
+  </form>
+  {%else%}
+  <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
+  {%endif%}
+<br>
+<br>
   {% for pl in moments%}
     <div class="moment" style="margin-top:40pt;">
       <div class="panel panel-default">
@@ -50,10 +52,7 @@ Create new post
           Title:{{pl.title}}
         </div>
         <div class="panel-body">{{pl.content}}</div>
-      </div>
-      <a class="buttons" href="#" type="Share">Share</a>
-      <a class="buttons" href="#" type="Share">Comment</a>
-      <a class="buttons" href="#" type="Share">Like</a>    
+      </div>  
     </div>
     
   {% endfor %}

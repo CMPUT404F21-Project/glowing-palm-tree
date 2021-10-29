@@ -18,7 +18,7 @@ View
                 Title:{{pl.title}}
             </div>
             
-          <div class="panel-body"><a href="/{{pl.id}}">{{pl.content}}</a></div>
+          <div class="panel-body"><a href="/{{pl.user.id|cut:pl.user.host}}/posts/{{pl.id}}">{{pl.content}}</a></div>
         </div>
         <div class="btn-group btn-group-justified">
             <a href="#" class="btn btn-default " type="Share">Share</a>

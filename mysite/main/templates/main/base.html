@@ -54,9 +54,9 @@
 
     <body>
         <div class="sidenav">
-            <a href="/home">Home</a>
-            <a href="/view">Post</a>
+            <a href="/home">Home</a>          
             {%if user.is_authenticated%}
+            <a href="/view">Post</a>
             <a href="/{{user.id|cut:user.host}}/inbox/" >Inbox</a>
             <a href="/logout/" style="float: right;">Logout</a>
             <a href="/author/{{user.localId}}" style="float: right;">{{user.username}}</a>
