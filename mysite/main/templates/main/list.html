@@ -1,34 +1,52 @@
 {% extends "main/base.html" %}
 
+{% block style %}
+<style>
+    #likeShare {
+        float: right;
+    }
+  </style>
+{% endblock %}
+
 {% block title %}
 View List
 {% endblock %}
 
 {% block content %}
-    <h1>{{ls.content}}</h1>
-    <form method="post" action="#">
-        {% csrf_token %}
-        {% for comment in ls.comment_set.all %}
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <div class="input-group-text">
-                    {% if comment.complete == True %}
-                        <input type="checkbox", value="clicked", name="c{{comment.id}}" checked>
-                    {% else %}
-                        <input type="checkbox", value="clicked", name="c{{comment.id}}">
-                    {% endif %}
-                </div>
-            </div>
-            <input type="text", value="{{comment.content}}" class="form-control">
-        </div>
-        {% endfor %}
+    <div class="moment" style="margin-top:40pt;">
 
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <button type="submit", name="newPost", value="newPost", class="btn btn-success">New Comment</button>
-            </div>
-            <input type="text", name="new">
+        <div class="panel panel-default">
+          <div class="panel-heading" style="font-size:x-large">{{ls.title}}</div>
+          <div class="panel-body">{{ls.content}}</div>
+          <div style="padding-bottom: 50pt;">   </div>
         </div>
-        <button type="submit", name="save", value="save", class="btn btn-success">Save</button>
+        <form action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
+        <div id="likeShare">
+            {% csrf_token %}
+            <button  class="btn btn-success" type="submit" disabled>Share</button>
+            {% if liked %}
+            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit" disabled>Like</button>    
+            {% else %}
+            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit">Like</button>
+            {% endif %}   
+        </div>  
+        </form>
+      
+    </div>
+
+    {% for comment in ls.comment_set.all %}
+    <div class="panel panel-default" style="margin-top: 30pt;">
+        <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+        <div class="panel-body">{{comment.content}}</div>
+      </div>
+    {% endfor %}
+    <form method="post" style="margin-top: 30pt;" action="#">
+        {% csrf_token %}
+        
+        <div class="input-group mb-3">
+            <label for="comment">Comment:</label>
+            <textarea class="form-control" name="new" rows="5" id="comment"></textarea>
+        </div>
+        <button type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</button>
     </form>
 {% endblock %}

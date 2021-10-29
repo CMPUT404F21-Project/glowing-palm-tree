@@ -1,0 +1,58 @@
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    
+                    
+                        
+                        
+                        
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-2" >
+             </div>
+            
+            <div class="col-sm-9">
+                
+                
+
+                <table class="table table-striped">
+                    <tbody>
+                      
+                    
+                        {% for pl in user.moment.all %}
+                        <tr>
+                            <td>User Name</td>
+                            <td>status</td>
+                            <td><form>
+                                <input class="btn-primary" type="submit" value="Unfollow" style="margin-bottom: 20pt; margin-left: 40%;">
+                            </form></td> 
+                        </tr>
+
+                        {% endfor %}  
+                    
+                    
+                    </tbody>
+                </table>
+                
+            </div>
+            <div class="col-sm-1" >
+             </div>
+        </div>
+        
+    </div>
+      
+    
+{% endblock %}

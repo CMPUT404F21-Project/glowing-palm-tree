@@ -1,0 +1,47 @@
+
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    
+                    
+                        
+                        
+    <h4 style="text-align: center;"> Message Box </h4>                    
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-3" >
+             </div>
+            
+            <div class="col-sm-6">
+                
+                {% for lp in items %}
+                <div class="moment">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" style="font-size:large"></div>
+                        {%if lp.type == "Like"%}
+                        <div class="panel-body" style="font-size:medium">{{lp.summary}} <a href="{{lp.object}}">View</a><br>
+                        {%endif%}
+                    </div>
+                </div>
+                {% endfor %}   
+        
+            </div>
+            <div class="col-sm-3" >
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}

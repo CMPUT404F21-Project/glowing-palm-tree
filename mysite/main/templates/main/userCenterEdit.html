@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <div class="container"></div>
+        <img style=" width: 25%; border-radius: 50%; 
+                    margin-bottom: 30pt;display: block;
+                    margin-left: auto;
+                    margin-right: auto;" 
+                    src="https://freedomwire.com/wp-content/uploads/2020/08/Biden-Communism.jpg"> 
+                    
+                        
+                        
+                        
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-2" ></div>
+            <div class="col-sm-8">
+                <form method="post" action="/userCenterEdit/" class="form-group">
+                    {% csrf_token %}
+                    {{form|crispy}}
+                    <button  class="btn btn-success" type="submit" value="submit" style="float: right;">Save</button>
+                </form>
+                 
+            </div>
+            <div class="col-sm-2"></div> 
+        </div>
+        
+    </div>
+    
+    
+{% endblock %}

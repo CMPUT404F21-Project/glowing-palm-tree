@@ -1,0 +1,70 @@
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    
+                    
+                        
+                        
+                        
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-4" ><img style=" width: 80%; border-radius: 50%; 
+                margin-bottom: 30pt;display: block;
+                margin-left: 0" 
+                src="https://i.ytimg.com/vi/0ecRKCk89sw/hqdefault.jpg">
+             </div>
+            
+            <div class="col-sm-8">
+                    {% if following %}
+                        <a href="/unfollow/{{otherUser.localId}}" class="btn-lg btn-success" type="submit"  style="margin-bottom: 20pt;"> Unfollow</a>
+                    {% else %}
+                        <a href="/friendRequest/{{user.localId}}/{{otherUser.localId}}" class="btn-lg btn-success" type="submit"  style="margin-bottom: 20pt;">Follow</a>
+                    {% endif%}
+                <table class="table table-striped">
+                    <tbody>
+                     <tr>
+                        <td>User Name</td>
+                        <td>{{otherUser.username}}</td>
+                    </tr>   
+                    <tr>
+                        <td>Email</td>
+                        <td>{{otherUser.email}}</td>
+                    </tr>
+                    <tr>
+                        <td>Github</td>
+                        <td>{{otherUser.github}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+        </div>
+        
+    </div>
+    {% for pl in otherUser.moment.all %}
+        <div class="moment" style="margin-top:40pt;">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
+            <div class="panel-body">{{pl.content}}</div>
+        </div>
+        <a href="#">Share</a>
+        <a href="#">Comment</a>
+        <a href="#">Like</a>    
+    </div>
+
+{% endfor %}    
+    
+{% endblock %}
