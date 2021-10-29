@@ -1,9 +1,11 @@
 # glowing-palm-tree
 
+    github.com/CMPUT404F21-Project/glowing-palm-tree/
+
 Copyright 2021 Jiaxin Wang, Jiayuan Sun, Senyu Li, Tianying Xia, Yiyang Wang
 
 Licensed under the Apache License, Version 2.0 (the "License");\
-you may not use this file except in compliance with the License.\
+you may not use any file from this repository except in compliance with the License.\
 You may obtain a copy of the License at
 
     http://www.apache.org/licenses/LICENSE-2.0
