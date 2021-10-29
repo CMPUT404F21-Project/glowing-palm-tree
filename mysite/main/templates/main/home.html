@@ -16,7 +16,10 @@
   .form-check-label {
     margin-bottom: 0;
     margin-left: 10pt;
-}
+  }
+  #submitButton {
+    float: right;
+  }
 </style>
 {% endblock %}
 {% block title %}
@@ -34,7 +37,7 @@ Create new post
       <input type="hidden" name="_METHOD" value="PUT"/>
       {% csrf_token %}
       {{form|crispy}}
-        <input class="btn-lg" type="submit" value="put" style="float: right;"> 
+        <input id="submitButton" class="btn btn-success" type="submit" value="put"> 
   </form>
   {%else%}
   <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>

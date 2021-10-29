@@ -1,5 +1,13 @@
 {% extends "main/base.html" %}
 
+{% block style %}
+<style>
+    #likeShare {
+        float: right;
+    }
+  </style>
+{% endblock %}
+
 {% block title %}
 View List
 {% endblock %}
@@ -13,13 +21,13 @@ View List
           <div style="padding-bottom: 50pt;">   </div>
         </div>
         <form action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
-        <div class="btn-group btn-group-justified">
+        <div id="likeShare">
             {% csrf_token %}
-            <button  class="btn btn-default " type="submit" disabled>Share</button>
+            <button  class="btn btn-success" type="submit" disabled>Share</button>
             {% if liked %}
-            <button  value="{{ls.id}}" name="like" class="btn btn-default " type="submit" disabled>Like</button>    
+            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit" disabled>Like</button>    
             {% else %}
-            <button  value="{{ls.id}}" name="like" class="btn btn-default " type="submit">Like</button>
+            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit">Like</button>
             {% endif %}   
         </div>  
         </form>

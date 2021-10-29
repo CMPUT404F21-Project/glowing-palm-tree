@@ -6,6 +6,14 @@
       padding-left: 10px;
       padding-right: 10px;
     }
+
+    #editForm {
+        float: left;
+    }
+
+    #deleteForm {
+        float: right;
+    }
   </style>
 {% endblock %}
 
@@ -52,13 +60,13 @@ User Center
                         <div class="panel-body">{{pl.content}}</div>
                     </div>
 
-                    <form method="get" action="/momentEdit/{{pl.id}}" class="form-group">
+                    <form id="editForm" method="get" action="/momentEdit/{{pl.id}}" class="form-group">
                         {% csrf_token %}
                         <button class="btn btn-primary" type="submit">Edit</button> 
                     </form>
 
                     
-                    <form method="post" action="/{{user.id|cut:user.host}}/posts/{{pl.id}}" class="form-group">
+                    <form id="deleteForm" method="post" action="/{{user.id|cut:user.host}}/posts/{{pl.id}}" class="form-group">
                         <input type="hidden" name="_METHOD" value="Delete"/>
                         {% csrf_token %}
                         <button class="btn btn-primary" type="submit">Delete</button> 
