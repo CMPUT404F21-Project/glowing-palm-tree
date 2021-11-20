@@ -34,18 +34,40 @@ View List
       
     </div>
 
-    {% for comment in ls.comment_set.all %}
-    <div class="panel panel-default" style="margin-top: 30pt;">
-        <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
-        <div class="panel-body">{{comment.content}}</div>
-      </div>
-    {% endfor %}
-    <form method="post" style="margin-top: 30pt;" action="#">
-        {% csrf_token %}
+    {% if ls.visibility == "Friend" %}
+        {% if ls.user.id == user.id %}
+            {% for comment in ls.comment_set.all %}
+                <div class="panel panel-default" style="margin-top: 30pt;">
+                    <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+                    <div class="panel-body">{{comment.content}}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            {% for comment in ls.comment_set.all %} 
+                {% if comment.author.id == user.id %}
+                    <div class="panel panel-default" style="margin-top: 30pt;">
+                        <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+                        <div class="panel-body">{{comment.content}}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% else %}
+        {% for comment in ls.comment_set.all %}
+            <div class="panel panel-default" style="margin-top: 30pt;">
+                <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+                <div class="panel-body">{{comment.content}}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
         
+            
+    <form method="post" style="margin-top: 30pt;" action="{{ls.id}}/comments">
+        {% csrf_token %}
+        <input type="hidden" name="url" value={{ls.id}}>
         <div class="input-group mb-3">
             <label for="comment">Comment:</label>
-            <textarea class="form-control" name="new" rows="5" id="comment"></textarea>
+            <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
         </div>
         <button type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</button>
     </form>

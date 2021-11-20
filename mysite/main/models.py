@@ -43,7 +43,7 @@ class Moment(models.Model):
 class Comment(models.Model):
     moment = models.ForeignKey(Moment, on_delete=models.CASCADE, null=True)
     type = models.CharField(max_length=2000, null=True)
-    author =  models.JSONField(null=True)
+    author =  models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment", null=True)
     content = models.CharField(max_length=2000, null=True)
     contentType = models.CharField(max_length=2000, null=True)
     published = models.DateTimeField(null=True)

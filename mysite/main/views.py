@@ -89,42 +89,35 @@ def userMoment(response, authorId, postId):
     print(cleanUrl)
     ls = Moment.objects.filter(id__exact=cleanUrl )
     ls = ls[0]
-    if ls in response.user.moment.all(): 
-        '''if response.method == "POST":
-            # print(response.POST)
-            if response.POST.get("newComment"):
-                txt = response.POST.get("new")
-                if len(txt) > 2:
-                    ls.comment_set.create(content=txt, published=datetime.datetime.now(), complete=False)
-                else:
-                    print("invalid")'''
-        if response.method == "GET":
-            edit = response.GET.get("edit",'')    
-            if(edit == "edit"):
-                form = CreateNewMoment(instance=ls)    
-                return render(response, "main/momentEdit.html", {"form":form, "pl":ls})
-
-            
-            like = Likes.objects.filter(userId__exact=authorId, object=ls.id)
-            return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists())})
-        elif response.method == "POST":
-            if(response.POST.get("_METHOD") == "Delete"):
-                ls.delete()
-                return render(response, "main/userCenter.html", {"user":response.user})
+    '''if response.method == "POST":
+        # print(response.POST)
+        if response.POST.get("newComment"):
+            txt = response.POST.get("new")
+            if len(txt) > 2:
+                ls.comment_set.create(content=txt, published=datetime.datetime.now(), complete=False)
             else:
-                form = CreateNewMoment(response.POST, instance=ls)
-                if form.is_valid():
-                    #raise Exception         
-                    form.save()
-                    return HttpResponseRedirect(ls.id)
-        elif response.method == "DELETE":
+                print("invalid")'''
+    if response.method == "GET":
+        edit = response.GET.get("edit",'')    
+        if(edit == "edit"):
+            form = CreateNewMoment(instance=ls)    
+            return render(response, "main/momentEdit.html", {"form":form, "pl":ls})
+        like = Likes.objects.filter(userId__exact=response.user.id, object__exact=ls.id)
+        return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists())})
+    elif response.method == "POST":
+        if(response.POST.get("_METHOD") == "Delete"):
             ls.delete()
-            return HttpResponseRedirect("/author/%s/posts/%s" %(authorId, postId))
+            return render(response, "main/userCenter.html", {"user":response.user})
+        else:
+            form = CreateNewMoment(response.POST, instance=ls)
+            if form.is_valid():
+                #raise Exception         
+                form.save()
+                return HttpResponseRedirect(ls.id)
+    elif response.method == "DELETE":
+        ls.delete()
+        return HttpResponseRedirect("/author/%s/posts/%s" %(authorId, postId))
 
-
-         
-            
-    
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
@@ -240,8 +233,7 @@ def inbox(response, id):
 
         user = json.dumps(user)
 
-        like = Likes.objects.create(object=object, type="Like", author=user , summary=summary, userId=response.user.localId
-                                    )
+        like = Likes.objects.create(object=object, type="Like", author=user , summary=summary, userId=response.user.id)
 
         inbox = Inbox.objects.get(author=moment.user)
         
@@ -274,5 +266,26 @@ def momentEdit(response, postId):
     moment = Moment.objects.get(id=postId)
     form = CreateNewMoment(instance=moment)    
     return render(response, "main/momentEdit.html", {"form":form, "pl":moment})
+
+
+def createComment(response, authorId, postId):
+    momentUrl = response.build_absolute_uri()
+    momentUrl = momentUrl.replace("/comments", "")
+    print(momentUrl)
+    moment = Moment.objects.get(id=momentUrl)
+    commentUuid = str(uuid4())
+    comment = Comment.objects.create()
+    comment.commentId = response.build_absolute_uri() + "/" + commentUuid
+    comment.moment = moment
+    print("outside")
+    if response.method == "POST":
+        print("enter")
+        comment.content = response.POST.get("content")
+        comment.author = response.user
+        comment.type = "comment"
+        comment.published = datetime.datetime.now()
+        comment.save()
+    url = response.POST.get("url")
+    return HttpResponseRedirect(url)
 
     

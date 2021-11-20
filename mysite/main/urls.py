@@ -17,4 +17,5 @@ urlpatterns = [
     path("author/<str:id>/inbox/", views.inbox, name="inbox"),
     path("momentEdit/<str:postId>", views.momentEdit, name="MomentEdit"),
     path("author/<str:authorId>/posts/", views.doMoment, name = "doMoment"),
+    path("author/<str:authorId>/posts/<str:postId>/comments", views.createComment, name = "createComment")
 ]
