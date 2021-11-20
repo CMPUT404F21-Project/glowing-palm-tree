@@ -1,0 +1,63 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+View
+{% endblock %}
+
+
+
+{% block content %}
+    {% for pl in showList %}
+    <div class="moment" style="margin-top:40pt;">
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Posted by  <a href="/{{pl.user.id|cut:pl.user.host}}">{{pl.user.username}}</a>
+                <br>
+                At:{{pl.published}}
+                <br>
+                Title:{{pl.title}}
+            </div>
+            
+          <div class="panel-body"><a href="{{pl.id}}">{{pl.content}}</a></div>
+        </div>
+        <div class="btn-group btn-group-justified">
+            <a href="#" class="btn btn-default " type="Share">Share</a>
+            <a href="{{pl.id}}" class="btn btn-default " type="Share">Comment</a>
+            <a href="#" class="btn btn-default " type="Share">Like</a>   
+        </div>  
+      
+    </div> 
+    {% endfor %}
+    
+    <form method="get" action="/author/{{authorId}}/posts/" class="form-group">
+        {% csrf_token %}
+          {% if page == maxPage %}
+          <input id="submitButton" class="btn btn-success" type="submit" value="Next page" disabled> 
+        {% else %}
+
+          <input type="hidden" name="page" value={{page|add:1}}>
+          <input type="hidden" name="size" value={{size}}>
+          <input type="hidden" name="type" value="next">
+          <input id="submitButton" class="btn btn-success" type="submit" value="Next page"> 
+        {%endif%}
+    </form>
+
+    <form method="get" action="/author/{{authorId}}/posts/" class="form-group">
+        {% csrf_token %}
+        {% if page == 1 %}
+        <input id="submitButton" class="btn btn-success" type="submit" value="Previous page" disabled> 
+        {% else %}
+        <input type="hidden" name="page" value={{page|add:-1}}>
+        <input type="hidden" name="size" value={{size}}>
+        <input type="hidden" name="type" value="previous">
+        <input id="submitButton" class="btn btn-success" type="submit" value="Previous page"> 
+        {%endif%}
+
+
+    </form>
+
+
+
+{% endblock %}

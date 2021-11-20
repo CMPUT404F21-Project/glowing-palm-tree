@@ -8,6 +8,10 @@ def cut(value, arg):
     """Removes all values of arg from the given string"""
     return value.replace(arg, '')
 
+def add(value, arg):
+    return int(value) + int(arg)
+
+
 
 @register.simple_tag
 def createuuid(var):

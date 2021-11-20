@@ -1,15 +1,18 @@
 from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import Inbox, Moment, Comment, Following, Likes, Liked
+from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
 from django.forms.models import model_to_dict
+from django.core import serializers
 from .forms import *
 import datetime
 from django.views.decorators.csrf import csrf_protect
 import random
 import json
 from django.db import IntegrityError
-
+from uuid import uuid4
+import math
+from urllib.parse import urlparse
 
 # Create your views here.
 
@@ -17,58 +20,111 @@ def flat(arg):
     return arg[0]
 
 
-def userMoment(response, authorId, postId):
-    ls = Moment.objects.filter(id__exact=postId)
-    print("good")
-    if(not ls.exists()):
-        if response.method == "POST":
-            if(response.POST.get("_METHOD") == "PUT"):
-                if authorId == response.user.localId:
-                    
-                    form = CreateNewMoment(response.POST)
-                    
-                    if form.is_valid():
-                        #raise Exception
-                        p = form.save(commit=False)
-                        p.id = postId
-                        p.published = datetime.datetime.now()
-                        p.save()
-                        response.user.moment.add(p)
-                        return render(response, "main/list.html", {"ls":p})
-        else:
-            print("there")
+
+def doMoment(response, authorId):
+    # ls = Moment.objects.filter(id__exact=postId)
+    #if(not ls.exists()):
+    if response.method == "POST":
+        if authorId == response.user.localId:
+            form = CreateNewMoment(response.POST)
+            if form.is_valid():
+                #raise Exception
+                p = form.save(commit=False)
+                postId = str(uuid4())
+                p.id = response.build_absolute_uri() + postId
+                print("ggggggaaaaaaaaaaa")
+                print(p.id)
+                p.user = response.user
+                p.published = datetime.datetime.now()
+                p.save()
+                response.user.moment.add(p)
+                return render(response, "main/list.html", {"ls":p})
     else:
-        ls = ls[0]
-        if ls in response.user.moment.all(): 
-            '''if response.method == "POST":
-                # print(response.POST)
-                if response.POST.get("newComment"):
-                    txt = response.POST.get("new")
-                    if len(txt) > 2:
-                        ls.comment_set.create(content=txt, published=datetime.datetime.now(), complete=False)
-                    else:
-                        print("invalid")'''
-            if response.method == "GET":
-                like = Likes.objects.filter(userId__exact=authorId, itemId=postId)
-                return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists())})
-            elif response.method == "POST":
-                if(response.POST.get("_METHOD") == "Delete"):
-                    ls.delete()
-                    return render(response, "main/userCenter.html", {"user":response.user})
+        user = User.objects.get(localId=authorId)
+        ls = Moment.objects.filter(user__exact=user)
+        
+        page =  int(response.GET.get("page", 1))
+        size =  int(response.GET.get("size", 5))
+        
+        
+        btType = response.GET.get("type", '')
+
+        # if(btType == "next"):
+        #     page = page + 1
+        # elif(btType == "previous"):
+        #     page = page - 1
+
+        print(page)
+        print(size)
+        print("here is")
+
+        offset = (page-1)*size
+
+        lsList = list(ls)
+        showList = []
+
+        if(len(lsList) >= (offset+size) ):
+            showList = lsList[offset:(offset+size)]
+        else:
+            if(len(lsList) > offset):
+                showList = lsList[offset:]
+
+        maxPage = math.ceil(len(lsList)/size)
+        
+
+
+        return render(response, "main/aPostList.html", {"authorId":authorId,"showList":showList, "size":size, "page": page, "maxPage":maxPage})
+        
+
+        
+
+
+
+
+
+def userMoment(response, authorId, postId):
+    #url = "http://localhost:8000/" + "author/" + authorId + "/posts/" + postId
+    url = urlparse(response.build_absolute_uri())
+    cleanUrl = response.build_absolute_uri().replace("?" + url.query,'')
+    print(cleanUrl)
+    ls = Moment.objects.filter(id__exact=cleanUrl )
+    ls = ls[0]
+    if ls in response.user.moment.all(): 
+        '''if response.method == "POST":
+            # print(response.POST)
+            if response.POST.get("newComment"):
+                txt = response.POST.get("new")
+                if len(txt) > 2:
+                    ls.comment_set.create(content=txt, published=datetime.datetime.now(), complete=False)
                 else:
-                    form = CreateNewMoment(response.POST, instance=ls)
-                    if form.is_valid():
-                        #raise Exception         
-                        form.save()
-                        return HttpResponseRedirect("/author/%s/posts/%s" %(authorId, postId))
-            elif response.method == "DELETE":
+                    print("invalid")'''
+        if response.method == "GET":
+            edit = response.GET.get("edit",'')    
+            if(edit == "edit"):
+                form = CreateNewMoment(instance=ls)    
+                return render(response, "main/momentEdit.html", {"form":form, "pl":ls})
+
+            
+            like = Likes.objects.filter(userId__exact=authorId, object=ls.id)
+            return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists())})
+        elif response.method == "POST":
+            if(response.POST.get("_METHOD") == "Delete"):
                 ls.delete()
-                return HttpResponseRedirect("/author/%s/posts/%s" %(authorId, postId))
+                return render(response, "main/userCenter.html", {"user":response.user})
+            else:
+                form = CreateNewMoment(response.POST, instance=ls)
+                if form.is_valid():
+                    #raise Exception         
+                    form.save()
+                    return HttpResponseRedirect(ls.id)
+        elif response.method == "DELETE":
+            ls.delete()
+            return HttpResponseRedirect("/author/%s/posts/%s" %(authorId, postId))
 
 
          
             
-
+    
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
@@ -137,7 +193,6 @@ def register(response):
             createdUser.id = userId
             createdUser.url = userId
             createdUser.localId = localId
-            print(userId)
             createdUser.save()
 
             initial_list = json.dumps([])
@@ -178,15 +233,15 @@ def inbox(response, id):
         moment = Moment.objects.get(id=object)
         selfName = response.user.username
         summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
-        author = moment.user.url
 
-        url = author+'/posts/' + object
+        user = serializers.serialize("json", [moment.user,])
 
-        host = response.build_absolute_uri('/')
-        url.replace(host, "")
+        user = json.loads(user)[0]
 
-        like = Likes.objects.create(object=url, type="Like", author=moment.user.id, summary=summary, userId=response.user.localId
-                                    ,itemId=object)
+        user = json.dumps(user)
+
+        like = Likes.objects.create(object=object, type="Like", author=user , summary=summary, userId=response.user.localId
+                                    )
 
         inbox = Inbox.objects.get(author=moment.user)
         
@@ -206,7 +261,7 @@ def inbox(response, id):
         inbox.save()
         #json_object = json.dumps(dict_object)
         #inbox.items.
-        return HttpResponseRedirect("/author/%s/posts/%s" %(id, moment.id))
+        return HttpResponseRedirect(object)
     else:
         inbox = Inbox.objects.get(author=response.user)
         items = inbox.items

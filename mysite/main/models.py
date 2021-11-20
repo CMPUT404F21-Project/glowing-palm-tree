@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.db.models import constraints
+#from django.db.models import constraints
 import uuid
 # from django.conf import settings
 def createUUID():
@@ -63,10 +63,9 @@ class Likes(models.Model):
     author = models.JSONField()
     object = models.URLField()
     userId = models.CharField(max_length=2000)
-    itemId = models.CharField(max_length=2000)
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields= ['userId','itemId'], name="like constraint")
+            models.UniqueConstraint(fields= ['userId','object'], name="like constraint")
         ]
 
 class Liked(models.Model):
