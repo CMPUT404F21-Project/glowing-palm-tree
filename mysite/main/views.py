@@ -77,12 +77,6 @@ def doMoment(response, authorId):
         return render(response, "main/aPostList.html", {"authorId":authorId,"showList":showList, "size":size, "page": page, "maxPage":maxPage})
         
 
-        
-
-
-
-
-
 def userMoment(response, authorId, postId):
     #url = "http://localhost:8000/" + "author/" + authorId + "/posts/" + postId
     url = urlparse(response.build_absolute_uri())

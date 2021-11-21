@@ -20,6 +20,12 @@
   #submitButton {
     float: right;
   }
+  #id_contentType{
+    width: auto;
+  }
+  #div_id_fileSelect{
+    display: none;
+  }
 </style>
 {% endblock %}
 {% block title %}
@@ -30,22 +36,13 @@ Create new post
 {% load custom_tags %}
 {% block content %}
 
-
+<!--../{{user.id|cut:user.host}}/posts/  onsubmit="post()"-->>
   {% if user.is_authenticated%}
   <h3>Create Post</h3>
-  <form method="get" action="/home" class="form-group" id="changeButton">
-    {% csrf_token %}
-    {% if imageForm == "file"%}
-      <input type="hidden" name="formType" value="text">
-    {% else %}
-      <input type="hidden" name="formType" value="file">
-    {% endif %}
-    <input id="submitButton" class="btn btn-success" type="submit" value="Change Post Type"> 
-  </form>
-  <form method="post" action="../{{user.id|cut:user.host}}/posts/" class="form-group" id="contentForm">
+  <form method="post" action="../{{user.id|cut:user.host}}/posts/" class="form-group" id="contentForm" onsubmit="post()">
       {% csrf_token %}
       {{form|crispy}}
-        <input id="submitButton" class="btn btn-success" type="submit" value="put"> 
+        <input id="submitButton" class="btn btn-success" type="submit" value="post"> 
   </form>
   {%else%}
   <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
@@ -68,18 +65,71 @@ Create new post
     
   {% endfor %}
 
-<!-- <script>
-  changeForm = function () {
-    url = "/get/form/file";
-    fetch(url).then(function (response) {
-      if (response.status != 200) {
-        alert("Form fetching error!")
-      }
-    }).then(function (data) {
-      let form = document.getElementById("contentForm");
-      form.innerHTML = data.form;
-    })
+<script>
+
+  var typeSelector = document.getElementById("id_contentType");
+
+
+  let contentDiv = document.getElementById("div_id_content");
+  let img = document.createElement("img");
+  img.setAttribute('id', 'image');
+  contentDiv.appendChild(img);
+
+  let fileSelector = document.getElementById("id_fileSelect");
+
+  typeSelector.addEventListener('change', function () {
+    console.log("+++++++++++++++++++++++++++++++++++++");
+    let text = typeSelector.value;
+    if (['application', 'JPEG', 'PNG'].includes(text)){
+      
+      let fileSelector = document.getElementById('div_id_fileSelect');
+      fileSelector.setAttribute('style', 'display:block');
+      form = document.getElementById('contentForm');
+      form.appendChild(fileSelector);
+
+      let contentBox = document.getElementById("id_content");
+      contentBox.setAttribute('style', 'display:none');
+    }
+    else{
+      let fileSelector = document.getElementById('div_id_fileSelect');
+      fileSelector.setAttribute('style', 'display:none');
+
+      let contentBox = document.getElementById("id_content");
+      contentBox.setAttribute('style', 'display:block');
+    }
+  });
+
+  fileSelector.onchange = e => {
+    const [file] = fileSelector.files;
+    if (file) {
+    img.src = URL.createObjectURL(file);
+    }
+    var reader = new FileReader();
+
+    let file1 = fileSelector.files;
+    reader.readAsDataURL(file1[0]);
+
+    reader.onload = function () {
+      console.log(reader.result);
+      let contentBox = document.getElementById("id_content");
+      contentBox.value = reader.result;
+    };
+
   }
-  changeForm();
-</script> -->
+
+
+  function post(){
+    let typeSelector = document.getElementById("id_contentType");
+    let fileSelector = document.getElementById("id_fileSelect");
+    let contentBox = document.getElementById("id_content");
+    let contentType = typeSelector.value;
+    if (['application', 'JPEG', 'PNG'].includes(contentType)){
+      
+      
+    }
+    return true;
+
+  }
+  // changeForm();
+</script>
 {% endblock %}
