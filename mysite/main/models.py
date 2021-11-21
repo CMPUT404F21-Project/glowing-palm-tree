@@ -26,7 +26,7 @@ class Moment(models.Model):
     source = models.CharField(max_length=2000, null=True)
     origin = models.CharField(max_length=2000, null=True)
     description = models.CharField(max_length=2000, null=True)
-    contentTyep = models.CharField(max_length=2000, null=True)
+    contentType = models.CharField(max_length=2000, null=True)
     content = models.CharField(max_length=2000, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="moment", null=True)
     categories = models.JSONField(null=True)

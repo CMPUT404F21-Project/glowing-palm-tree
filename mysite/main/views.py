@@ -1,4 +1,4 @@
-from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect
+from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
@@ -13,6 +13,7 @@ from django.db import IntegrityError
 from uuid import uuid4
 import math
 from urllib.parse import urlparse
+from django.template.loader import render_to_string
 
 # Create your views here.
 
@@ -121,9 +122,13 @@ def userMoment(response, authorId, postId):
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
+    imageForm = response.GET.get("formType", "text")
     moments = Moment.objects.filter(visibility__iexact="Public")
-    form = CreateNewMoment()
-    return render(response, "main/home.html", {"form":form, "moments":moments})
+    if imageForm == "file":
+        form = CreateNewImageMoment()
+    else:
+        form = CreateNewMoment()
+    return render(response, "main/home.html", {"form":form, "moments":moments, "imageForm":imageForm})
 
 
 def view(response):
@@ -288,4 +293,13 @@ def createComment(response, authorId, postId):
     url = response.POST.get("url")
     return HttpResponseRedirect(url)
 
+
+# def getForm(response, formType):
+#     if formType == "file":
+#         form = CreateNewImageMoment()
+#     else:
+#         form = CreateNewMoment()
+#     renderHtml = render_to_string("main/home.html", {"form": form})
+#     print(renderHtml)
+#     return JsonResponse({"form":renderHtml})
     
