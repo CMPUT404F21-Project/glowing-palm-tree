@@ -18,7 +18,7 @@ class CreateNewMoment(forms.ModelForm):
                                     'class':'form-control',
                                     'placeholder':'Title'
                                 }), required=True)
-    content = forms.CharField(label="content", max_length=200000,
+    content = forms.CharField(label="content", max_length=10485760,
                              widget=forms.Textarea({
                                     'class':'form-control',
                                     'placeholder':'Content'
