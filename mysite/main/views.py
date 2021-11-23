@@ -121,13 +121,12 @@ def userMoment(response, authorId, postId):
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
-    imageForm = response.GET.get("formType", "text")
     moments = Moment.objects.filter(visibility__iexact="Public")
-    if imageForm == "file":
-        form = CreateNewImageMoment()
-    else:
-        form = CreateNewMoment()
-    return render(response, "main/home.html", {"form":form, "moments":moments, "imageForm":imageForm})
+    content = list(moments.values_list('content', flat=True))
+    
+    content = json.dumps(content)
+    form = CreateNewMoment()
+    return render(response, "main/home.html", {"form":form, "moments":moments, "content":content})
 
 
 def view(response):
@@ -142,10 +141,15 @@ def view(response):
 
     #print(friendIdList)
     friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
-    print(friendPost)
-    showList = publicMoments | selfMoments | friendPost
+    showList = publicMoments.union(selfMoments).union(friendPost)
+    # showList = showList.order_by('published')
     print(showList)
-    return render(response, "main/view.html", {"showList":showList, 'user':response.user})
+    # print(showList.values_list('content', flat=True))
+    content = list(showList.values_list('content', flat=True))
+    # print(content)
+    content = json.dumps(content)
+
+    return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content})
 
 def userCenter(response, id):
     if(response.user.localId == id):

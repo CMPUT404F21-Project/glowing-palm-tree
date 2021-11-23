@@ -55,11 +55,14 @@ Create new post
 <script>
   var contentBody;
   var counter = 0;
+  var src = '{{content | safe}}';
 
-  function addImage(contentBody, src){
+  src = JSON.parse(src);
+
+  function addImage(contentBody){
     let img = new Image();
-    img.src = src;
-    contentBody.innerHTML = '';
+    img.src = src[counter];
+    // console.log(img.src);
     contentBody.appendChild(img);
     contentBody.setAttribute('style', 'display:flex; justify-content: center');
   }
@@ -74,17 +77,21 @@ Create new post
           <br>
           Title:{{pl.title}}
         </div>
-        <div class="panel-body" id="content-body">{{pl.content}}</div>
+        <div class="panel-body" id="content-body"></div>
         {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
           <script type="text/javascript">
+
               contentBody = [...document.querySelectorAll('#content-body')][counter];
-              addImage(contentBody, contentBody.innerText);
+              addImage(contentBody);
+              counter += 1;
+          </script>
+        {% else %}
+          <script type="text/javascript">
+            contentBody = [...document.querySelectorAll('#content-body')][counter];
+            contentBody.innerHTML = src[counter];
+            counter += 1;
           </script>
         {% endif %}
-        <script>
-          counter += 1;
-      </script>
-
       </div>  
     </div>
     
