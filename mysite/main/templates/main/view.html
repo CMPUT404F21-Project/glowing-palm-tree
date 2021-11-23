@@ -6,6 +6,18 @@ View
 {% endblock %}
 
 {% block content %}
+    <script>
+        var contentBody;
+        var counter = 0;
+    
+        function addImage(contentBody, src){
+        let img = new Image();
+        img.src = src;
+        contentBody.innerHTML = '';
+        contentBody.appendChild(img);
+        contentBody.setAttribute('style', 'display:flex; justify-content: center');
+        }
+    </script>
     {% for pl in showList %}
     <div class="moment" style="margin-top:40pt;">
         
@@ -15,10 +27,23 @@ View
                 <br>
                 At:{{pl.published}}
                 <br>
-                Title:{{pl.title}}
+                <a href="{{pl.id}}">{{pl.title}}</a>
             </div>
             
-          <div class="panel-body"><a href="{{pl.id}}">{{pl.content}}</a></div>
+          <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
+
+        {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+          <script type="text/javascript">
+              contentBody = [...document.querySelectorAll('#content-body')][counter];
+              
+              addImage(contentBody, contentBody.innerText);
+          </script>
+        {% endif %}
+        
+        <script>
+            counter += 1;
+        </script>
+
         </div>
         <div class="btn-group btn-group-justified">
             <a href="#" class="btn btn-default " type="Share">Share</a>

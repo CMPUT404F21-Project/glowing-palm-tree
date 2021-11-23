@@ -1,12 +1,5 @@
 {% extends 'main/base.html' %}
 {% block style %}
-<style>
-    a{
-      float: right;
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-  </style>
 {% endblock %}
 
 {% block title %}
@@ -14,11 +7,6 @@ User Center
 {% endblock %}
 
 {% block content %}
-    
-                    
-                        
-                        
-                        
     <div class="row">                                  
         <div class="container">
             <div class="col-sm-4" ><img style=" width: 80%; border-radius: 50%; 
@@ -52,17 +40,36 @@ User Center
                 
             </div>
         </div>
-        
     </div>
+    <script>
+        var contentBody;
+        var counter = 0;
+      
+        function addImage(contentBody, src){
+          let img = new Image();
+          img.src = src;
+          contentBody.innerHTML = '';
+          contentBody.appendChild(img);
+          contentBody.setAttribute('style', 'display:flex; justify-content: center');
+        }
+    </script>
     {% for pl in otherUser.moment.all %}
         <div class="moment" style="margin-top:40pt;">
         <div class="panel panel-default">
             <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
-            <div class="panel-body">{{pl.content}}</div>
+            <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
+
+            {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+            <script type="text/javascript">
+                contentBody = [...document.querySelectorAll('#content-body')][counter];
+                addImage(contentBody, contentBody.innerText);
+            </script>
+            {% endif %}
+            <script>
+              counter += 1;
+            </script>
+
         </div>
-        <a href="#">Share</a>
-        <a href="#">Comment</a>
-        <a href="#">Like</a>    
     </div>
 
 {% endfor %}    

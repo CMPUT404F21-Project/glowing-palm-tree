@@ -5,6 +5,9 @@
     #likeShare {
         float: right;
     }
+    img{
+        width: 20em;
+    }
   </style>
 {% endblock %}
 
@@ -16,8 +19,22 @@ View List
     <div class="moment" style="margin-top:40pt;">
 
         <div class="panel panel-default">
-          <div class="panel-heading" style="font-size:x-large">{{ls.title}}</div>
-          <div class="panel-body">{{ls.content}}</div>
+            <div class="panel-heading" style="font-size:x-large">{{ls.title}}</div>
+            <div class="panel-body" id='content-body'></div>
+
+            {% if ls.contentType == "JPEG" or ls.contentType == "PNG" or ls.contentType == "application" %}
+                <script type="text/javascript">
+                    let content = "{{content}}";
+                    let contentType = "{{contentType}}"
+
+
+                    const contentBody = document.getElementById('content-body');
+                    let img = new Image();
+                    img.src = content;
+                    contentBody.appendChild(img);
+                    contentBody.setAttribute('style', 'display:flex; justify-content: center');
+                </script>
+            {% endif %}
           <div style="padding-bottom: 50pt;">   </div>
         </div>
         <form action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
@@ -25,13 +42,12 @@ View List
             {% csrf_token %}
             <button  class="btn btn-success" type="submit" disabled>Share</button>
             {% if liked %}
-            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit" disabled>Like</button>    
+            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit" disabled>Like</button>
             {% else %}
             <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit">Like</button>
-            {% endif %}   
-        </div>  
+            {% endif %}
+        </div>
         </form>
-      
     </div>
 
     {% if ls.visibility == "Friend" %}
@@ -71,4 +87,5 @@ View List
         </div>
         <button type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</button>
     </form>
+
 {% endblock %}

@@ -1,11 +1,7 @@
 {% extends 'main/base.html' %}
 {% block style %}
 <style>
-    a{
-      float: right;
-      padding-left: 10px;
-      padding-right: 10px;
-    }
+
 
     #editForm {
         float: left;
@@ -53,11 +49,36 @@ User Center
                     </tbody>
                 </table>
                 <a href="/userCenterEdit" style="float: right;">[edit]</a>
+
+                <script>
+                    var contentBody;
+                    var counter = 0;
+                  
+                    function addImage(contentBody, src){
+                      let img = new Image();
+                      img.src = src;
+                      contentBody.innerHTML = '';
+                      contentBody.appendChild(img);
+                      contentBody.setAttribute('style', 'display:flex; justify-content: center');
+                    }
+                  </script>
+
                 {% for pl in user.moment.all %}
                     <div class="moment" style="margin-top:40pt;">
                     <div class="panel panel-default">
                         <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
-                        <div class="panel-body">{{pl.content}}</div>
+                        <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
+                        {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+                        <script type="text/javascript">
+                            contentBody = [...document.querySelectorAll('#content-body')][counter];
+                            addImage(contentBody, contentBody.innerText);
+                        </script>
+                        {% endif %}
+                        <script>
+                          counter += 1;
+                      </script>
+
+                        
                     </div>
 
                     <form id="editForm" method="get" action="{{pl.id}}" class="form-group">
@@ -72,9 +93,6 @@ User Center
                         {% csrf_token %}
                         <button class="btn btn-primary" type="submit">Delete</button> 
                     </form>
-
-
-
                     </div>
                 
                 {% endfor %}

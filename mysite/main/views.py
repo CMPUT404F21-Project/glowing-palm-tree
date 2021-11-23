@@ -39,7 +39,12 @@ def doMoment(response, authorId):
                 p.published = datetime.datetime.now()
                 p.save()
                 response.user.moment.add(p)
-                return render(response, "main/list.html", {"ls":p})
+                # p = serializers.serialize('json', [p,])
+                # p = json.loads(p)[0]
+                # p = json.dumps(p)
+                content = p.content
+                contentType = p.contentType
+                return render(response, "main/list.html", {"ls":p, "content":content, "contentType": contentType})
     else:
         user = User.objects.get(localId=authorId)
         ls = Moment.objects.filter(user__exact=user)

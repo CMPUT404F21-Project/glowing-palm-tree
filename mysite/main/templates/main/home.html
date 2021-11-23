@@ -30,6 +30,8 @@
 {% endblock %}
 {% block title %}
 Create new post
+
+
 {% endblock %}
 
 {% load crispy_forms_tags %}
@@ -49,6 +51,19 @@ Create new post
   {%endif%}
 <br>
 <br>
+
+<script>
+  var contentBody;
+  var counter = 0;
+
+  function addImage(contentBody, src){
+    let img = new Image();
+    img.src = src;
+    contentBody.innerHTML = '';
+    contentBody.appendChild(img);
+    contentBody.setAttribute('style', 'display:flex; justify-content: center');
+  }
+</script>
   {% for pl in moments%}
     <div class="moment" style="margin-top:40pt;">
       <div class="panel panel-default">
@@ -59,7 +74,17 @@ Create new post
           <br>
           Title:{{pl.title}}
         </div>
-        <div class="panel-body">{{pl.content}}</div>
+        <div class="panel-body" id="content-body">{{pl.content}}</div>
+        {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+          <script type="text/javascript">
+              contentBody = [...document.querySelectorAll('#content-body')][counter];
+              addImage(contentBody, contentBody.innerText);
+          </script>
+        {% endif %}
+        <script>
+          counter += 1;
+      </script>
+
       </div>  
     </div>
     
@@ -78,7 +103,6 @@ Create new post
   let fileSelector = document.getElementById("id_fileSelect");
 
   typeSelector.addEventListener('change', function () {
-    console.log("+++++++++++++++++++++++++++++++++++++");
     let text = typeSelector.value;
     if (['application', 'JPEG', 'PNG'].includes(text)){
       
@@ -110,7 +134,6 @@ Create new post
     reader.readAsDataURL(file1[0]);
 
     reader.onload = function () {
-      console.log(reader.result);
       let contentBox = document.getElementById("id_content");
       contentBox.value = reader.result;
     };
