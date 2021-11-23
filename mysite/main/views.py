@@ -47,7 +47,25 @@ def doMoment(response, authorId):
                 return render(response, "main/list.html", {"ls":p, "content":content, "contentType": contentType})
     else:
         user = User.objects.get(localId=authorId)
-        ls = Moment.objects.filter(user__exact=user)
+        # ls = Moment.objects.filter(user__exact=user).order_by("-published")
+
+
+        publicMoments = Moment.objects.filter(visibility__iexact="Public", user__exact=user)
+        # selfMoments = response.user.moment.all()
+        followerList = Following.objects.filter(following_user__exact=user, user__exact=response.user)
+        followingList = Following.objects.filter(user__exact=user, following_user__exact=response.user)
+        # followerList = set(followerList)
+        # followingList = set(followingList)
+        # friendList = followerList.intersection(followingList)
+        
+        showListFull = publicMoments
+        if followerList.exists() and followingList.exists():
+            friendMoments = Moment.objects.filter(visibility__iexact="Friend", user__exact=user)
+            showListFull = publicMoments.union(friendMoments)
+
+        # friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
+        # showList = publicMoments.union(ls).union(friendPost)
+        content = showListFull.values_list('content', flat=True)
         
         page =  int(response.GET.get("page", 1))
         size =  int(response.GET.get("size", 5))
@@ -60,26 +78,29 @@ def doMoment(response, authorId):
         # elif(btType == "previous"):
         #     page = page - 1
 
-        print(page)
-        print(size)
-        print("here is")
+        # print(page)
+        # print(size)
+        # print("here is")
 
         offset = (page-1)*size
-
-        lsList = list(ls)
+        lsList = list(showListFull)
+        contentList = list(content)
         showList = []
+        showContent = []
 
         if(len(lsList) >= (offset+size) ):
             showList = lsList[offset:(offset+size)]
+            showContent = contentList[offset:(offset+size)]
+
         else:
             if(len(lsList) > offset):
                 showList = lsList[offset:]
+                showContent = contentList[offset:]
 
         maxPage = math.ceil(len(lsList)/size)
-        
+        showContent = json.dumps(showContent)
 
-
-        return render(response, "main/aPostList.html", {"authorId":authorId,"showList":showList, "size":size, "page": page, "maxPage":maxPage})
+        return render(response, "main/aPostList.html", {"authorId":authorId,"showList":showList, "size":size, "page": page, "maxPage":maxPage, "content":showContent})
         
 
 def userMoment(response, authorId, postId):
@@ -103,7 +124,8 @@ def userMoment(response, authorId, postId):
             form = CreateNewMoment(instance=ls)    
             return render(response, "main/momentEdit.html", {"form":form, "pl":ls})
         like = Likes.objects.filter(userId__exact=response.user.id, object__exact=ls.id)
-        return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists())})
+        content = ls.content
+        return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content})
     elif response.method == "POST":
         if(response.POST.get("_METHOD") == "Delete"):
             ls.delete()
@@ -122,6 +144,7 @@ def userMoment(response, authorId, postId):
 
 def home(response):
     moments = Moment.objects.filter(visibility__iexact="Public")
+    moments = moments.order_by("-published")
     content = list(moments.values_list('content', flat=True))
     
     content = json.dumps(content)
@@ -142,8 +165,8 @@ def view(response):
     #print(friendIdList)
     friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
     showList = publicMoments.union(selfMoments).union(friendPost)
-    # showList = showList.order_by('published')
-    print(showList)
+    showList = showList.order_by('-published')
+    # print(showList)
     # print(showList.values_list('content', flat=True))
     content = list(showList.values_list('content', flat=True))
     # print(content)

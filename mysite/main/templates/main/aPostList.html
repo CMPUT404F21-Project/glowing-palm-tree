@@ -8,6 +8,22 @@ View
 
 
 {% block content %}
+    <script>
+        var contentBody;
+        var counter = 0;
+        var src = '{{content | safe}}';
+
+        src = JSON.parse(src);
+        console.log(src);
+
+        function addImage(contentBody){
+            let img = new Image();
+            img.src = src[counter];
+            // console.log(img.src);
+            contentBody.appendChild(img);
+            contentBody.setAttribute('style', 'display:flex; justify-content: center');
+        }
+    </script>
     {% for pl in showList %}
     <div class="moment" style="margin-top:40pt;">
         
@@ -20,7 +36,22 @@ View
                 Title:{{pl.title}}
             </div>
             
-          <div class="panel-body"><a href="{{pl.id}}">{{pl.content}}</a></div>
+            <div class="panel-body"><a id="content-body" href="{{pl.id}}"></a></div>
+
+            {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+              <script type="text/javascript">
+                  contentBody = [...document.querySelectorAll('#content-body')][counter];
+                  
+                  addImage(contentBody);
+                  counter += 1;
+              </script>
+            {% else %}
+                <script type="text/javascript">
+                    contentBody = [...document.querySelectorAll('#content-body')][counter];
+                    contentBody.innerHTML = src[counter];
+                    counter += 1;
+                </script>
+            {% endif %}
         </div>
         <div class="btn-group btn-group-justified">
             <a href="#" class="btn btn-default " type="Share">Share</a>

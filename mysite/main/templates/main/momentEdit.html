@@ -34,5 +34,70 @@ User Center
         
     </div>
     
+    <script>
+
+        var typeSelector = document.getElementById("id_contentType");
+      
+      
+        let contentDiv = document.getElementById("div_id_content");
+        let img = document.createElement("img");
+        img.setAttribute('id', 'image');
+        contentDiv.appendChild(img);
+      
+        let fileSelector = document.getElementById("id_fileSelect");
+      
+        typeSelector.addEventListener('change', function () {
+          let text = typeSelector.value;
+          if (['application', 'JPEG', 'PNG'].includes(text)){
+            
+            let fileSelector = document.getElementById('div_id_fileSelect');
+            fileSelector.setAttribute('style', 'display:block');
+            form = document.getElementById('contentForm');
+            form.appendChild(fileSelector);
+      
+            let contentBox = document.getElementById("id_content");
+            contentBox.setAttribute('style', 'display:none');
+          }
+          else{
+            let fileSelector = document.getElementById('div_id_fileSelect');
+            fileSelector.setAttribute('style', 'display:none');
+      
+            let contentBox = document.getElementById("id_content");
+            contentBox.setAttribute('style', 'display:block');
+          }
+        });
+      
+        fileSelector.onchange = e => {
+          const [file] = fileSelector.files;
+          if (file) {
+          img.src = URL.createObjectURL(file);
+          }
+          var reader = new FileReader();
+      
+          let file1 = fileSelector.files;
+          reader.readAsDataURL(file1[0]);
+      
+          reader.onload = function () {
+            let contentBox = document.getElementById("id_content");
+            contentBox.value = reader.result;
+          };
+      
+        }
+      
+      
+        function post(){
+          let typeSelector = document.getElementById("id_contentType");
+          let fileSelector = document.getElementById("id_fileSelect");
+          let contentBox = document.getElementById("id_content");
+          let contentType = typeSelector.value;
+          if (['application', 'JPEG', 'PNG'].includes(contentType)){
+            
+            
+          }
+          return true;
+      
+        }
+        // changeForm();
+      </script>
     
 {% endblock %}
