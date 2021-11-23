@@ -1,6 +1,6 @@
 from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, request
 from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
 from django.forms.models import model_to_dict
 from django.core import serializers
@@ -119,10 +119,6 @@ def userMoment(response, authorId, postId):
             else:
                 print("invalid")'''
     if response.method == "GET":
-        edit = response.GET.get("edit",'')    
-        if(edit == "edit"):
-            form = CreateNewMoment(instance=ls)    
-            return render(response, "main/momentEdit.html", {"form":form, "pl":ls})
         like = Likes.objects.filter(userId__exact=response.user.id, object__exact=ls.id)
         content = ls.content
         return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content})
@@ -135,7 +131,9 @@ def userMoment(response, authorId, postId):
             if form.is_valid():
                 #raise Exception         
                 form.save()
-                return HttpResponseRedirect(ls.id)
+                content = str(form.cleaned_data.get('content')) 
+                return render(response, "main/list.html", {"ls":ls, 'content':content})
+
     elif response.method == "DELETE":
         ls.delete()
         return HttpResponseRedirect("/author/%s/posts/%s" %(authorId, postId))
@@ -166,10 +164,7 @@ def view(response):
     friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
     showList = publicMoments.union(selfMoments).union(friendPost)
     showList = showList.order_by('-published')
-    # print(showList)
-    # print(showList.values_list('content', flat=True))
     content = list(showList.values_list('content', flat=True))
-    # print(content)
     content = json.dumps(content)
 
     return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content})
@@ -293,10 +288,14 @@ def inbox(response, id):
         return render(response, "main/messageBox.html", {"items":items})
 
 
-def momentEdit(response, postId):
-    moment = Moment.objects.get(id=postId)
-    form = CreateNewMoment(instance=moment)    
-    return render(response, "main/momentEdit.html", {"form":form, "pl":moment})
+def momentEdit(response,authorId, postId):
+    postId = response.build_absolute_uri().replace('/edit', '')
+    ls = Moment.objects.filter(id__exact=postId )
+    ls = ls[0]
+    content = str(ls.content)
+    ls.content = ''
+    form = CreateNewMoment(instance=ls)    
+    return render(response, "main/momentEdit.html", {"form":form, "pl":ls, 'content':content})
 
 
 def createComment(response, authorId, postId):

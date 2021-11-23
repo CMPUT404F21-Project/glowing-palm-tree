@@ -81,8 +81,7 @@ User Center
                         
                     </div>
 
-                    <form id="editForm" method="get" action="{{pl.id}}" class="form-group">
-                        <input type="hidden" name="edit" value="edit">
+                    <form id="editForm" method="post" action="{{pl.id}}/edit" class="form-group">
                         {% csrf_token %}
                         <button class="btn btn-primary" type="submit">Edit</button> 
                     </form>
