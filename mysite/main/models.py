@@ -36,7 +36,6 @@ class Moment(models.Model):
     published = models.DateTimeField(null=True)
     visibility = models.CharField(max_length=2000,null=True)
     unlisted = models.BooleanField(null=True)
-    markDown = models.BooleanField(null=True)
     def __str__(self):
         return self.content
 

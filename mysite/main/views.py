@@ -20,7 +20,26 @@ from django.template.loader import render_to_string
 def flat(arg):
     return arg[0]
 
+def date_converter(o):
+    if isinstance(o, datetime.datetime):
+        return o.__str__()
 
+def send_to_inbox(item, inboxes):
+    for inbox in inboxes:
+        items = inbox.items
+        items = json.loads(items)
+        items.append(item)
+        items = json.dumps(items, default=date_converter)
+        inbox.items = items
+        inbox.save()
+    return
+
+def get_friends(user):
+    followerList = Following.objects.filter(following_user__exact=user).values_list('user',flat=True)
+    followingList = Following.objects.filter(user__exact=user).values_list('following_user',flat=True)
+
+    friendList = followerList.intersection(followingList)
+    return friendList
 
 def doMoment(response, authorId):
     # ls = Moment.objects.filter(id__exact=postId)
@@ -33,12 +52,26 @@ def doMoment(response, authorId):
                 p = form.save(commit=False)
                 postId = str(uuid4())
                 p.id = response.build_absolute_uri() + postId
-                print("ggggggaaaaaaaaaaa")
-                print(p.id)
+                p.type = 'post'
+                p.source = p.id
+                p.origin = p.id
+                p.count = 0
+                # p.comment = ""
+
                 p.user = response.user
                 p.published = datetime.datetime.now()
                 p.save()
                 response.user.moment.add(p)
+
+                if p.visibility in ["Public", "Friend"]:
+                    friend_list = get_friends(response.user)
+                    inboxes = Inbox.objects.filter(author__in=friend_list)
+                    dict_object = model_to_dict(p)
+                    dict_object['user'] = response.user.username
+                    dict_object['userLink'] = response.user.id
+                    send_to_inbox(dict_object, list(inboxes))
+
+                    
                 # p = serializers.serialize('json', [p,])
                 # p = json.loads(p)[0]
                 # p = json.dumps(p)
@@ -71,7 +104,7 @@ def doMoment(response, authorId):
         size =  int(response.GET.get("size", 5))
         
         
-        btType = response.GET.get("type", '')
+        # btType = response.GET.get("type", '')
 
         # if(btType == "next"):
         #     page = page + 1
@@ -237,6 +270,10 @@ def friendRequest(response, selfId, otherId):
     try:
         Following.objects.create(user=response.user, following_user=otherUser)
 
+        inbox = Inbox.objects.get(author=otherUser)
+        item = {"user":response.user.username, "userId":response.user.id, "type":"follow"}
+        send_to_inbox(item, [inbox])
+
     except IntegrityError:
         print("Already followed")
 
@@ -254,32 +291,40 @@ def unfollow(response, otherId):
 def inbox(response, id):
     # maybe like maybe share
     if(response.method == "POST"):
-        type = response.POST.get("like", "")
+        obj_type = response.POST.get("type", "")
         url = response.POST.get("url", "")
         moment = Moment.objects.get(id=url)
         selfName = response.user.username
         
         
-        if(type == "like"):
+        if(obj_type == "like"):
             print("hahahahaha")
             inbox = Inbox.objects.get(author=moment.user)
             user = serializers.serialize("json", [moment.user,])
             user = json.loads(user)[0]
             user = json.dumps(user)
             summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
-            like = Likes.objects.create(object=url, type="Like", author=user , summary=summary, userId=response.user.id)
+            like = Likes.objects.create(object=url, type="like", author=user , summary=summary, userId=response.user.id)
             dict_object = model_to_dict(like)
-        else:
-            
+            #print(dict_object)
+            items = inbox.items
+            items = json.loads(items)
+            items.append(dict_object)
+            items = json.dumps(items)
+            inbox.items = items
+            inbox.save()
+            return HttpResponseRedirect(url)
+        elif obj_type == 'share':
+            users = response.POST.getlist("userSelect")
+
+            inboxes = Inbox.objects.filter(author__in=users)
             dict_object = model_to_dict(moment)
-        #print(dict_object)
-        items = inbox.items
-        items = json.loads(items)
-        items.append(dict_object)
-        items = json.dumps(items)
-        inbox.items = items
-        inbox.save()
-        return HttpResponseRedirect(url)
+            dict_object['user'] = selfName
+            dict_object['userLink'] = response.user.id
+
+            send_to_inbox(dict_object, list(inboxes))
+
+            return HttpResponseRedirect(url)
     else:
         inbox = Inbox.objects.get(author=response.user)
         items = inbox.items
@@ -318,8 +363,7 @@ def createComment(response, authorId, postId):
     url = response.POST.get("url")
     return HttpResponseRedirect(url)
 
-def momentShare(response, authorId, postId):
-    print("1")
+def momentRepost(response, authorId, postId):
     url = response.build_absolute_uri().replace("/share", "")
     ls = Moment.objects.filter(id__exact=url)
     user = User.objects.filter(localId__exact=authorId)
@@ -329,8 +373,8 @@ def momentShare(response, authorId, postId):
     newId = response.user.id + "/posts/" + uuid
     #print(user)
     #print(ls)
-    newLs = Moment.objects.create(id=newId, content=ls.content, contentType=ls.contentType, user=response.user,
-                                    source=user.id, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility )
+    newLs = Moment.objects.create(id=newId, content=ls.content, type="post", contentType=ls.contentType, user=response.user, origin = ls.origin,
+                                    source=ls.id, count=0, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility )
 
     # newLs.content = ls.content
     # newLs.contenType = ls.contentType
