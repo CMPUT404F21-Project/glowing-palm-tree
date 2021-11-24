@@ -125,7 +125,10 @@ def userMoment(response, authorId, postId):
     elif response.method == "POST":
         if(response.POST.get("_METHOD") == "Delete"):
             ls.delete()
-            return render(response, "main/userCenter.html", {"user":response.user})
+            showList = Moment.objects.filter(user__exact=response.user).order_by("-published")
+            content = list(showList.values_list('content', flat=True))
+            content = json.dumps(content)
+            return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content})
         else:
             form = CreateNewMoment(response.POST, instance=ls)
             if form.is_valid():
@@ -171,7 +174,10 @@ def view(response):
 
 def userCenter(response, id):
     if(response.user.localId == id):
-        return render(response, "main/userCenter.html", {"user":response.user})
+        showList = Moment.objects.filter(user__exact=response.user).order_by("-published")
+        content = list(showList.values_list('content', flat=True))
+        content = json.dumps(content)
+        return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content},)
     else:
         otherUser = User.objects.get(localId=id)
         user = response.user
@@ -230,6 +236,7 @@ def friendRequest(response, selfId, otherId):
     otherUser = User.objects.get(localId=otherId)
     try:
         Following.objects.create(user=response.user, following_user=otherUser)
+
     except IntegrityError:
         print("Already followed")
 
@@ -245,41 +252,34 @@ def unfollow(response, otherId):
     return HttpResponseRedirect("/author/%s" %otherId)
 
 def inbox(response, id):
-    
-    
+    # maybe like maybe share
     if(response.method == "POST"):
-        object = response.POST.get("like")    
-        moment = Moment.objects.get(id=object)
+        type = response.POST.get("like", "")
+        url = response.POST.get("url", "")
+        moment = Moment.objects.get(id=url)
         selfName = response.user.username
-        summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
-
-        user = serializers.serialize("json", [moment.user,])
-
-        user = json.loads(user)[0]
-
-        user = json.dumps(user)
-
-        like = Likes.objects.create(object=object, type="Like", author=user , summary=summary, userId=response.user.id)
-
-        inbox = Inbox.objects.get(author=moment.user)
         
-
-
-        items = inbox.items
         
-        items = json.loads(items)
-
-        dict_object = model_to_dict(like)
+        if(type == "like"):
+            print("hahahahaha")
+            inbox = Inbox.objects.get(author=moment.user)
+            user = serializers.serialize("json", [moment.user,])
+            user = json.loads(user)[0]
+            user = json.dumps(user)
+            summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
+            like = Likes.objects.create(object=url, type="Like", author=user , summary=summary, userId=response.user.id)
+            dict_object = model_to_dict(like)
+        else:
+            
+            dict_object = model_to_dict(moment)
         #print(dict_object)
-
+        items = inbox.items
+        items = json.loads(items)
         items.append(dict_object)
         items = json.dumps(items)
-
         inbox.items = items
         inbox.save()
-        #json_object = json.dumps(dict_object)
-        #inbox.items.
-        return HttpResponseRedirect(object)
+        return HttpResponseRedirect(url)
     else:
         inbox = Inbox.objects.get(author=response.user)
         items = inbox.items
@@ -317,6 +317,49 @@ def createComment(response, authorId, postId):
         comment.save()
     url = response.POST.get("url")
     return HttpResponseRedirect(url)
+
+def momentShare(response, authorId, postId):
+    print("1")
+    url = response.build_absolute_uri().replace("/share", "")
+    ls = Moment.objects.filter(id__exact=url)
+    user = User.objects.filter(localId__exact=authorId)
+    ls = ls[0]
+    user = user[0]
+    uuid = str(uuid4())
+    newId = response.user.id + "/posts/" + uuid
+    #print(user)
+    #print(ls)
+    newLs = Moment.objects.create(id=newId, content=ls.content, contentType=ls.contentType, user=response.user,
+                                    source=user.id, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility )
+
+    # newLs.content = ls.content
+    # newLs.contenType = ls.contentType
+    # newLs.user = response.user
+    # newLs.source = user.id
+    # newLs.published = datetime.datetime.now()
+    newLs.save()
+    content = ls.content
+    contentType = ls.contentType
+    
+    return render(response, "main/list.html", {"ls":newLs, "content":content, "contentType": contentType}) 
+
+
+def getFriend(response):
+
+    followerList = Following.objects.filter(following_user__exact=response.user).values_list('user',flat=True)
+    followingList = Following.objects.filter(user__exact=response.user).values_list('following_user',flat=True)
+    friendList = list(followerList.intersection(followingList))
+
+    friendList = User.objects.filter(id__in=friendList)
+    
+
+    friendListName = list(friendList.values_list("username",flat=True))
+    friendListId = list(friendList.values_list("id", flat=True))
+
+    nameListJs = json.dumps(friendListName)
+    idListJs = json.dumps(friendListId)
+
+    return JsonResponse({"nameList":nameListJs, "idList":idListJs})
 
 
 # def getForm(response, formType):

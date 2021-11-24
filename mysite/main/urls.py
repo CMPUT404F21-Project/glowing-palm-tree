@@ -19,5 +19,7 @@ urlpatterns = [
     path("author/<str:authorId>/posts/", views.doMoment, name = "doMoment"),
     path("author/<str:authorId>/posts/<str:postId>/comments", views.createComment, name = "createComment"),
     path("author/<str:authorId>/posts/<str:postId>/edit", views.momentEdit, name = "momentEdit"),
+    path("author/<str:authorId>/posts/<str:postId>/share", views.momentShare, name = "momentShare"),
+    path("getFriend/", views.getFriend, name = "getFriend")
     # path("get/form/<str:formType>", views.getForm, name="getForm")
 ]

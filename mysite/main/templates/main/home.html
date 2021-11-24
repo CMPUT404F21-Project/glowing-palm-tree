@@ -38,16 +38,16 @@ Create new post
 {% load custom_tags %}
 {% block content %}
 
-<!--../{{user.id|cut:user.host}}/posts/  onsubmit="post()"-->>
-  {% if user.is_authenticated%}
-  <h3>Create Post</h3>
-  <form method="post" action="../{{user.id|cut:user.host}}/posts/" class="form-group" id="contentForm" onsubmit="post()">
-      {% csrf_token %}
-      {{form|crispy}}
-        <input id="submitButton" class="btn btn-success" type="submit" value="post"> 
-  </form>
+  {% if user.is_anonymous%}
+    <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
   {%else%}
-  <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
+  
+    <h3>Create Post</h3>
+    <form method="post" action="../{{user.id|cut:user.host}}/posts/" class="form-group" id="contentForm" onsubmit="post()">
+        {% csrf_token %}
+        {{form|crispy}}
+          <input id="submitButton" class="btn btn-success" type="submit" value="post"> 
+    </form>
   {%endif%}
 <br>
 <br>
@@ -71,7 +71,7 @@ Create new post
     <div class="moment" style="margin-top:40pt;">
       <div class="panel panel-default">
         <div class="panel-heading">
-          Posted by  <a href="../{{pl.user.id|cut:pl.user.host}}">{{pl.user.username}}</a>
+          Posted by  <a href="{{pl.user.id}}">{{pl.user.username}}</a>
           <br>
           At:{{pl.published}}
           <br>

@@ -16,7 +16,7 @@ View List
 {% endblock %}
 
 {% block content %}
-    <div class="moment" style="margin-top:40pt;">
+    <div class="moment" id="contentPanel" style="margin-top:40pt;">
 
         <div class="panel panel-default">
             <div class="panel-heading" style="font-size:x-large">{{ls.title}}</div>
@@ -46,18 +46,63 @@ View List
             {% endif %}
           <div style="padding-bottom: 50pt;">   </div>
         </div>
-        <form action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
+        <form id="shareLikeForm" action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
+        <a style="color: white;" class="btn btn-success" href="{{ls.id}}/share">reshare Post</a>
         <div id="likeShare">
             {% csrf_token %}
-            <button  class="btn btn-success" type="submit" disabled>Share</button>
+            <input type="hidden" name="url" value="{{ls.id}}">
+            <a  class="btn btn-success " onclick="shareOnClick()" >Share</a>
             {% if liked %}
-            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit" disabled>Like</button>
+            <button  value="{{ls.id}}" name="cantlike" class="btn btn-success " type="submit" disabled>Like</button>
             {% else %}
-            <button  value="{{ls.id}}" name="like" class="btn btn-success " type="submit">Like</button>
+            <input type="hidden" name="like" value="like">
+            <button  value="{{ls.id}}" name="likeButton" class="btn btn-success " type="submit">Like</button>
             {% endif %}
         </div>
         </form>
     </div>
+
+    <script>
+        
+        let shareOnClick = async function(){
+            let url =  "/getFriend"
+            check = document.getElementById("confirmButton")
+            console.log(check)
+            if(!check){
+                fetch(url).then( (response) => {if(response.status == 200){
+                    return response.json()
+                }} ).then((data) => {
+                    let nameList = JSON.parse(data["nameList"])
+                    let idList = JSON.parse(data["idList"])
+                    let br = document.createElement("br")
+                    let form = document.getElementById("shareLikeForm")
+                    let contentPanel = document.getElementById("contentPanel")
+                    for(let i=0; i < nameList.length; i++){
+                        let checkbox = document.createElement("input")
+                        let label = document.createElement("label")
+                        checkbox.setAttribute("type","checkbox")
+                        checkbox.setAttribute("value", idList[i])
+                        checkbox.setAttribute("name", "userSelect")
+                        checkbox.setAttribute("id", "user"+ i)
+                        label.setAttribute("for", "user" + i)
+                        label.innerHTML = nameList[i]
+                        contentPanel.appendChild(checkbox)
+                        contentPanel.appendChild(label)
+                        contentPanel.appendChild(br)
+
+                    }
+                    let confirm = document.createElement("button") 
+                    confirm.setAttribute("type", "submit")
+                    confirm.setAttribute("class", "btn btn-success")
+                    confirm.innerText = "confirm"
+                    confirm.setAttribute("id", "confirmButton")
+                    form.appendChild(confirm)
+                    
+            } )
+        }   
+
+        }
+    </script>
 
     {% if ls.visibility == "Friend" %}
         {% if ls.user.id == user.id %}
