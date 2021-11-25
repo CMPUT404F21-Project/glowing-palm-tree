@@ -19,3 +19,5 @@ limitations under the License.
 
 
 #### This project uses django crispy forms; please check the provided requirements.txt
+
+To team members and outside collaborators: please check GitHub Projects for open and closed progress and work divisions
