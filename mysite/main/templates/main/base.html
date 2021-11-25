@@ -64,7 +64,7 @@
             <a href="/login" style="float: right;">Login</a>
             {%else%}
             <a href="/view">Post</a>
-            <a href="/{{user.id|cut:user.host}}/inbox/" >Inbox</a>
+            <a href="/author/{{user.localId}}/inbox/" >Inbox</a>
             <a href="/logout/" style="float: right;">Logout</a>
             <a href="/author/{{user.localId}}" style="float: right;">{{user.username}}</a>
             {%endif%}

@@ -46,7 +46,7 @@ View List
             {% endif %}
           <div style="padding-bottom: 50pt;">   </div>
         </div>
-        <form id="LikeForm" action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post">
+        <form id="LikeForm" action="{{ls.user.id}}/inbox/" method="post">
         <a style="color: white;" class="btn btn-success" href="{{ls.id}}/share">repost Post</a>
         <div id="likeShare">
             {% csrf_token %}
@@ -61,7 +61,7 @@ View List
         </div>
         </form>
         <div><br>
-            <form id="shareFrom" action="/{{ls.user.id|cut:ls.user.host}}/inbox/" method="post" onsubmit="alert('hahahaha')">
+            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post" onsubmit="alert('hahahaha')">
                 {% csrf_token %}
                 <input type="hidden" name="url" value="{{ls.id}}">
                 <input type="hidden" name="type" value="share">

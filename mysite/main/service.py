@@ -1,7 +1,8 @@
-from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
+from _typeshed import OpenTextModeWriting
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
-
+from datetime import datetime
 from main.views import following
 from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
 from django.forms.models import model_to_dict
@@ -69,7 +70,7 @@ def retrive_user_all(response):
             "github":user.github,
             "profileImage": user.profileImage
         }
-        json_response["items"].append(user_object)
+        json_response["data"].append(user_object)
 
     return JsonResponse(json_response)
 
@@ -125,12 +126,12 @@ def retrive_followers(response, author_id):
             "github":user.github,
             "profileImage": user.profileImage
         }
-        json_response["items"].append(user_object)
+        json_response["data"].append(user_object)
     return JsonResponse(json_response)
 
 def manage_followers(response, author_id, foreign_author_id):
+    user = get_object_or_404(User, localId=author_id)
     if response.method == "GET":
-        user = get_object_or_404(User, localId=author_id)
         follower = Following.objects.filter(user__exaxt=user.id, following_user__exact=foreign_author_id)
         if follower.exists():
             return JsonResponse({"follower":True})
@@ -138,21 +139,39 @@ def manage_followers(response, author_id, foreign_author_id):
             return JsonResponse({"follower":False})
 
     elif response.method == "PUT":
-        pass
+        type = response.data["type"]
+        if not type == "follower":
+            return HttpResponseBadRequest("Data must be of type 'follower'.")
+        data = response.data["data"][0]
+        foreign_user_id = data["id"]
+
+        
+        following = Following.objects.create(user=user.id, following_user=foreign_user_id)
+        following.save()
+        return HttpResponse(status=204)
+
     elif response.method == "DELETE":
-        pass
+        following = Following.objects.filter(user__exact=user.id, following_user__contains=foreign_author_id)
+        if not following.exists():
+            return HttpResponseNotFound("No such follower")
+        following[0].delete()
+        return HttpResponse(status=204)
     else:
         return HttpResponseNotAllowed()
 
 def manage_posts(response, author_id, post_id):
     if response.method == "GET":
-        url = response.build_absolute_uri()
-        url = url.replace("/service", "")
-        request_host = response.get_host()
-        url = url.replace(request_host, "127.0.0.1")
-        ls = get_object_or_404(Moment, id=url)
+        # url = response.build_absolute_uri()
+        # url = url.replace("/service", "")
+        # request_host = response.get_host()
+        # url = url.replace(request_host, "127.0.0.1")
+        ls = get_object_or_404(Moment, localId=post_id)
         user = ls.user
         json_response = {
+            "type": "posts",
+            "data":[]
+        }
+        obj = {
             "type": "post",
             "title": ls.title,
             "id": ls.id,
@@ -178,14 +197,38 @@ def manage_posts(response, author_id, post_id):
             "visibility": ls.visibility,
             "unlisted": ls.unlisted
         }
+        json_response["data"].append(obj)
         return JsonResponse(json_response)
 
     elif response.method == "POST":
-        pass
+        ls = get_object_or_404(Moment, localId=post_id)
+        data = response.data["data"][0]
+        for key in data:
+            setattr(ls, key, data[key])
+        try:
+            ls.save()
+            return HttpResponse(status=204)
+        except:
+            return HttpResponseBadRequest("Can not parse some of the fields")
+
     elif response.method == "DELETE":
-        pass
+        ls = get_object_or_404(Moment, localId=post_id)
+        ls.delete()
+        return HttpResponse(status=204)
     elif response.methid == "PUT":
-        pass
+        data = response.data["data"]
+        for ls in data:
+            moment = Moment.objects.create(type="post", title=ls["title"], id=ls["id"], localId=post_id,
+                                            source=ls["source"], origin=ls["origin"], description=ls["description"],
+                                            contentType=ls["contentType"], content=ls["content"], categories=ls["categories"],
+                                            counts=ls["counts"], comments=ls["comments"], commentsSrc=ls["commentsSrc"],
+                                            published=datetime.strptime(ls["published"], '%H:%M:%S').time(), visibility=ls["visibility"], unlisted=ls["unlisted"]
+            )
+        try:
+            moment.save()
+            return HttpResponse(204)
+        except:
+            return HttpResponseBadRequest("Can not parse some of the fields")
     else:
         return HttpResponseNotAllowed()
     

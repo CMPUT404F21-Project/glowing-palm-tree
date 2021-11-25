@@ -57,7 +57,7 @@ urlpatterns = [
     # GET: if authenticated get a list of posts sent to {AUTHOR_ID}
     # POST: send a post to the author
     # if the type is “post” then add that post to the author’s inbox
-    # if the type is “follow” then add that follow is added to the author’s inbox to approve later
+    # if the type is “follow” then add that follow to the author’s inbox to approve later
     # if the type is “like” then add that like to the author’s inbox
     # DELETE: clear the inbox
     path("service/author/<str:author_id>/inbox/", service.send_inbox, name="send_likes"),

@@ -269,7 +269,7 @@ def register(response):
 def friendRequest(response, selfId, otherId):
     otherUser = User.objects.get(localId=otherId)
     try:
-        Following.objects.create(user=response.user, following_user=otherUser)
+        Following.objects.create(user=response.user, following_user=otherUser, userLocalId=response.user.localId, followingUserLocalId=otherUser.localId)
 
         inbox = Inbox.objects.get(author=otherUser)
         item = {"user":response.user.username, "userId":response.user.id, "type":"follow"}
@@ -301,14 +301,8 @@ def inbox(response, id):
         if(obj_type == "like"):
             print("hahahahaha")
             inbox = Inbox.objects.get(author=moment.user)
-            user = serializers.serialize("json", [moment.user,])
-            user = json.loads(user)[0]
-            user = json.dumps(user)
-            summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
-            like = Likes.objects.create(object=url, type="like", author=user , summary=summary, userId=response.user.id)
-            dict_object = model_to_dict(like)
-
-            dict_object["author"] = {
+            user = moment.user
+            author = {
                 "type": "author",
                 "id": user.id,
                 "url": user.url,
@@ -317,7 +311,10 @@ def inbox(response, id):
                 "github": user.github,
                 "profileImage": user.profileImage
             }
-
+            author = json.dumps(author)
+            summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
+            like = Likes.objects.create(object=url, type="like", author=author, summary=summary, userId=response.user.id)
+            dict_object = model_to_dict(like)
             #print(dict_object)
             items = inbox.items
             items = json.loads(items)

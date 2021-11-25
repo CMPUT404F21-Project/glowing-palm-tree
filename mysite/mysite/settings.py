@@ -141,5 +141,6 @@ CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
   'http://localhost:8000',
   'http://127.0.0.1:8000',
+  'https://social-distribution-t10.herokuapp.com'
 )
 django_on_heroku.settings(locals()) # bottom of the file
