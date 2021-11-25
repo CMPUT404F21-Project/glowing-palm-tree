@@ -1,4 +1,4 @@
-from _typeshed import OpenTextModeWriting
+# from _typeshed import OpenTextModeWriting
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
