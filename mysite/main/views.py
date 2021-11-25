@@ -52,6 +52,7 @@ def doMoment(response, authorId):
                 p = form.save(commit=False)
                 postId = str(uuid4())
                 p.id = response.build_absolute_uri() + postId
+                p.localId = postId
                 p.type = 'post'
                 p.source = p.id
                 p.origin = p.id
@@ -306,6 +307,17 @@ def inbox(response, id):
             summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
             like = Likes.objects.create(object=url, type="like", author=user , summary=summary, userId=response.user.id)
             dict_object = model_to_dict(like)
+
+            dict_object["author"] = {
+                "type": "author",
+                "id": user.id,
+                "url": user.url,
+                "host": user.host,
+                "displayName": user.username,
+                "github": user.github,
+                "profileImage": user.profileImage
+            }
+
             #print(dict_object)
             items = inbox.items
             items = json.loads(items)
@@ -316,11 +328,22 @@ def inbox(response, id):
             return HttpResponseRedirect(url)
         elif obj_type == 'share':
             users = response.POST.getlist("userSelect")
+            user = response.user
 
             inboxes = Inbox.objects.filter(author__in=users)
             dict_object = model_to_dict(moment)
             dict_object['user'] = selfName
-            dict_object['userLink'] = response.user.id
+            dict_object['userLink'] = user.id
+
+            dict_object["author"] = {
+                "type": "author",
+                "id": user.id,
+                "url": user.url,
+                "host": user.host,
+                "displayName": user.username,
+                "github": user.github,
+                "profileImage": user.profileImage
+            }
 
             send_to_inbox(dict_object, list(inboxes))
 
@@ -351,6 +374,7 @@ def createComment(response, authorId, postId):
     commentUuid = str(uuid4())
     comment = Comment.objects.create()
     comment.commentId = response.build_absolute_uri() + "/" + commentUuid
+    comment.localId = commentUuid
     comment.moment = moment
     print("outside")
     if response.method == "POST":
@@ -373,7 +397,7 @@ def momentRepost(response, authorId, postId):
     newId = response.user.id + "/posts/" + uuid
     #print(user)
     #print(ls)
-    newLs = Moment.objects.create(id=newId, content=ls.content, type="post", contentType=ls.contentType, user=response.user, origin = ls.origin,
+    newLs = Moment.objects.create(id=newId, localId=uuid, content=ls.content, type="post", contentType=ls.contentType, user=response.user, origin = ls.origin,
                                     source=ls.id, count=0, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility )
 
     # newLs.content = ls.content
