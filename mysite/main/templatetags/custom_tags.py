@@ -6,7 +6,10 @@ register = template.Library()
 
 def cut(value, arg):
     """Removes all values of arg from the given string"""
-    return value.replace(arg, '')
+    if arg:
+        return value.replace(arg, '')
+    else:
+        return "#"
 
 def add(value, arg):
     return int(value) + int(arg)
