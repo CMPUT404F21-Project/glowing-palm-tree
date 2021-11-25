@@ -3,7 +3,7 @@
 {% block style %}
 <style>
     a{
-      float: right;
+      /* float: right; */
       padding-left: 10px;
       padding-right: 10px;
     }
@@ -15,8 +15,19 @@ User Center
 {% endblock %}
 
 {% block content %}
-    
-                    
+        
+    <script>
+        var contentBody;
+        var counter = 0;
+
+        function addImage(contentBody, src){
+            let img = new Image();
+            img.src = src;
+            // console.log(img.src);
+            contentBody.appendChild(img);
+            contentBody.setAttribute('style', 'display:flex; justify-content: center');
+        }
+    </script>
                         
                         
     <h4 style="text-align: center;"> Message Box </h4>                    
@@ -31,11 +42,37 @@ User Center
                 <div class="moment">
                     <div class="panel panel-default">
                         <div class="panel-heading" style="font-size:large"></div>
-                        {%if lp.type == "Like"%}
+                        {%if lp.type == "like"%}
                         <div class="panel-body" style="font-size:medium">{{lp.summary}} <a href="{{lp.object}}">View</a><br>
+                        {%elif lp.type == "follow"%}
+                        <div class="panel-body" style="font-size:medium">{{lp.user}} just followed you!<a href="{{lp.userId}}">View</a><br>
+                        {%elif lp.type == "post"%}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <a href="{{lp.userLink}}">{{lp.user}}</a> shared a post to you
+                                <br>
+                                <h2 st>{{lp.title}}</h1>
+                            </div>
+                            
+                          <div class="panel-body"><a href="{{lp.id}}" id="content-body"></a></div>
+                            {% if lp.contentType == "JPEG" or lp.contentType == "PNG" or lp.contentType == "application" %}
+                            <script type="text/javascript">
+                                contentBody = [...document.querySelectorAll('#content-body')][counter];                  
+                                addImage(contentBody, "{{lp.content}}");
+                                counter += 1;
+                            </script>
+                            {% else %}
+                            <script type="text/javascript">
+                                contentBody = [...document.querySelectorAll('#content-body')][counter];
+                                contentBody.innerHTML = "{{lp.content}}";
+                                counter += 1;
+                            </script>
+                            {% endif %}
+                                            
                         {%endif%}
-                    </div>
+                           </div>
                 </div>
+ 
                 {% endfor %}   
         
             </div>

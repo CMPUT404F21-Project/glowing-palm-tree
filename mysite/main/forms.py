@@ -42,36 +42,6 @@ class CreateNewMoment(forms.ModelForm):
     class Meta:
         model = Moment
         fields = {"title", 'content',  'visibility', 'contentType', 'fileSelect'}
-
-
-class CreateNewImageMoment(forms.ModelForm):
-
-    
-    title = forms.CharField(label="title", max_length=2000, 
-                                widget=forms.TextInput({
-                                    'class':'form-control',
-                                    'placeholder':'Title'
-                                }), required=True)
-    content = forms.FileField(label="content",required=True)
-    CHOICES= (
-    ('Public','Public'),
-    ('Friend','Friend'),
-    ('Unlisted','Unlisted')
-    )
-    CHOICES2 = (
-        ('File', 'File'),
-        ('JPEG', 'JPEG'),
-        ('PNG', 'PNG')
-    )
-    visibility = forms.ChoiceField(widget=forms.Select, choices=CHOICES)
-    contentType = forms.ChoiceField(widget=forms.Select, choices=CHOICES2)
-    
-    class Meta:
-        model = Moment
-        fields = {"title", 'content',  'visibility', 'contentType'}
-    
-    
-
     
 
 class RegisterForm(UserCreationForm):

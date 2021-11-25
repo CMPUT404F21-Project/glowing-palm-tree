@@ -23,7 +23,7 @@ User Center
         <div class="container">
             <div class="col-sm-2" ></div>
             <div class="col-sm-8">
-                <form method="post" action="{{pl.id}}" class="form-group">
+                <form method="post" action="{{pl.id}}" class="form-group" onsubmit="post()">
                     {% csrf_token %}
                     {{form|crispy}}
                     <button  class="btn btn-success" type="submit" value="submit" style="float: right;">Save</button>
@@ -34,5 +34,103 @@ User Center
         
     </div>
     
+    <script>
+        var content = '{{content}}';
+        console.log(content);
+        var typeSelector = document.getElementById("id_contentType");
+        let contentDiv = document.getElementById("div_id_content");
+        let contentBox = document.getElementById("id_content");
+        let oldType = typeSelector.value;
+        if (['application', 'JPEG', 'PNG'].includes(oldType)){
+          
+          let img = document.createElement("img");
+          img.setAttribute('id', 'image');
+          img.src = content;
+          
+          contentDiv.appendChild(img);
+
+          let fileSelector = document.getElementById('div_id_fileSelect');
+          fileSelector.setAttribute('style', 'display:block');
+
+          contentBox.setAttribute('style', 'display:none');
+
+        }else{
+          let fileSelector = document.getElementById('div_id_fileSelect');
+          fileSelector.setAttribute('style', 'display:none');
+          contentBox.setAttribute('placeholder', content);
+
+        }
+        
+      
+        let fileSelector = document.getElementById("id_fileSelect");
+      
+        typeSelector.addEventListener('change', function () {
+          let text = typeSelector.value;
+          fileSelector.value = '';
+          contentBox.value = '';
+          if (['application', 'JPEG', 'PNG'].includes(text)){
+            let img = document.getElementById("image");
+            if (!img){
+              img = document.createElement('img');
+              img.setAttribute('id', 'image');
+              contentDiv.appendChild(img);
+            }
+
+              
+            let fileSelector = document.getElementById('div_id_fileSelect');
+            fileSelector.setAttribute('style', 'display:block');
+            // form = document.getElementById('contentForm');
+            // form.appendChild(fileSelector);
+      
+            let contentBox = document.getElementById("id_content");
+            contentBox.setAttribute('style', 'display:none');
+          }
+          else{
+            let fileSelector = document.getElementById('div_id_fileSelect');
+            fileSelector.setAttribute('style', 'display:none');
+      
+            let contentBox = document.getElementById("id_content");
+            contentBox.setAttribute('style', 'display:block');
+
+            contentBox.value = '';
+
+            let img = document.getElementById("image");
+            if (img){
+              img.parentElement.removeChild(img);
+            }
+
+
+          }
+        });
+      
+        fileSelector.onchange = e => {
+          let [file] = fileSelector.files;
+          if (file) {
+          let img = document.getElementById("image");
+          img.src = URL.createObjectURL(file);
+          }
+          var reader = new FileReader();
+      
+          let file1 = fileSelector.files;
+          reader.readAsDataURL(file1[0]);
+      
+          reader.onload = function () {
+            let contentBox = document.getElementById("id_content");
+            contentBox.value = reader.result;
+            content = contentBox.value;
+          };
+      
+        }
+
+
+        function post(){
+          let contentBox = document.getElementById("id_content");
+          var typeSelector = document.getElementById("id_contentType");
+          let text = typeSelector.value;
+          if (['application', 'JPEG', 'PNG'].includes(text)){
+            contentBox.value = content;
+          }
+        }
+      </script>
     
 {% endblock %}

@@ -37,7 +37,7 @@ User Center
                     </tr>
                     </tbody>
                 </table>
-                
+                <a href="{{otherUser.id}}/posts/" class="btn-lg btn-success">Post List</a>
             </div>
         </div>
     </div>
@@ -53,8 +53,8 @@ User Center
           contentBody.setAttribute('style', 'display:flex; justify-content: center');
         }
     </script>
-    {% for pl in otherUser.moment.all %}
-        <div class="moment" style="margin-top:40pt;">
+    <!-- {% for pl in otherUser.moment.all %} -->
+        <!-- <div class="moment" style="margin-top:40pt;">
         <div class="panel panel-default">
             <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
             <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
@@ -70,8 +70,8 @@ User Center
             </script>
 
         </div>
-    </div>
+        </div> -->
 
-{% endfor %}    
+    <!-- {% endfor %}     -->
     
 {% endblock %}
