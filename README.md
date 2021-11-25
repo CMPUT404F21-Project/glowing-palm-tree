@@ -18,4 +18,4 @@ limitations under the License.
 
 
 
-#### This project uses django crispy forms, please check the provided requirements.txt
+#### This project uses django crispy forms; please check the provided requirements.txt
