@@ -1,0 +1,50 @@
+{% extends "main/base.html" %}
+
+{% block style %}
+<style>
+    #likeShare {
+        float: right;
+    }
+    img{
+        width: 20em;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+View List
+{% endblock %}
+
+{% block content %}
+    <div class="moment" id="contentPanel" style="margin-top:40pt;">
+
+        <div class="panel panel-default">
+            <div class="panel-heading" style="font-size:x-large">{{title}}</div>
+            <div class="panel-body" id='content-body'></div>
+
+            {% if contentType == "image/jpeg;base64" or contentType == "image/png;base64" or contentType == "application/base64" %}
+                <script type="text/javascript">
+                    let content = "{{content}}";
+                    let contentType = "{{contentType}}"
+
+
+                    const contentBody = document.getElementById('content-body');
+                    let img = new Image();
+                    img.src = content;
+                    contentBody.appendChild(img);
+                    contentBody.setAttribute('style', 'display:flex; justify-content: center');
+                </script>
+            {% else %}
+                <script type="text/javascript">
+                    let content = '{{content | safe}}';
+                    let contentType = "{{contentType | safe}}"
+
+
+                    const contentBody = document.getElementById('content-body');
+                    contentBody.innerHTML = content;
+                </script>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

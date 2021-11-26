@@ -162,11 +162,56 @@ fetch(req)
                 // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
                 
 
-                heading.children[0].innerHTML = post["author"]["displayName"];
-                heading.children[0].href = post["author"]["url"];
-                heading.childNodes[4].textContent = "At: " + post["published"];
-                heading.childNodes[7].innerHTML = post["title"];
-                heading.childNodes[7].href = "#"
+                newForm1 = document.createElement("form")
+                newForm1.setAttribute("action","/remoteUser/detail/")
+                newForm1.setAttribute("method","post")
+                profileButton = document.createElement("button")
+
+                authorName = post["author"]['displayName']
+                profileButton.innerText = "posted by " + authorName
+
+                profileButton.setAttribute("type","submit")
+                hiddenValue1 = document.createElement("input")
+                hiddenValue1.setAttribute("type", "hidden")
+                hiddenValue1.setAttribute("name", "data")
+                hiddenValue1.setAttribute("value", JSON.stringify(post['author']))
+
+                newForm1.appendChild(profileButton)
+                newForm1.appendChild(hiddenValue1)
+                newForm1.innerHTML += '{% csrf_token %}'
+                
+
+                heading.removeChild(heading.children[1])
+                heading.appendChild(newForm1)
+
+                
+
+                newForm = document.createElement("form")
+                newForm.setAttribute("action","/remotePost/detail/")
+                newForm.setAttribute("method","post")
+                titleButton = document.createElement("button")
+
+                titleButton.innerText = post["title"]
+                titleButton.setAttribute("type","submit")
+                hiddenValue = document.createElement("input")
+                hiddenValue.setAttribute("type", "hidden")
+                hiddenValue.setAttribute("name", "data")
+                hiddenValue.setAttribute("value", JSON.stringify(post))
+
+                newForm.appendChild(titleButton)
+                newForm.appendChild(hiddenValue)
+                newForm.innerHTML += '{% csrf_token %}'
+
+                newDiv1 = document.createElement("div")
+                newDiv1.textContent = "At: " + post["published"];
+
+
+                heading.innerHTML = ''
+
+                heading.appendChild(newForm1)
+                heading.appendChild(newDiv1)
+                heading.appendChild(newForm)
+
                 let text = post["contentType"];
 
                 let temp = body.children[0];
@@ -255,11 +300,55 @@ fetch(req)
                     // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
                     
     
-                    heading.children[0].innerHTML = post["author"]["displayName"];
-                    heading.children[0].href = post["author"]["url"];
-                    heading.childNodes[4].textContent = "At: " + post["published"];
-                    heading.childNodes[7].innerHTML = post["title"];
-                    heading.childNodes[7].href = "#"
+                    newForm1 = document.createElement("form")
+                    newForm1.setAttribute("action","/remoteUser/detail/")
+                    newForm1.setAttribute("method","post")
+                    profileButton = document.createElement("button")
+
+                    authorName = post["author"]['displayName']
+                    profileButton.innerText = "posted by " + authorName
+
+                    profileButton.setAttribute("type","submit")
+                    hiddenValue1 = document.createElement("input")
+                    hiddenValue1.setAttribute("type", "hidden")
+                    hiddenValue1.setAttribute("name", "data")
+                    hiddenValue1.setAttribute("value", JSON.stringify(post['author']))
+
+                    newForm1.appendChild(profileButton)
+                    newForm1.appendChild(hiddenValue1)
+                    newForm1.innerHTML += '{% csrf_token %}'
+                    
+
+                    heading.removeChild(heading.children[1])
+                    heading.appendChild(newForm1)
+
+                    
+
+                    newForm = document.createElement("form")
+                    newForm.setAttribute("action","/remotePost/detail/")
+                    newForm.setAttribute("method","post")
+                    titleButton = document.createElement("button")
+
+                    titleButton.innerText = post["title"]
+                    titleButton.setAttribute("type","submit")
+                    hiddenValue = document.createElement("input")
+                    hiddenValue.setAttribute("type", "hidden")
+                    hiddenValue.setAttribute("name", "data")
+                    hiddenValue.setAttribute("value", JSON.stringify(post))
+
+                    newForm.appendChild(titleButton)
+                    newForm.appendChild(hiddenValue)
+                    newForm.innerHTML += '{% csrf_token %}'
+
+                    newDiv1 = document.createElement("div")
+                    newDiv1.textContent = "At: " + post["published"];
+
+
+                    heading.innerHTML = ''
+
+                    heading.appendChild(newForm1)
+                    heading.appendChild(newDiv1)
+                    heading.appendChild(newForm)
                     let text = post["contentType"];
     
                     let temp = body.children[0];

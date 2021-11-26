@@ -17,7 +17,21 @@ from urllib.parse import urlparse
 from django.template.loader import render_to_string
 
 # Create your views here.
+def remotePostDetail(request):
+    data = json.loads(request.POST.get("data"))
+    remoteUser = data['author']
+    content = data['content']
+    contentType = data['contentType']
 
+    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType}) 
+
+def remoteUserDetail(request):
+    remoteUser = json.loads(request.POST.get("data"))
+    username = remoteUser['displayName']
+    email = "None"
+    github = remoteUser['github']
+    return render(request, "main/otherRemoteUser.html", {'github':github,"email":email, "username":username})
+    
 def flat(arg):
     return arg[0]
 

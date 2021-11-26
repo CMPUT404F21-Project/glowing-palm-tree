@@ -1,0 +1,77 @@
+{% extends 'main/base.html' %}
+{% block style %}
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-4" ><img style=" width: 80%; border-radius: 50%; 
+                margin-bottom: 30pt;display: block;
+                margin-left: 0" 
+                src="https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg">
+             </div>
+            
+            <div class="col-sm-8">
+                    {% if following %}
+                        <a href="#" class="btn-lg btn-success" type="submit"  style="margin-bottom: 20pt;"> Unfollow</a>
+                    {% else %}
+                        <a href="#" class="btn-lg btn-success" type="submit"  style="margin-bottom: 20pt;">Follow</a>
+                    {% endif%}
+                <table class="table table-striped">
+                    <tbody>
+                     <tr>
+                        <td>User Name</td>
+                        <td>{{username}}</td>
+                    </tr>   
+                    <tr>
+                        <td>Email</td>
+                        <td>{{email}}</td>
+                    </tr>
+                    <tr>
+                        <td>Github</td>
+                        <td>{{github}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <a href="#" class="btn-lg btn-success">Post List</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        var contentBody;
+        var counter = 0;
+      
+        function addImage(contentBody, src){
+          let img = new Image();
+          img.src = src;
+          contentBody.innerHTML = '';
+          contentBody.appendChild(img);
+          contentBody.setAttribute('style', 'display:flex; justify-content: center');
+        }
+    </script>
+    <!-- {% for pl in otherUser.moment.all %} -->
+        <!-- <div class="moment" style="margin-top:40pt;">
+        <div class="panel panel-default">
+            <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
+            <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
+
+            {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+            <script type="text/javascript">
+                contentBody = [...document.querySelectorAll('#content-body')][counter];
+                addImage(contentBody, contentBody.innerText);
+            </script>
+            {% endif %}
+            <script>
+              counter += 1;
+            </script>
+
+        </div>
+        </div> -->
+
+    <!-- {% endfor %}     -->
+    
+{% endblock %}

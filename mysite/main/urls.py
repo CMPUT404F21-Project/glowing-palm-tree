@@ -22,6 +22,8 @@ urlpatterns = [
     path("author/<str:authorId>/posts/<str:postId>/share", views.momentRepost, name = "momentRepost"),
     path("getFriend/", views.getFriend, name = "getFriend"),
     # path("get/form/<str:formType>", views.getForm, name="getForm")
+    path("remotePost/detail/", views.remotePostDetail, name = "remotePostDetail"),
+    path("remoteUser/detail/", views.remoteUserDetail, name = "remoteUserDetail"),
 
 
     # GET: retrieve all profiles on the server paginated
