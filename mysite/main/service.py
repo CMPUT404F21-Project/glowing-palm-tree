@@ -63,10 +63,15 @@ def retrive_user_all(response):
     for user in users:
         if user.type != "author":
             continue
+        
+        host = user.host
+        user_url = user.id.replace(host, "")
+        user_url = host + 'service/' +user_url
+
         user_object = {
             "type": user.type,
-            "id": user.id,
-            "url": user.url,
+            "id": user_url,
+            "url": user_url,
             "host": user.host,
             "displayName": user.displayName,
             "github":user.github,
@@ -84,13 +89,16 @@ def retrive_user(response, author_id):
         
         user = get_object_or_404(User, localId=author_id)
         
+        host = user.host
+        user_url = user.id.replace(host, "")
+        user_url = host + 'service/' +user_url
         json_response = {
                 "type": "author",
                 "data":[
                     {
                         "type" : user.type,
-                        "id": user.id,
-                        "url": user.url,
+                        "id": user_url,
+                        "url": user_url,
                         "host": user.host,
                         "displayName": user.displayName,
                         "github":user.github,
@@ -128,10 +136,14 @@ def retrive_followers(response, author_id):
         "data": [],
         }
     for user in followers:
+        host = user.host
+        user_url = user.id.replace(host, "")
+        user_url = host + 'service/' +user_url
+
         user_object = {
             "type": user.type,
-            "id": user.id,
-            "url": user.url,
+            "id": user_url,
+            "url": user_url,
             "host": user.host,
             "displayName": user.displayName,
             "github":user.github,
@@ -186,6 +198,14 @@ def manage_posts(response, author_id, post_id):
         # url = url.replace(request_host, "127.0.0.1")
         ls = get_object_or_404(Moment, localId=post_id)
         user = ls.user
+
+        host = user.host
+        user_url = user.id.replace(host, "")
+        user_url = host + 'service/' +user_url
+
+        post_url = ls.id.replace(host, "")
+        post_url = host + 'service/' + post_url
+
         json_response = {
             "type": "posts",
             "data":[]
@@ -193,16 +213,16 @@ def manage_posts(response, author_id, post_id):
         obj = {
             "type": "post",
             "title": ls.title,
-            "id": ls.id,
-            "source": ls.source,
-            "origin": ls.origin,
+            "id": post_url,
+            "source": post_url,
+            "origin": post_url,
             "description": ls.description,
             "contentType": ls.contentType,
             "content": ls.content,
             "author": {
                 "type": "author",
-                "id": user.id,
-                "url": user.url,
+                "id": user_url,
+                "url": user_url,
                 "host": user.host,
                 "displayName": user.displayName,
                 "github":user.github,
@@ -210,7 +230,7 @@ def manage_posts(response, author_id, post_id):
             },
             "categories": ls.categories,
             "counts": ls.count,
-            "comments": ls.id,
+            "comments": ls.comments,
             "commentsSrc": None,
             "published": ls.published.__str__(),
             "visibility": ls.visibility,
@@ -303,19 +323,27 @@ def do_posts(response, author_id):
         }
 
         for ls in moments:
+
+            host = user.host
+            user_url = user.id.replace(host, "")
+            user_url = host + 'service/' +user_url
+
+            post_url = ls.id.replace(host, "")
+            post_url = host + 'service/' + post_url
+
             moment = {
                 "type": "post",
                 "title": ls.title,
-                "id": ls.id,
-                "source": ls.source,
-                "origin": ls.origin,
+                "id": post_url,
+                "source": post_url,
+                "origin": post_url,
                 "description": ls.description,
                 "contentType": ls.contentType,
                 "content": ls.content,
                 "author": {
                     "type": "author",
-                    "id": user.id,
-                    "url": user.url,
+                    "id": user_url,
+                    "url": user_url,
                     "host": user.host,
                     "displayName": user.displayName,
                     "github":user.github,
@@ -360,12 +388,19 @@ def manage_comments(response, author_id, post_id):
         }
 
         for comment in comments:
+            host = user.host
+            user_url = user.id.replace(host, "")
+            user_url = host + 'service/' +user_url
+
+            post_url = comment.commentId.replace(host, "")
+            post_url = host + 'service/' + post_url
+
             obj = {
                 "type": "comment",
                 "author":{
                     "type": "author",
-                    "id": user.id,
-                    "url": user.url,
+                    "id": user_url,
+                    "url": user_url,
                     "host": user.host,
                     "displayName": user.displayName,
                     "github": user.github,
@@ -374,7 +409,7 @@ def manage_comments(response, author_id, post_id):
                 "comment":comment.content,
                 "contentType":comment.contentType,
                 "published": comment.published.__str__(),
-                "id": comment.commentId
+                "id": post_url
             }
             json_response["data"].append(obj)
 
@@ -470,19 +505,27 @@ def get_likes_post(response, author_id, post_id):
             userId = like.userId
             if userId:
                 user = User.objects.get(id=userId)
+
+                host = user.host
+                user_url = user.id.replace(host, "")
+                user_url = host + 'service/' +user_url
+
+                post_url = like.object.replace(host, "")
+                post_url = host + 'service/' + post_url
+
                 obj = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "summary": like.summary,
                 "author":{
                     "type": "author",
-                    "id": user.id,
-                    "url": user.url,
+                    "id": user_url,
+                    "url": user_url,
                     "host": user.host,
                     "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
-                "object": like.object
+                "object": post_url
             }
             else:
                 user = like.author
@@ -536,19 +579,27 @@ def get_likes_comment(response, author_id, post_id, comment_id):
             userId = like.userId
             if userId:
                 user = User.objects.get(id=userId)
+
+                host = user.host
+                user_url = user.id.replace(host, "")
+                user_url = host + 'service/' +user_url
+
+                post_url = like.object.replace(host, "")
+                post_url = host + 'service/' + post_url
+
                 obj = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "summary": like.summary,
                 "author":{
                     "type": "author",
-                    "id": user.id,
-                    "url": user.url,
+                    "id": user_url,
+                    "url": user_url,
                     "host": user.host,
                     "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
-                "object": like.object
+                "object": post_url
             }
             else:
                 user = like.author
@@ -597,19 +648,28 @@ def get_liked(response, author_id):
             userId = like.userId
             if userId:
                 user = User.objects.get(id=userId)
+
+                host = user.host
+                user_url = user.id.replace(host, "")
+                user_url = host + 'service/' +user_url
+
+                post_url = like.object.replace(host, "")
+                post_url = host + 'service/' + post_url
+
+
                 obj = {
                 "@context": "https://www.w3.org/ns/activitystreams",
                 "summary": like.summary,
                 "author":{
                     "type": "author",
-                    "id": user.id,
-                    "url": user.url,
+                    "id": user_url,
+                    "url": user_url,
                     "host": user.host,
                     "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
-                "object": like.object
+                "object": post_url
             }
             else:
                 user = like.author
