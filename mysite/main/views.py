@@ -1,3 +1,4 @@
+from django.db.models import base
 from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
@@ -68,7 +69,7 @@ def doMoment(response, authorId):
                     friend_list = get_friends(response.user)
                     inboxes = Inbox.objects.filter(author__in=friend_list)
                     dict_object = model_to_dict(p)
-                    dict_object['user'] = response.user.username
+                    dict_object['user'] = response.user.displayName
                     dict_object['userLink'] = response.user.id
                     send_to_inbox(dict_object, list(inboxes))
 
@@ -181,8 +182,7 @@ def home(response):
     moments = Moment.objects.filter(visibility__iexact="Public")
     moments = moments.order_by("-published")
     content = list(moments.values_list('content', flat=True))
-    
-    content = json.dumps(content)
+    content = json.dumps({"content":content})
     form = CreateNewMoment()
     return render(response, "main/home.html", {"form":form, "moments":moments, "content":content})
 
@@ -248,6 +248,8 @@ def register(response):
             userId = response.build_absolute_uri('/author/') + createdUser.id
             host = response.build_absolute_uri('/')
             localId = createdUser.id
+            createdUser.type = "author"
+            createdUser.displayName = createdUser.username
             createdUser.host = host
             createdUser.id = userId
             createdUser.url = userId
@@ -269,10 +271,10 @@ def register(response):
 def friendRequest(response, selfId, otherId):
     otherUser = User.objects.get(localId=otherId)
     try:
-        Following.objects.create(user=response.user, following_user=otherUser, userLocalId=response.user.localId, followingUserLocalId=otherUser.localId)
+        Following.objects.create(user=response.user, following_user=otherUser)
 
         inbox = Inbox.objects.get(author=otherUser)
-        item = {"user":response.user.username, "userId":response.user.id, "type":"follow"}
+        item = {"user":response.user.displayName, "userId":response.user.id, "type":"follow"}
         send_to_inbox(item, [inbox])
 
     except IntegrityError:
@@ -295,7 +297,7 @@ def inbox(response, id):
         obj_type = response.POST.get("type", "")
         url = response.POST.get("url", "")
         moment = Moment.objects.get(id=url)
-        selfName = response.user.username
+        selfName = response.user.displayName
         
         
         if(obj_type == "like"):
@@ -307,7 +309,7 @@ def inbox(response, id):
                 "id": user.id,
                 "url": user.url,
                 "host": user.host,
-                "displayName": user.username,
+                "displayName": user.displayName,
                 "github": user.github,
                 "profileImage": user.profileImage
             }
@@ -337,7 +339,7 @@ def inbox(response, id):
                 "id": user.id,
                 "url": user.url,
                 "host": user.host,
-                "displayName": user.username,
+                "displayName": user.displayName,
                 "github": user.github,
                 "profileImage": user.profileImage
             }
@@ -418,7 +420,7 @@ def getFriend(response):
     friendList = User.objects.filter(id__in=friendList)
     
 
-    friendListName = list(friendList.values_list("username",flat=True))
+    friendListName = list(friendList.values_list("displayName",flat=True))
     friendListId = list(friendList.values_list("id", flat=True))
 
     nameListJs = json.dumps(friendListName)

@@ -42,7 +42,7 @@ def date_converter(o):
 
 def retrive_user_all(response):
     if response.method != "GET":
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
     users = list(User.objects.all())
     page  = response.GET.get("page", 1)
     size = response.GET.get("size", len(users))
@@ -61,18 +61,23 @@ def retrive_user_all(response):
         "data": [],
         }
     for user in users:
+        if user.type != "author":
+            continue
         user_object = {
-            "type": "author",
+            "type": user.type,
             "id": user.id,
             "url": user.url,
             "host": user.host,
-            "displayName": user.username,
+            "displayName": user.displayName,
             "github":user.github,
             "profileImage": user.profileImage
         }
         json_response["data"].append(user_object)
 
-    return JsonResponse(json_response)
+    # temp is suppose to be json_response
+    temp = JsonResponse(json_response)
+    temp['Access-Control-Allow-Origin'] = '*'
+    return temp
 
 def retrive_user(response, author_id):
     if response.method == "GET":
@@ -83,31 +88,37 @@ def retrive_user(response, author_id):
                 "type": "author",
                 "data":[
                     {
-                        "type" : "author",
+                        "type" : user.type,
                         "id": user.id,
                         "url": user.url,
                         "host": user.host,
-                        "displayName": user.username,
+                        "displayName": user.displayName,
                         "github":user.github,
                         "profileImage": user.profileImage
                     }
                 ]
             }
-        return JsonResponse(json_response)
+        # temp is suppose to be jsonResponse
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
     elif response.method == "POST":
         user = get_object_or_404(User, localId=author_id)
+        data = response.data['data']
 
-        form = UserProfileEdit(response.POST, instance=user)
-        if form.is_valid:
-            form.save()
-        else:
+        for key in data:
+            setattr(user, key, data[key])
+        try:
+            user.save()
+            return HttpResponse(status=204)
+        except:
             return HttpResponseBadRequest()
     else:
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed(permitted_methods=['GET', 'POST'])
 
 def retrive_followers(response, author_id):
     if response.method != "GET":
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
     user = get_object_or_404(User, localId=author_id)
     followers = Following.objects.filter(following_user__exact=user.id).values_list("user")
     followers = User.objects.filter(id__in=followers)
@@ -118,25 +129,33 @@ def retrive_followers(response, author_id):
         }
     for user in followers:
         user_object = {
-            "type": "author",
+            "type": user.type,
             "id": user.id,
             "url": user.url,
             "host": user.host,
-            "displayName": user.username,
+            "displayName": user.displayName,
             "github":user.github,
             "profileImage": user.profileImage
         }
         json_response["data"].append(user_object)
-    return JsonResponse(json_response)
+    # temp is suppose to be jsonResponse
+    temp = JsonResponse(json_response)
+    temp['Access-Control-Allow-Origin'] = '*'
+    return temp
 
 def manage_followers(response, author_id, foreign_author_id):
     user = get_object_or_404(User, localId=author_id)
     if response.method == "GET":
         follower = Following.objects.filter(user__exaxt=user.id, following_user__exact=foreign_author_id)
         if follower.exists():
-            return JsonResponse({"follower":True})
+            # temp is suppose to be jsonResponse
+            temp = JsonResponse({"follower":True})
+            temp['Access-Control-Allow-Origin'] = '*'
+            return temp
         else:
-            return JsonResponse({"follower":False})
+            temp = JsonResponse({"follower":False})
+            temp['Access-Control-Allow-Origin'] = '*'
+            return temp
 
     elif response.method == "PUT":
         type = response.data["type"]
@@ -157,7 +176,7 @@ def manage_followers(response, author_id, foreign_author_id):
         following[0].delete()
         return HttpResponse(status=204)
     else:
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed(permitted_methods=['GET', 'PUT', 'DELETE'])
 
 def manage_posts(response, author_id, post_id):
     if response.method == "GET":
@@ -185,7 +204,7 @@ def manage_posts(response, author_id, post_id):
                 "id": user.id,
                 "url": user.url,
                 "host": user.host,
-                "displayName": user.username,
+                "displayName": user.displayName,
                 "github":user.github,
                 "profileImage": user.profileImage
             },
@@ -198,7 +217,9 @@ def manage_posts(response, author_id, post_id):
             "unlisted": ls.unlisted
         }
         json_response["data"].append(obj)
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
 
     elif response.method == "POST":
         ls = get_object_or_404(Moment, localId=post_id)
@@ -230,7 +251,7 @@ def manage_posts(response, author_id, post_id):
         except:
             return HttpResponseBadRequest("Can not parse some of the fields")
     else:
-        return HttpResponseNotAllowed()
+        return HttpResponseNotAllowed(permitted_methods=['GET', 'POST','PUT', 'DELETE'])
     
 def do_posts(response, author_id):
     if response.method == "POST":
@@ -255,9 +276,10 @@ def do_posts(response, author_id):
                 friend_list = get_friends(response.user)
                 inboxes = Inbox.objects.filter(author__in=friend_list)
                 dict_object = model_to_dict(p)
-                dict_object['user'] = response.user.username
+                dict_object['user'] = response.user.displayName
                 dict_object['userLink'] = response.user.id
                 send_to_inbox(dict_object, list(inboxes))
+
     elif response.method == "GET":
         user = get_object_or_404(User, localId=author_id)
         moments = list(Moment.objects.filter(user__exact=user.id).order_by("-published"))
@@ -295,7 +317,7 @@ def do_posts(response, author_id):
                     "id": user.id,
                     "url": user.url,
                     "host": user.host,
-                    "displayName": user.username,
+                    "displayName": user.displayName,
                     "github":user.github,
                     "profileImage": user.profileImage
                     },
@@ -309,7 +331,9 @@ def do_posts(response, author_id):
                 }
             json_response["data"].append(moment)
 
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
 
 def manage_comments(response, author_id, post_id):
     moment = get_object_or_404(Moment, localId=post_id)
@@ -343,7 +367,7 @@ def manage_comments(response, author_id, post_id):
                     "id": user.id,
                     "url": user.url,
                     "host": user.host,
-                    "displayName": user.username,
+                    "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
@@ -354,7 +378,9 @@ def manage_comments(response, author_id, post_id):
             }
             json_response["data"].append(obj)
 
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
     elif response.method == "POST":
         obj_type = response.data["type"]
         if not obj_type == "comment":
@@ -365,7 +391,7 @@ def manage_comments(response, author_id, post_id):
                                         )
         comment.save()
     else:
-        return HttpResponseNotAllowed
+        return HttpResponseNotAllowed(permitted_methods=['GET', 'POST'])
 
 def send_inbox(response, author_id):
     user = get_object_or_404(User, localId=author_id)
@@ -404,14 +430,16 @@ def send_inbox(response, author_id):
             if item["type"] == "post":
                 json_response["data"].append(item)
 
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
     
     elif response.method == "DELETE":
         inbox.items = json.dumps([])
         inbox.save()
         return HttpResponse(status=204)
     else:
-        return HttpResponseNotAllowed
+        return HttpResponseNotAllowed(permitted_methods=['GET', 'POST', 'DELETE'])
 
 def get_likes_post(response, author_id, post_id):
     user = get_object_or_404(User, localId=author_id)
@@ -450,7 +478,7 @@ def get_likes_post(response, author_id, post_id):
                     "id": user.id,
                     "url": user.url,
                     "host": user.host,
-                    "displayName": user.username,
+                    "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
@@ -474,9 +502,11 @@ def get_likes_post(response, author_id, post_id):
                 }
             json_response["data"].append(obj)
         
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
     else:
-        return HttpResponseNotAllowed
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
 
 def get_likes_comment(response, author_id, post_id, comment_id):
     user = get_object_or_404(User, localId=author_id)
@@ -514,7 +544,7 @@ def get_likes_comment(response, author_id, post_id, comment_id):
                     "id": user.id,
                     "url": user.url,
                     "host": user.host,
-                    "displayName": user.username,
+                    "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
@@ -537,9 +567,11 @@ def get_likes_comment(response, author_id, post_id, comment_id):
                     "object": like.object
                 }
             json_response["data"].append(obj)
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
     else:
-        return HttpResponseNotAllowed
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
 
 def get_liked(response, author_id):
     user = get_object_or_404(User, localId=author_id)
@@ -573,7 +605,7 @@ def get_liked(response, author_id):
                     "id": user.id,
                     "url": user.url,
                     "host": user.host,
-                    "displayName": user.username,
+                    "displayName": user.displayName,
                     "github": user.github,
                     "profileImage": user.profileImage
                 },
@@ -596,7 +628,9 @@ def get_liked(response, author_id):
                     "object": like.object
                 }
             json_response["data"].append(obj)
-        return JsonResponse(json_response)
+        temp = JsonResponse(json_response)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
     else:
-        return HttpResponseNotAllowed
+        return HttpResponseNotAllowed(permitted_methods=['GET'])
 

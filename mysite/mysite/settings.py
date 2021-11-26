@@ -42,8 +42,19 @@ INSTALLED_APPS = [
     'crispy_forms',
     'main.apps.MainConfig',
     'corsheaders',
+    'rest_framework.authtoken'
 
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -136,8 +147,8 @@ LOGOUT_REDIRECT_URL = "/login/"
 AUTH_USER_MODEL = "main.User"
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
-
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_REPLACE_HTTPS_REFERER = True
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ORIGIN_WHITELIST = (
   'http://localhost:8000',
   'http://127.0.0.1:8000',

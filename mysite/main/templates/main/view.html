@@ -27,7 +27,7 @@ View
         
         <div class="panel panel-default">
             <div class="panel-heading">
-                Posted by  <a href="{{pl.user.id}}">{{pl.user.username}}</a>
+                Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
                 <br>
                 At:{{pl.published}}
                 <br>
@@ -36,10 +36,9 @@ View
             
           <div class="panel-body"><a id="content-body" href="{{pl.id}}"></a></div>
 
-        {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+        {% if pl.contentType == "application/base64" or pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" %}
           <script type="text/javascript">
               contentBody = [...document.querySelectorAll('#content-body')][counter];
-              
               addImage(contentBody);
               counter += 1;
           </script>
@@ -59,6 +58,188 @@ View
       
     </div> 
     {% endfor %}
+<script>
+// 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
+
+
+let url10 = "https://social-distribution-t10.herokuapp.com/api/";
+// let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
+// let tokens = []
+// let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
+let h1 = new Headers();
+h1.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
+let foreignAuthor = [];
+let req = new Request(url10+"authors/", {
+    method: 'GET',
+    mode: 'cors',
+    headers: h1
+});
+fetch(req)
+.then(response => response.json())
+.then(data => {
+    let jsonData = data;
+    jsonData = jsonData["data"];
+    for (let author of jsonData){
+        let api = author["host"] ;
+        console.log(api)
+        let rest = author["id"].replace(author["host"], "");
+        console.log(rest)
+        let url = api + rest + "/posts/";
+        let h2 = new Headers();
+        h2.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
+        let postReq = new Request(url,{
+            method: 'GET',
+            mode: 'cors',
+            headers: h2
+        });
+        fetch(postReq)
+        .then(response => response.json())
+        .then(data =>{
+            let postData = data;
+            postData = postData["data"];
+            for (let post of postData){
+                let oldDiv = document.querySelector(".moment");
+                let newDiv = document.createElement("div");
+                newDiv.innerHTML = oldDiv.innerHTML;
+                newDiv.setAttribute("style","margin-top:40pt;");
+                newDiv.setAttribute("class", "moment");
+                oldDiv.parentElement.appendChild(newDiv);
+
+                let heading = newDiv.children[0].children[0];
+                let body = newDiv.children[0].children[1];
+                let buttons = newDiv.children[1];
+
+                let shareButton = buttons.children[0];
+                let commentButton = buttons.children[1];
+                let likeButton = buttons.children[2];
+
+                likeButton.herf = "#";
+                likeButton.setAttribute("onclick", 'alert(url10 + "author/" + post["author"]["id"] + "/inbox/")');
+                // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
+                
+
+                heading.children[0].innerHTML = post["author"]["displayName"];
+                heading.children[0].href = post["author"]["url"];
+                heading.childNodes[4].textContent = "At: " + post["published"];
+                heading.childNodes[7].innerHTML = post["title"];
+                heading.childNodes[7].href = "#"
+                let text = post["contentType"];
+
+                let temp = body.children[0];
+                    if (temp){
+                    temp.parentElement.removeChild(temp);
+                    }
+                if (['application/base64', 'image/png;base64', 'image/jpeg;base64'].includes(text)){
+                    
+                    let img = new Image();
+                    img.src = post["content"];
+                    body.appendChild(img);
+                }else{
+                    body.textContent = post["content"];
+                    body.setAttribute("style", "");
+                }
+            }
+        })
+    }
+})
+
+
+function sendLike(url){
+    alert("clicked");
+}
+</script>
+
+
+<script>
+    // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
     
     
+    // let url10 = "https://social-distribution-t10.herokuapp.com/api/";
+    let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
+    // let tokens = []
+    // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
+    let h3 = new Headers();
+    h3.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
+    let foreignAuthor1 = [];
+    let req1 = new Request(url18+"authors", {
+        method: 'GET',
+        mode: 'cors',
+        headers: h3
+    });
+    fetch(req1)
+    .then(response => response.json())
+    .then(data => {
+        let jsonData = data;
+        jsonData = jsonData["data"];
+        for (let author of jsonData){
+            let api = author["host"] ;
+            // console.log(api)
+            let rest = author["id"].replace(author["host"], "");
+            // console.log(rest)
+            let url = api +'/author/' + rest + "/posts";
+            let h2 = new Headers();
+            h2.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
+            let postReq = new Request(url,{
+                method: 'GET',
+                mode: 'cors',
+                headers: h2
+            });
+            fetch(postReq)
+            .then(response => response.json())
+            .then(data =>{
+                let postData = data;
+                postData = postData["data"];
+                for (let post of postData){
+                    let oldDiv = document.querySelector(".moment");
+                    let newDiv = document.createElement("div");
+                    newDiv.innerHTML = oldDiv.innerHTML;
+                    newDiv.setAttribute("style","margin-top:40pt;");
+                    newDiv.setAttribute("class", "moment");
+                    oldDiv.parentElement.appendChild(newDiv);
+    
+                    let heading = newDiv.children[0].children[0];
+                    let body = newDiv.children[0].children[1];
+                    let buttons = newDiv.children[1];
+    
+                    let shareButton = buttons.children[0];
+                    let commentButton = buttons.children[1];
+                    let likeButton = buttons.children[2];
+    
+                    likeButton.herf = "#";
+                    likeButton.setAttribute("onclick", 'alert(url10 + "author/" + post["author"]["id"] + "/inbox/")');
+                    // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
+                    
+    
+                    heading.children[0].innerHTML = post["author"]["displayName"];
+                    heading.children[0].href = post["author"]["url"];
+                    heading.childNodes[4].textContent = "At: " + post["published"];
+                    heading.childNodes[7].innerHTML = post["title"];
+                    heading.childNodes[7].href = "#"
+                    let text = post["contentType"];
+    
+                    let temp = body.children[0];
+                        if (temp){
+                        temp.parentElement.removeChild(temp);
+                        }
+                    if (['application/base64', 'image/png;base64', 'image/jpeg;base64'].includes(text)){
+                        
+                        let img = new Image();
+                        img.src = post["content"];
+                        body.appendChild(img);
+                    }else{
+                        body.textContent = post["content"];
+                        body.setAttribute("style", "");
+                    }
+                }
+            })
+        }
+    })
+    
+    
+    function sendLike(url){
+        alert("clicked");
+    }
+    </script>
+
 {% endblock %}
+

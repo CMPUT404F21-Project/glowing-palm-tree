@@ -56,7 +56,7 @@ User Center
                     </tr>
                     <tr>
                         <td>User Name</td>
-                        <td>{{user.username}}</td>
+                        <td>{{user.displayName}}</td>
                     </tr>
                     <tr>
                         <td>Github</td>
@@ -71,7 +71,7 @@ User Center
                     <div class="panel panel-default">
                         <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
                         <div class="panel-body"><a id="content-body" href="{{pl.id}}"></a></div>
-                        {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+                        {% if pl.contentType == "application/base64" or pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" %}
                             <script type="text/javascript">
                                 contentBody = [...document.querySelectorAll('#content-body')][counter];
                                 

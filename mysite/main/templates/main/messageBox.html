@@ -55,7 +55,7 @@ User Center
                             </div>
                             
                           <div class="panel-body"><a href="{{lp.id}}" id="content-body"></a></div>
-                            {% if lp.contentType == "JPEG" or lp.contentType == "PNG" or lp.contentType == "application" %}
+                            {% if lp.contentType == "image/jpeg;base64" or lp.contentType == "image/png;base64" or lp.contentType == "application/base64" %}
                             <script type="text/javascript">
                                 contentBody = [...document.querySelectorAll('#content-body')][counter];                  
                                 addImage(contentBody, "{{lp.content}}");

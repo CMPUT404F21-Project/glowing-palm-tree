@@ -22,7 +22,7 @@ View List
             <div class="panel-heading" style="font-size:x-large">{{ls.title}}</div>
             <div class="panel-body" id='content-body'></div>
 
-            {% if ls.contentType == "JPEG" or ls.contentType == "PNG" or ls.contentType == "application" %}
+            {% if ls.contentType == "image/jpeg;base64" or ls.contentType == "image/png;base64" or ls.contentType == "application/base64" %}
                 <script type="text/javascript">
                     let content = "{{content}}";
                     let contentType = "{{contentType}}"
@@ -118,7 +118,7 @@ View List
         {% if ls.user.id == user.id %}
             {% for comment in ls.comment_set.all %}
                 <div class="panel panel-default" style="margin-top: 30pt;">
-                    <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+                    <div class="panel-heading">{{user.displayName}} <br> {{comment.published}}</div>
                     <div class="panel-body">{{comment.content}}</div>
                 </div>
             {% endfor %}
@@ -126,7 +126,7 @@ View List
             {% for comment in ls.comment_set.all %} 
                 {% if comment.author.id == user.id %}
                     <div class="panel panel-default" style="margin-top: 30pt;">
-                        <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+                        <div class="panel-heading">{{user.displayName}} <br> {{comment.published}}</div>
                         <div class="panel-body">{{comment.content}}</div>
                     </div>
                 {% endif %}
@@ -135,7 +135,7 @@ View List
     {% else %}
         {% for comment in ls.comment_set.all %}
             <div class="panel panel-default" style="margin-top: 30pt;">
-                <div class="panel-heading">{{user.username}} <br> {{comment.published}}</div>
+                <div class="panel-heading">{{user.displayName}} <br> {{comment.published}}</div>
                 <div class="panel-body">{{comment.content}}</div>
             </div>
         {% endfor %}

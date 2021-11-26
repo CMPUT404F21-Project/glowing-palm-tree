@@ -29,11 +29,11 @@ class CreateNewMoment(forms.ModelForm):
     ('Unlisted','Unlisted')
     )
     CHOICES2= (
-    ('plain text','plain text'),
-    ('markDown','markDown'),
-    ('application','application'),
-    ('JPEG', 'JPEG'),
-    ('PNG', 'PNG'),
+    ('text/plain', 'plain text'),
+    ('text/markdown', 'markDown'),
+    ('application/base64', 'application'),
+    ('image/jpeg;base64', 'JPEG'),
+    ('image/png;base64', 'PNG'),
     )
     visibility = forms.ChoiceField(widget=forms.Select, choices=CHOICES)
     contentType = forms.ChoiceField(widget=forms.Select, choices=CHOICES2)

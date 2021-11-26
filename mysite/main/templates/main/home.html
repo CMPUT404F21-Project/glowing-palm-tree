@@ -58,6 +58,7 @@ Create new post
   var src = '{{content | safe}}';
 
   src = JSON.parse(src);
+  src = src["content"]
 
   function addImage(contentBody){
     let img = new Image();
@@ -71,14 +72,14 @@ Create new post
     <div class="moment" style="margin-top:40pt;">
       <div class="panel panel-default">
         <div class="panel-heading">
-          Posted by  <a href="{{pl.user.id}}">{{pl.user.username}}</a>
+          Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
           <br>
           At:{{pl.published}}
           <br>
           Title:{{pl.title}}
         </div>
         <div class="panel-body" id="content-body"></div>
-        {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
+        {% if pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" or pl.contentType == "application/base64" %}
           <script type="text/javascript">
 
               contentBody = [...document.querySelectorAll('#content-body')][counter];
@@ -111,7 +112,7 @@ Create new post
 
   typeSelector.addEventListener('change', function () {
     let text = typeSelector.value;
-    if (['application', 'JPEG', 'PNG'].includes(text)){
+    if (['application/base64', 'image/png;base64', 'image/jpeg;base64'].includes(text)){
       
       let fileSelector = document.getElementById('div_id_fileSelect');
       fileSelector.setAttribute('style', 'display:block');
@@ -146,20 +147,9 @@ Create new post
     };
 
   }
-
-
-  function post(){
-    let typeSelector = document.getElementById("id_contentType");
-    let fileSelector = document.getElementById("id_fileSelect");
-    let contentBox = document.getElementById("id_content");
-    let contentType = typeSelector.value;
-    if (['application', 'JPEG', 'PNG'].includes(contentType)){
-      
-      
-    }
-    return true;
-
-  }
   // changeForm();
 </script>
+
+
+
 {% endblock %}
