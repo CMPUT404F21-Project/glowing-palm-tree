@@ -333,5 +333,72 @@ class TestProfile(TestCase):
         response = self.client.get(addr)
         self.assertContains(response, 'https://github.com/CMPUT404F21-Project/glowing-palm-tree')
         
+class TestShare(TestCase):
 
+    def setUp(self):
+        data = urlencode({"username": "yiyang9", "email":"yiyang9@ulaberta.ca", "password1":"Jackie608", "password2":"Jackie608"})
+        response = self.client.post("/register/", data, content_type="application/x-www-form-urlencoded")
+        self.client.login(username="yiyang9", password="Jackie608")
+        
+        self.otherclient1 = Client()
+        data = urlencode({"username": "other1", "email":"other1@ulaberta.ca", "password1":"Testuser1", "password2":"Testuser1"})
+        response = self.otherclient1.post("/register/", data, content_type="application/x-www-form-urlencoded")
+        self.otherclient1.login(username="other1", password="Testuser1")
+        
+        self.otherclient2 = Client()
+        data = urlencode({"username": "other2", "email":"other2@ulaberta.ca", "password1":"Testuser2", "password2":"Testuser2"})
+        response = self.otherclient2.post("/register/", data, content_type="application/x-www-form-urlencoded")
+        self.otherclient2.login(username="other2", password="Testuser2")
+        
+        
+    def test_Share_Public(self):
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
+        id = User.objects.all()[0].localId
+        addr = "/author/"+id+"/posts/"
+        # mock user new post acticity
+        response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
+        
+        postid = Moment.objects.all()[0].localId
+        addr = "/author/"+id+"/posts/"+postid+"/share"
+        response = self.otherclient1.post(addr)
+        
+        id2 = User.objects.all()[1].localId
+        addr = "/author/" + id2
+        response = self.otherclient1.get(addr)
+        self.assertContains(response, "thisistestcontent")
+        
+    def test_Share_Private(self):
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Friend", "contentType":"text/plain"})
+        id = User.objects.all()[0].localId
+        addr = "/author/"+id+"/posts/"
+        # mock user new post acticity
+        response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
+        
+        id1 = User.objects.all()[0].localId
+        id2 = User.objects.all()[1].localId
+        addr = "/friendRequest/"+id1+"/"+id2
+        response = self.client.get(addr)
+        
+        addr = "/friendRequest/"+id2+"/"+id1
+        response = self.otherclient1.get(addr)
+        
+        id1 = User.objects.all()[1].localId
+        id2 = User.objects.all()[2].localId
+        addr = "/friendRequest/"+id1+"/"+id2
+        response = self.otherclient1.get(addr)
+        
+        addr = "/friendRequest/"+id2+"/"+id1
+        response = self.otherclient2.get(addr)
+        
+        postid = Moment.objects.all()[0].localId
+        addr = "/author/"+id+"/posts/"+postid+"/share"
+        response = self.otherclient1.post(addr)
+        
+        addr = "/author/" + id1
+        response = self.otherclient2.get(addr)
+        self.assertContains(response, "thisistestcontent")
+        
+        
+        
+    
        
