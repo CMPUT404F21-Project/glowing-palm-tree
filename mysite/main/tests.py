@@ -52,7 +52,9 @@ class TestFriend(TestCase):
         
         addr="/friendRequest/"+id2+"/"+id1
         response = self.otherclient.get(addr)
-        self.assertContains(response, 'yiyang9 just followed you')
+        addr = "/author/"+id2+"/inbox/"
+        response = self.otherclient.get(addr)
+        self.assertContains(response, 'yiyang9 just followed you!')
         
     def test_Real_Friend(self):
         
@@ -82,7 +84,7 @@ class TestFriend(TestCase):
         response = self.otherclient.get(addr)
         
         # mock unfriend
-        addr = "/friendRequest/"+id1+"/"+id2
+        addr = "/unfollow/"+id2
         response = self.client.get(addr)
         # should not be friend anymore
         response = self.otherclient.get("/getFriend/")
@@ -104,7 +106,7 @@ class TestMoment(TestCase):
 
     @csrf_exempt
     def test_New_Public_Post(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity
@@ -118,7 +120,7 @@ class TestMoment(TestCase):
 
     @csrf_exempt
     def test_Edit_Public_Post(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity
@@ -128,7 +130,7 @@ class TestMoment(TestCase):
                 
         #addr = "/momentEdit/" + postid
         addr = "/author/"+id+"/posts/"+postid
-        data = urlencode({"title":"change", "content":"contentshouldchange", "visibility":"Public", "contentType":"plain text"})
+        data = urlencode({"title":"change", "content":"contentshouldchange", "visibility":"Public", "contentType":"text/plain"})
 
         # mock edit post activity
         response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
@@ -138,7 +140,7 @@ class TestMoment(TestCase):
         self.assertContains(response, 'contentshouldchange')
         
     def test_Delete_Post(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity
@@ -160,7 +162,7 @@ class TestMoment(TestCase):
         self.assertNotContains(response, 'thisistestcontent')
         
     def test_Friend_Post(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Friend", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Friend", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity but post is Friend
@@ -190,7 +192,7 @@ class TestMoment(TestCase):
         
         
     def test_Unlisted_Post(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent","visibility":"Unlisted", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent","visibility":"Unlisted", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity but post is unlisted
@@ -211,7 +213,7 @@ class TestMoment(TestCase):
         
         img = SimpleUploadedFile("testimage.jpg", b"file_content", content_type="image/jpeg")
         print(img)
-        data = urlencode({ "title":"testimage","visibility":"Public", "contentType":"JPEG","fileSelect":img})
+        data = urlencode({ "title":"testimage","visibility":"Public", "contentType":"image/jpeg;base64","fileSelect":img})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity but post in image
@@ -241,7 +243,7 @@ class TestCommentLike(TestCase):
         self.otherclient2.login(username="other2", password="Testuser2")
         
     def test_Comment_to_other(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity
@@ -258,7 +260,7 @@ class TestCommentLike(TestCase):
         self.assertContains(response, 'Atestcomment')
         
     def test_Friend_Post_Comment(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Friend", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Friend", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity
@@ -296,7 +298,7 @@ class TestCommentLike(TestCase):
         
         
     def test_Like(self):
-        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"plain text"})
+        data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
         addr = "/author/"+id+"/posts/"
         # mock user new post acticity
