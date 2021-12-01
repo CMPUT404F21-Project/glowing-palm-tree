@@ -1,8 +1,10 @@
 from django.db.models import base
+
 from django.http.response import Http404, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
+
 from django.http import HttpResponse, HttpResponseRedirect, request
-from .models import Inbox, Moment, Comment, Following, Likes, Liked, Pending, User
+from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
 from django.forms.models import model_to_dict
 from django.core import serializers
 from .forms import *
@@ -23,8 +25,6 @@ def redirectToHome(request):
 
 
 def remotePostDetail(request):
-    if( (not request.user.authorized) or request.user.is_anonymous):
-        return HttpResponseForbidden()
     data = json.loads(request.POST.get("data"))
     remoteUser = data['author']
     content = data['content']
@@ -38,8 +38,6 @@ def remotePostDetail(request):
     return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType, "source":source}) 
 
 def remoteUserDetail(request):
-    if( (not request.user.authorized) or request.user.is_anonymous):
-        return HttpResponseForbidden()
     remoteUser = json.loads(request.POST.get("data"))
     username = remoteUser['displayName']
     email = "None"
@@ -85,9 +83,6 @@ def get_friends(user):
 def doMoment(response, authorId):
     # ls = Moment.objects.filter(id__exact=postId)
     #if(not ls.exists()):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
-
     if response.method == "POST":
         if authorId == response.user.localId:
             form = CreateNewMoment(response.POST)
@@ -198,8 +193,6 @@ def doMoment(response, authorId):
         
 
 def userMoment(response, authorId, postId):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     #url = "http://localhost:8000/" + "author/" + authorId + "/posts/" + postId
     url = urlparse(response.build_absolute_uri())
     cleanUrl = response.build_absolute_uri().replace("?" + url.query,'')
@@ -248,15 +241,6 @@ def userMoment(response, authorId, postId):
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
-
-    if(response.user.is_anonymous):
-        pass
-    elif(not response.user.pending.exists()):
-        response.user.authorized = True
-        response.user.save()
-    else:
-        pass
-
     moments = Moment.objects.filter(visibility__iexact="Public")
     moments = moments.order_by("-published")
     content = list(moments.values_list('content', flat=True))
@@ -272,8 +256,6 @@ def home(response):
 
 
 def view(response):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     publicMoments = Moment.objects.filter(visibility__iexact="Public")
     selfMoments = response.user.moment.all()
     followerList = Following.objects.filter(following_user__exact=response.user).values_list('user',flat=True)
@@ -302,16 +284,12 @@ def view(response):
 
 
 def browseAuthors(response):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     localAuthors = User.objects.filter(is_superuser = False)
     localAuthors = localAuthors.order_by('displayName')
     return render(response, "main/browseAuthor.html", {"localAuthors":localAuthors})
 
 
 def userCenter(response, id):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     if(response.user.localId == id):
         showList = Moment.objects.filter(user__exact=response.user).order_by("-published")
         content = list(showList.values_list('content', flat=True))
@@ -330,8 +308,6 @@ def userCenter(response, id):
         return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following})
 
 def userCenterEdit(response):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     if response.method == "POST":
         form = UserProfileEdit(response.POST, instance=response.user)
         if form.is_valid():
@@ -344,14 +320,10 @@ def userCenterEdit(response):
     return render(response, "main/userCenterEdit.html", {"form":form})
   
 def messageBox(response):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     user = response.user
     return render(response, "main/messageBox.html", {"user":user})
 
 def following(response):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     user = response.user
     return render(response, "main/following.html", {"user":user})
 
@@ -376,8 +348,6 @@ def register(response):
             
             inbox = Inbox.objects.create(author=createdUser, type="inbox",items = initial_list)
             inbox.save()
-            pending = Pending.objects.create(pendingUser=createdUser)
-            pending.save()
             return redirect("/login/")
         else:
             print(form.errors)
@@ -387,9 +357,6 @@ def register(response):
 
 
 def friendRequest(response, selfId, otherId):
-    
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     otherUser = User.objects.get(localId=otherId)
     try:
         Following.objects.create(user=response.user, following_user=otherUser)
@@ -404,8 +371,6 @@ def friendRequest(response, selfId, otherId):
     return HttpResponseRedirect("/author/%s" %otherId)
 
 def unfollow(response, otherId):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     otherUser = User.objects.get(localId=otherId)
     user =  response.user
     quertSet = Following.objects.filter(user__exact=user, following_user__exact=otherUser)
@@ -415,8 +380,6 @@ def unfollow(response, otherId):
     return HttpResponseRedirect("/author/%s" %otherId)
 
 def inbox(response, id):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     # maybe like maybe share
     if(response.method == "POST"):
         obj_type = response.POST.get("type", "")
@@ -489,8 +452,6 @@ def inbox(response, id):
 
 
 def momentEdit(response,authorId, postId):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     postId = response.build_absolute_uri().replace('/edit', '')
     ls = Moment.objects.filter(id__exact=postId )
     ls = ls[0]
@@ -501,8 +462,6 @@ def momentEdit(response,authorId, postId):
 
 
 def createComment(response, authorId, postId):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     momentUrl = response.build_absolute_uri()
     momentUrl = momentUrl.replace("/comments", "")
     print(momentUrl)
@@ -524,8 +483,6 @@ def createComment(response, authorId, postId):
     return HttpResponseRedirect(url)
 
 def momentRepost(response, authorId, postId):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
     url = response.build_absolute_uri().replace("/share", "")
     ls = Moment.objects.filter(id__exact=url)
     user = User.objects.filter(localId__exact=authorId)
@@ -553,8 +510,6 @@ def momentRepost(response, authorId, postId):
 
 
 def getFriend(response):
-    if( (not response.user.authorized) or response.user.is_anonymous):
-        return HttpResponseForbidden()
 
     followerList = Following.objects.filter(following_user__exact=response.user).values_list('user',flat=True)
     followingList = Following.objects.filter(user__exact=response.user).values_list('following_user',flat=True)

@@ -149,16 +149,33 @@ View List
             <label for="comment">Comment:</label>
             <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
         </div>
-        <button type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</button>
+        <a type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</a>
     </form>
         </div>
     </div>
     
     <script>
-        function sendLike(object){
-            url = "{{author.url}}";
+
+        function uuid(){
+            var dt = new Date().getTime();
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = (dt + Math.random()*16)%16 | 0;
+                dt = Math.floor(dt/16);
+                return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+            });
+            return uuid;
+        }
+        token10 = "2dc59103754a77ac6a2de5a43fd9f994dc52e32a";
+        token18 = "dDEyOkNNUFVUNDA0";
+
+        function sendLike(object, team){
+
+            url = "{{author.url}}" + "/inbox/";
             console.log(url);
             console.log(object);
+            let host = "{{user.host}}"
+            let user_url = "{{user.id}}".replace(host, "")
+            user_url = host + 'service/' +user_url
             let like = {
                 "type": "like",
                 "data":[{
@@ -167,21 +184,29 @@ View List
                     "summary": "{{user.displayName}}" + "likes your post",
                     "author": {
                         "type": "author",
-                        "id": "{{author.id}}",
-                        "host":"{{author.host}}",
-                        "displayName": "{{author.diaplayName}}",
-                        "url": "{{author.url}}",
-                        "github": "{{author.github}}",
-                        "profileImage": "{{author.profileImage}}"
+                        "id": "{{user.id}}",
+                        "host":"{{user.host}}",
+                        "displayName": "{{user.diaplayName}}",
+                        "url": user_url,
+                        "github": "{{user.github}}",
+                        "profileImage": "{{user.profileImage}}"
                     },
                     "object": object
                 }]
             };
 
+            
+
             like = JSON.stringify(like);
             let h = new Headers();
-            h.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
+            if (team == 10){
+                h.append("Authorization", "Token " + token10);
+            }
+            else if (team == 18){
+                h.append("Authorization", "Basic " + token18);
+            }
             h.append("Content-Type", "application/json");
+
             let req = new Request(url, {
                 method: "POST",
                 mode: "cors",
@@ -195,9 +220,70 @@ View List
             });
         }
 
+
+        function sendComment(object, team){
+            let url = "{{source}}" + "/comments";
+            console.log(url);
+            let id = "{{source}}" + "/comments/" + uuid();
+
+            let content = document.getElementById("comment").value;
+            let comment = {
+                "type": "comment",
+                "data":[{
+                    "type": "comment",
+                    "author": {
+                        "type": "author",
+                        "id": "{{author.id}}",
+                        "host":"{{author.host}}",
+                        "displayName": "{{author.diaplayName}}",
+                        "url": "{{author.url}}",
+                        "github": "{{author.github}}",
+                        "profileImage": "{{author.profileImage}}"
+                    },
+                    "comment": content,
+                    "contentType": "text/plain",
+                    "published": Date.toString(),
+                    "id" : id,
+                }]
+            };
+            comment = JSON.stringify(comment);
+            let h = new Headers();
+            if (team == 10){
+                h.append("Authorization", "Token " + token10);
+            }
+            else if (team == 18){
+                h.append("Authorization", "Basic " + token18);
+            }
+            h.append("Content-Type", "application/json");
+
+            let req = new Request(url, {
+                method: "POST",
+                mode: "cors",
+                headers: h,
+                body: comment,
+            });
+
+            fetch(req)
+            .then(response => {
+                console.log(response.status);
+            });
+        }
+
         let likeButton = document.getElementsByName("likeButton")[0];
         objectUrl = "{{source}}";
-        likeButton.setAttribute('onclick', 'sendLike(objectUrl)');
+        if ("{{author.host}}" == "https://cmput404-socialdistributio-t18.herokuapp.com"){
+            likeButton.setAttribute('onclick', 'sendLike(objectUrl, 18)');
+        }else{
+            likeButton.setAttribute('onclick', 'sendLike(objectUrl, 10)');
+        }
+
+        let commentButton = document.getElementsByName("newComment")[0];
+        
+        if ("{{author.host}}" == "https://cmput404-socialdistributio-t18.herokuapp.com"){
+            commentButton.setAttribute('onclick', 'sendComment(objectUrl, 18)');
+        }else{
+            commentButton.setAttribute('onclick', 'sendComment(objectUrl, 10)');
+        }
     </script>
 
 {% endblock %}
