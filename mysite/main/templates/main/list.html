@@ -8,6 +8,10 @@
     img{
         width: 20em;
     }
+
+    .likeCount {
+        float: right;
+    }
   </style>
 {% endblock %}
 
@@ -19,7 +23,7 @@ View List
     <div class="moment" id="contentPanel" style="margin-top:40pt;">
 
         <div class="panel panel-default">
-            <div class="panel-heading" style="font-size:x-large">{{ls.title}}</div>
+            <div class="panel-heading" style="font-size:x-large">{{ls.title}} <span class="likeCount">Liked by {{ls.count}} users</span></div>
             <div class="panel-body" id='content-body'></div>
             {% if ls.contentType == "image/jpeg;base64" or ls.contentType == "image/png;base64" or ls.contentType == "application/base64" %}
                 <script type="text/javascript">

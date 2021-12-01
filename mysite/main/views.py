@@ -389,6 +389,8 @@ def inbox(response, id):
             author = json.dumps(author)
             summary = "%s likes your Post(title: %s)"%(selfName, moment.title)
             like = Likes.objects.create(object=url, type="like", author=author, summary=summary, userId=response.user.id)
+            moment.count = moment.count + 1
+            moment.save()
             dict_object = model_to_dict(like)
             #print(dict_object)
             items = inbox.items
