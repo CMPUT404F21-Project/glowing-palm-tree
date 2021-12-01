@@ -27,12 +27,13 @@ def remotePostDetail(request):
     remoteUser = data['author']
     content = data['content']
     contentType = data['contentType']
+    source = data['source']
     print(content)
     print("+++++++++++++")
     if(contentType == "text/markdown"):
         #content = markdown.markdown(content).replace("\r", "<br>")
         content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
-    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType}) 
+    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType, "source":source}) 
 
 def remoteUserDetail(request):
     remoteUser = json.loads(request.POST.get("data"))
