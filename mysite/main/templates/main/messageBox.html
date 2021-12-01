@@ -64,7 +64,7 @@ User Center
                             {% else %}
                             <script type="text/javascript">
                                 contentBody = [...document.querySelectorAll('#content-body')][counter];
-                                contentBody.innerHTML = "{{lp.content}}";
+                                contentBody.innerHTML = "{{lp.content|safe}}";
                                 counter += 1;
                             </script>
                             {% endif %}

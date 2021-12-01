@@ -18,9 +18,9 @@ View
         var contentBody;
         var counter = 0;
         var src = '{{content | safe}}';
-
+        console.log(src[6195])
         src = JSON.parse(src);
-        console.log(src);
+        
 
         function addImage(contentBody){
             let img = new Image();

@@ -1,5 +1,5 @@
 from django.db.models import base
-from django.http.response import HttpResponseForbidden, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
+from django.http.response import Http404, HttpResponseForbidden, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
 from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
@@ -15,14 +15,23 @@ from uuid import uuid4
 import math
 from urllib.parse import urlparse
 from django.template.loader import render_to_string
-
+import markdown
 # Create your views here.
+
+def redirectToHome(request):
+    return HttpResponseRedirect("/home")
+
+
 def remotePostDetail(request):
     data = json.loads(request.POST.get("data"))
     remoteUser = data['author']
     content = data['content']
     contentType = data['contentType']
-
+    print(content)
+    print("+++++++++++++")
+    if(contentType == "text/markdown"):
+        #content = markdown.markdown(content).replace("\r", "<br>")
+        content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
     return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType}) 
 
 def remoteUserDetail(request):
@@ -85,6 +94,8 @@ def doMoment(response, authorId):
                     dict_object = model_to_dict(p)
                     dict_object['user'] = response.user.displayName
                     dict_object['userLink'] = response.user.id
+                    if(p.contentType == "text/markdown"):
+                        dict_object["content"] =   markdown.markdown(dict_object["content"]).replace("\n", "<br>").replace("\"","").replace("\\","")
                     send_to_inbox(dict_object, list(inboxes))
 
                     
@@ -93,6 +104,11 @@ def doMoment(response, authorId):
                 # p = json.dumps(p)
                 content = p.content
                 contentType = p.contentType
+                if(contentType == "text/markdown"):
+                    #content = markdown.markdown(content).replace("\r", "<br>")
+                    content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
+                   
+                
                 return render(response, "main/list.html", {"ls":p, "content":content, "contentType": contentType})
     else:
         user = User.objects.get(localId=authorId)
@@ -114,8 +130,10 @@ def doMoment(response, authorId):
 
         # friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
         # showList = publicMoments.union(ls).union(friendPost)
-        content = showListFull.values_list('content', flat=True)
+        content = showListFull.values_list('id','content')
         
+        content = [x[1] for x in content ]
+
         page =  int(response.GET.get("page", 1))
         size =  int(response.GET.get("size", 5))
         
@@ -134,6 +152,8 @@ def doMoment(response, authorId):
         offset = (page-1)*size
         lsList = list(showListFull)
         contentList = list(content)
+
+        
         showList = []
         showContent = []
 
@@ -145,6 +165,11 @@ def doMoment(response, authorId):
             if(len(lsList) > offset):
                 showList = lsList[offset:]
                 showContent = contentList[offset:]
+        
+        for i in range(len(showList)):
+            if showList[i].contentType == 'text/markdown':
+                print(type(showContent[i]))
+                showContent[i] = markdown.markdown(showContent[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
 
         maxPage = math.ceil(len(lsList)/size)
         showContent = json.dumps(showContent)
@@ -157,8 +182,13 @@ def userMoment(response, authorId, postId):
     url = urlparse(response.build_absolute_uri())
     cleanUrl = response.build_absolute_uri().replace("?" + url.query,'')
     print(cleanUrl)
+
     ls = Moment.objects.filter(id__exact=cleanUrl )
-    ls = ls[0]
+    if(ls.exists()):
+        ls = ls[0]
+    else:
+        print(url)
+        return HttpResponseNotFound()
     '''if response.method == "POST":
         # print(response.POST)
         if response.POST.get("newComment"):
@@ -170,6 +200,9 @@ def userMoment(response, authorId, postId):
     if response.method == "GET":
         like = Likes.objects.filter(userId__exact=response.user.id, object__exact=ls.id)
         content = ls.content
+        if(ls.contentType == "text/markdown"):
+                #content = markdown.markdown(content).replace("\r", "<br>")
+                content = markdown.markdown(content).replace("\n", "<br>")
         return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content})
     elif response.method == "POST":
         if(response.POST.get("_METHOD") == "Delete"):
@@ -196,8 +229,14 @@ def home(response):
     moments = Moment.objects.filter(visibility__iexact="Public")
     moments = moments.order_by("-published")
     content = list(moments.values_list('content', flat=True))
+    contentType = list(moments.values_list('contentType', flat=True))
+    for i in range(len(contentType)):
+        if contentType[i] == 'text/markdown':
+            content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
+    
     content = json.dumps({"content":content})
     form = CreateNewMoment()
+
     return render(response, "main/home.html", {"form":form, "moments":moments, "content":content})
 
 
@@ -216,6 +255,14 @@ def view(response):
     showList = publicMoments.union(selfMoments).union(friendPost)
     showList = showList.order_by('-published')
     content = list(showList.values_list('content', flat=True))
+    contentType = list(showList.values_list('contentType', flat=True))
+    
+    for i in range(len(contentType)):
+        if contentType[i] == 'text/markdown':
+            content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
+            #for JSON.parse to run I have to do this
+    
+
     content = json.dumps(content)
 
     return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content})
@@ -231,6 +278,11 @@ def userCenter(response, id):
     if(response.user.localId == id):
         showList = Moment.objects.filter(user__exact=response.user).order_by("-published")
         content = list(showList.values_list('content', flat=True))
+        contentType = list(showList.values_list('contentType', flat=True))
+        for i in range(len(contentType)):
+            if contentType[i] == 'text/markdown':
+                content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
+    
         content = json.dumps(content)
         return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content},)
     else:
@@ -352,6 +404,12 @@ def inbox(response, id):
 
             inboxes = Inbox.objects.filter(author__in=users)
             dict_object = model_to_dict(moment)
+            if(moment.contentType == "text/markdown"):
+                dict_object["content"] =   markdown.markdown(dict_object["content"]).replace("\n", "<br>").replace("\"","").replace("\\","")
+            print(moment.contentType)
+
+                
+            
             dict_object['user'] = selfName
             dict_object['userLink'] = user.id
 
@@ -428,7 +486,9 @@ def momentRepost(response, authorId, postId):
     newLs.save()
     content = ls.content
     contentType = ls.contentType
-    
+    if(contentType == "text/markdown"):
+        #content = markdown.markdown(content).replace("\r", "<br>")
+        content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
     return render(response, "main/list.html", {"ls":newLs, "content":content, "contentType": contentType}) 
 
 
