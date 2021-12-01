@@ -25,6 +25,7 @@ urlpatterns = [
     path("remotePost/detail/", views.remotePostDetail, name = "remotePostDetail"),
     path("remoteUser/detail/", views.remoteUserDetail, name = "remoteUserDetail"),
     path("browseAuthors/", views.browseAuthors, name="broseAuthors"),
+    path("author/<str:authorId>/githubFlow", views.githubFlow, name="githubFlow"),
     path("", views.redirectToHome, name = "redirectToHome"),
 
 

@@ -1,6 +1,6 @@
 from django.db.models import base
 from django.http.response import Http404, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
 from .models import Inbox, Moment, Comment, Following, Likes, Liked, Pending, User
 from django.forms.models import model_to_dict
@@ -45,6 +45,18 @@ def remoteUserDetail(request):
     email = "None"
     github = remoteUser['github']
     return render(request, "main/otherRemoteUser.html", {'github':github,"email":email, "username":username})
+
+def githubFlow(request, authorId):
+    user = get_object_or_404(User, localId=authorId)
+    github = user.github
+    if(github):
+        name = github.replace("https://github.com/",'')
+        
+    else:
+        name = None    
+    
+    return render(request, "main/githubFlow.html", {'name': name})
+
     
 def flat(arg):
     return arg[0]
