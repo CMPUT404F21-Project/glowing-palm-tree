@@ -24,6 +24,7 @@ urlpatterns = [
     # path("get/form/<str:formType>", views.getForm, name="getForm")
     path("remotePost/detail/", views.remotePostDetail, name = "remotePostDetail"),
     path("remoteUser/detail/", views.remoteUserDetail, name = "remoteUserDetail"),
+    path("", views.redirectToHome, name = "redirectToHome"),
 
 
     # GET: retrieve all profiles on the server paginated
