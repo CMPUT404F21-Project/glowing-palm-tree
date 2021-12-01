@@ -151,17 +151,17 @@ fetch(req)
 
                 let heading = newDiv.children[0].children[0];
                 let body = newDiv.children[0].children[1];
-                let buttons = newDiv.children[1];
+                // let buttons = newDiv.children[1];
 
-                let shareButton = buttons.children[0];
-                let commentButton = buttons.children[1];
-                let likeButton = buttons.children[2];
+                // let shareButton = buttons.children[0];
+                // let commentButton = buttons.children[1];
+                // let likeButton = buttons.children[2];
 
-                likeButton.herf = "#";
-                likeUrlT10 = post["author"]["id"] + "/inbox/";
-                objectUrlT10 = post["source"];
-                likeButton.setAttribute("onclick", 'sendLike(likeUrlT10, objectUrlT10)');
-                // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
+                // likeButton.herf = "#";
+                // likeUrlT10 = post["author"]["id"] + "/inbox/";
+                // objectUrlT10 = post["source"];
+                // likeButton.setAttribute("onclick", 'sendLike(likeUrlT10, objectUrlT10)');
+                // // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
                 
 
                 newForm1 = document.createElement("form")
@@ -296,16 +296,6 @@ fetch(req)
     
                     let heading = newDiv.children[0].children[0];
                     let body = newDiv.children[0].children[1];
-                    let buttons = newDiv.children[1];
-    
-                    let shareButton = buttons.children[0];
-                    let commentButton = buttons.children[1];
-                    let likeButton = buttons.children[2];
-    
-                    likeButton.herf = "#";
-                    likeButton.setAttribute("onclick", 'alert(url10 + "author/" + post["author"]["id"] + "/inbox/")');
-                    // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
-                    
     
                     newForm1 = document.createElement("form")
                     newForm1.setAttribute("action","/remoteUser/detail/")
