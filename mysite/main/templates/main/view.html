@@ -5,6 +5,14 @@
 View
 {% endblock %}
 
+{% block style %}
+<style type="text/css">
+.btoa {
+    padding-left: 0pt !important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
     <script>
         var contentBody;
@@ -168,7 +176,9 @@ fetch(req)
                 profileButton = document.createElement("button")
 
                 authorName = post["author"]['displayName']
-                profileButton.innerText = "posted by " + authorName
+                profileButton.innerText = "Posted by " + authorName
+                profileButton.setAttribute("class", "btn btn-link btoa")
+                profileButton.setAttribute("role", "link")
 
                 profileButton.setAttribute("type","submit")
                 hiddenValue1 = document.createElement("input")
@@ -190,6 +200,9 @@ fetch(req)
                 newForm.setAttribute("action","/remotePost/detail/")
                 newForm.setAttribute("method","post")
                 titleButton = document.createElement("button")
+                titleButton.setAttribute("class", "btn btn-link btoa")
+                titleButton.setAttribute("role", "link")
+
 
                 titleButton.innerText = post["title"]
                 titleButton.setAttribute("type","submit")
@@ -306,7 +319,9 @@ fetch(req)
                     profileButton = document.createElement("button")
 
                     authorName = post["author"]['displayName']
-                    profileButton.innerText = "posted by " + authorName
+                    profileButton.innerText = "Posted by " + authorName
+                    profileButton.setAttribute("class", "btn btn-link btoa")
+                    profileButton.setAttribute("role", "link")
 
                     profileButton.setAttribute("type","submit")
                     hiddenValue1 = document.createElement("input")
@@ -328,6 +343,8 @@ fetch(req)
                     newForm.setAttribute("action","/remotePost/detail/")
                     newForm.setAttribute("method","post")
                     titleButton = document.createElement("button")
+                    titleButton.setAttribute("class", "btn btn-link btoa")
+                    titleButton.setAttribute("role", "link")
 
                     titleButton.innerText = post["title"]
                     titleButton.setAttribute("type","submit")

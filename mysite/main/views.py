@@ -220,6 +220,13 @@ def view(response):
 
     return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content})
 
+
+def browseAuthors(response):
+    localAuthors = User.objects.filter(is_superuser = False)
+    localAuthors = localAuthors.order_by('displayName')
+    return render(response, "main/browseAuthor.html", {"localAuthors":localAuthors})
+
+
 def userCenter(response, id):
     if(response.user.localId == id):
         showList = Moment.objects.filter(user__exact=response.user).order_by("-published")
