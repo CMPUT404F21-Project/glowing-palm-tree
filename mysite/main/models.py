@@ -16,8 +16,13 @@ class User(AbstractUser):
     url = models.URLField(max_length=2000, null=True)
     github = models.URLField(max_length=2000, null=True)
     profileImage = models.URLField(max_length=2000, null=True)
+    authorized = models.BooleanField(default=False)
 
+class Pending(models.Model):
+    pendingUser = models.ForeignKey("User", on_delete=models.CASCADE, related_name="pending",null=True)
+    type = models.CharField(max_length=2000, default="pending user")
     
+
 
 class Moment(models.Model):
     type = models.CharField(max_length=2000, null=True)

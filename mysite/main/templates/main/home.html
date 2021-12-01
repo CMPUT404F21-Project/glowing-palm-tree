@@ -40,6 +40,8 @@ Create new post
 
   {% if user.is_anonymous%}
     <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
+  {% elif not user.authorized %}
+    <h1 style="text-align: center;">Your registration is still in process.</h1>
   {%else%}
   
     <h3>Create Post</h3>
