@@ -55,6 +55,33 @@ def githubFlow(request, authorId):
     
     return render(request, "main/githubFlow.html", {'name': name})
 
+
+def commentToPost(response, authorId, postId, commentId):
+    comment = Comment.objects.filter(localId=commentId)
+    if(comment.exists()):
+        comment = comment[0]
+    else:
+        return HttpResponseNotFound()
+    ls = Moment.objects.get(id=comment.moment.id)
+
+    
+    if response.method == "GET":
+        like = Likes.objects.filter(userId__exact=response.user.id, object__exact=ls.id)
+        content = ls.content
+        if(ls.contentType == "text/markdown"):
+                #content = markdown.markdown(content).replace("\r", "<br>")
+                content = markdown.markdown(content).replace("\n", "<br>")
+    comments = Comment.objects.filter(moment=ls)
+    likeDict = {}
+    
+    for item in comments:
+        if( (Likes.objects.filter(object=item.commentId, userId=response.user.id) ).exists()  ):
+            likeDict[item.localId] = True
+        else:
+            likeDict[item.localId] = False
+
+    likeDict = json.dumps(likeDict)        
+    return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content, "likeDict":likeDict})
     
 def flat(arg):
     return arg[0]
@@ -123,8 +150,8 @@ def doMoment(response, authorId):
                     #content = markdown.markdown(content).replace("\r", "<br>")
                     content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
                    
-                
-                return render(response, "main/list.html", {"ls":p, "content":content, "contentType": contentType})
+                likeDict = json.dumps({}) 
+                return render(response, "main/list.html", {"ls":p, "content":content, "contentType": contentType, "likeDict": likeDict})
     else:
         user = User.objects.get(localId=authorId)
         # ls = Moment.objects.filter(user__exact=user).order_by("-published")
@@ -218,7 +245,19 @@ def userMoment(response, authorId, postId):
         if(ls.contentType == "text/markdown"):
                 #content = markdown.markdown(content).replace("\r", "<br>")
                 content = markdown.markdown(content).replace("\n", "<br>")
-        return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content})
+
+        comments = Comment.objects.filter(moment=ls)
+        likeDict = {}
+        
+        for item in comments:
+            if( (Likes.objects.filter(object=item.commentId, userId=response.user.id) ).exists()  ):
+                likeDict[item.localId] = True
+            else:
+                likeDict[item.localId] = False
+
+        likeDict = json.dumps(likeDict) 
+        return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content, "likeDict":likeDict })
+        
     elif response.method == "POST":
         if(response.POST.get("_METHOD") == "Delete"):
             ls.delete()
@@ -231,8 +270,23 @@ def userMoment(response, authorId, postId):
             if form.is_valid():
                 #raise Exception         
                 form.save()
-                content = str(form.cleaned_data.get('content')) 
-                return render(response, "main/list.html", {"ls":ls, 'content':content})
+                like = Likes.objects.filter(userId__exact=response.user.id, object__exact=ls.id)
+                content = ls.content
+                if(ls.contentType == "text/markdown"):
+                        #content = markdown.markdown(content).replace("\r", "<br>")
+                        content = markdown.markdown(content).replace("\n", "<br>")
+
+                comments = Comment.objects.filter(moment=ls)
+                likeDict = {}
+                
+                for item in comments:
+                    if( (Likes.objects.filter(object=item.commentId, userId=response.user.id) ).exists()  ):
+                        likeDict[item.localId] = True
+                    else:
+                        likeDict[item.localId] = False
+
+                likeDict = json.dumps(likeDict) 
+                return render(response, "main/list.html", {"ls":ls, 'liked':(like.exists()), 'content':content, "likeDict":likeDict })
 
     elif response.method == "DELETE":
         ls.delete()
@@ -404,7 +458,7 @@ def inbox(response, id):
             }
             author = json.dumps(author)
             summary = "%s likes your comment under post: %s"%(response.user.displayName, comment.moment.title)
-            like = Likes.objects.create(object=url, type="like", author=author, summary=summary, userId=response.user.id)
+            like = Likes.objects.create(object=comment.commentId, type="like", author=author, summary=summary, userId=response.user.id)
             dict_object = model_to_dict(like)
             #print(dict_object)
             items = inbox.items
@@ -504,6 +558,7 @@ def createComment(response, authorId, postId):
     comment.commentId = response.build_absolute_uri() + "/" + commentUuid
     comment.localId = commentUuid
     comment.moment = moment
+    
     print("outside")
     if response.method == "POST":
         print("enter")
@@ -539,7 +594,8 @@ def momentRepost(response, authorId, postId):
     if(contentType == "text/markdown"):
         #content = markdown.markdown(content).replace("\r", "<br>")
         content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
-    return render(response, "main/list.html", {"ls":newLs, "content":content, "contentType": contentType}) 
+    likeDict = json.dumps({})  
+    return render(response, "main/list.html", {"ls":newLs, "content":content, "contentType": contentType, "likeDict": likeDict}) 
 
 
 def getFriend(response):

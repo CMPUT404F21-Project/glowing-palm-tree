@@ -51,7 +51,6 @@ class Comment(models.Model):
     published = models.DateTimeField(null=True)
     commentId = models.CharField(max_length=2000, null=True)
     localId = models.CharField(max_length=2000, null=True)
-    complete = models.BooleanField(null=True)
 
     def __str__(self):
         return self.content
