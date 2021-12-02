@@ -18,6 +18,7 @@ urlpatterns = [
     path("momentEdit/<str:postId>", views.momentEdit, name="MomentEdit"),
     path("author/<str:authorId>/posts/", views.doMoment, name = "doMoment"),
     path("author/<str:authorId>/posts/<str:postId>/comments", views.createComment, name = "createComment"),
+    path("author/<str:id>/commentLike/", views.inbox, name = "commentLike"),
     path("author/<str:authorId>/posts/<str:postId>/edit", views.momentEdit, name = "momentEdit"),
     path("author/<str:authorId>/posts/<str:postId>/share", views.momentRepost, name = "momentRepost"),
     path("getFriend/", views.getFriend, name = "getFriend"),

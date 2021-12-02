@@ -384,6 +384,39 @@ def inbox(response, id):
     if(response.method == "POST"):
         obj_type = response.POST.get("type", "")
         url = response.POST.get("url", "")
+        
+
+
+        if(obj_type == "commentLike"):
+            localId = response.POST.get("id", "")
+            comment = Comment.objects.get(localId=localId)
+            inbox = Inbox.objects.get(author=comment.author)
+
+            user = comment.author
+            author = {
+                "type": "author",
+                "id": user.id,
+                "url": user.url,
+                "host": user.host,
+                "displayName": user.displayName,
+                "github": user.github,
+                "profileImage": user.profileImage
+            }
+            author = json.dumps(author)
+            summary = "%s likes your comment under post: %s"%(response.user.displayName, comment.moment.title)
+            like = Likes.objects.create(object=url, type="like", author=author, summary=summary, userId=response.user.id)
+            dict_object = model_to_dict(like)
+            #print(dict_object)
+            items = inbox.items
+            items = json.loads(items)
+            items.append(dict_object)
+            items = json.dumps(items)
+            inbox.items = items
+            inbox.save()
+            return HttpResponseRedirect(url)
+
+
+            
         moment = Moment.objects.get(id=url)
         selfName = response.user.displayName
         

@@ -17,7 +17,9 @@ class User(AbstractUser):
     github = models.URLField(max_length=2000, null=True)
     profileImage = models.URLField(max_length=2000, null=True)
 
+
     
+
 
 class Moment(models.Model):
     type = models.CharField(max_length=2000, null=True)

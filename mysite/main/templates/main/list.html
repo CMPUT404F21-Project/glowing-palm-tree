@@ -138,7 +138,16 @@ View List
             <div class="panel panel-default" style="margin-top: 30pt;">
                 <div class="panel-heading">{{user.displayName}} <br> {{comment.published}}</div>
                 <div class="panel-body">{{comment.content}}</div>
+                <form method="post" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
+                    {% csrf_token %}
+                    <input type="hidden" name="type" value="commentLike">
+                    <input type="hidden" name="url" value="{{ls.id}}">
+                    <input type="hidden" name="id" value="{{comment.localId}}">
+                    <button type="submit", name="likeComment", value="likeComment", class="btn btn-success" style="float: right;">like</button>
+                </form>
             </div>
+            
+            
         {% endfor %}
     {% endif %}
         
