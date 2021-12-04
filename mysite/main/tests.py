@@ -15,12 +15,17 @@ class TestUser(TestCase):
     def test_signUp(self):
         data = urlencode({"username": "yiyang9", "email":"yiyang9@ulaberta.ca", "password1":"Jackie608", "password2":"Jackie608"})
         response = self.client.post("/register/", data, content_type="application/x-www-form-urlencoded")
-
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
 
     def test_login(self):
         # Sign-up 
         data = urlencode({"username": "yiyang9", "email":"yiyang9@ulaberta.ca", "password1":"Jackie608", "password2":"Jackie608"})
         response = self.client.post("/register/", data, content_type="application/x-www-form-urlencoded")
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
 
         data = urlencode({"username": "yiyang9", "password":"Jackie608"})
         response = self.client.post("/login/", data, content_type="application/x-www-form-urlencoded")
@@ -43,6 +48,11 @@ class TestFriend(TestCase):
         response = self.otherclient.post("/register/", data, content_type="application/x-www-form-urlencoded")
         self.otherclient.login(username="other1", password="Testuser1")
         
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
+        response = self.otherclient.get('/home/')
+        
     def test_Send_Recieve_Friend_Request(self):
         id1 = User.objects.all()[0].localId
         id2 = User.objects.all()[1].localId
@@ -61,13 +71,10 @@ class TestFriend(TestCase):
         id1 = User.objects.all()[0].localId
         id2 = User.objects.all()[1].localId
         addr="/friendRequest/"+id1+"/"+id2
-        
         response = self.client.get(addr)
-        self.assertEqual(response.status_code, 302)
         
         addr="/friendRequest/"+id2+"/"+id1
         response = self.otherclient.get(addr)
-        self.assertEqual(response.status_code, 302)
         
         response = self.otherclient.get("/getFriend/")
         self.assertContains(response, 'yiyang9')
@@ -102,7 +109,10 @@ class TestMoment(TestCase):
         data = urlencode({"username": "other1", "email":"other1@ulaberta.ca", "password1":"Testuser1", "password2":"Testuser1"})
         response = self.otherclient.post("/register/", data, content_type="application/x-www-form-urlencoded")
         self.otherclient.login(username="other1", password="Testuser1")
-
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
+        response = self.otherclient.get('/home/')
 
     @csrf_exempt
     def test_New_Public_Post(self):
@@ -113,7 +123,7 @@ class TestMoment(TestCase):
         response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
         
         # check other can see it on main page
-        response = self.otherclient.get("/home/")
+        response = self.otherclient.get("/view/")
         self.assertContains(response, 'thisistestcontent')
 
         
@@ -136,7 +146,7 @@ class TestMoment(TestCase):
         response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, 200)
         
-        response = self.client.get("/home/")
+        response = self.client.get("/view/")
         self.assertContains(response, 'contentshouldchange')
         
     def test_Delete_Post(self):
@@ -146,7 +156,7 @@ class TestMoment(TestCase):
         # mock user new post acticity
         response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
         
-        response = self.client.get("/home/")
+        response = self.client.get("/view/")
         self.assertContains(response, 'thisistestcontent')
         
         postid = Moment.objects.all()[0].localId
@@ -158,7 +168,7 @@ class TestMoment(TestCase):
         self.assertEqual(response.status_code, 200)
         
         # nothing should be there
-        response = self.client.get("/home/")
+        response = self.client.get("/view/")
         self.assertNotContains(response, 'thisistestcontent')
         
     def test_Friend_Post(self):
@@ -173,8 +183,6 @@ class TestMoment(TestCase):
         self.assertContains(response, 'thisistestcontent')
         
         response = self.otherclient.get("/view/")
-        self.assertNotContains(response, 'thisistestcontent')
-        response = self.otherclient.get("/home/")
         self.assertNotContains(response, 'thisistestcontent')
         
         # after become real friend, can see in post list
@@ -204,11 +212,10 @@ class TestMoment(TestCase):
         
         response = self.otherclient.get("/view/")
         self.assertNotContains(response, 'thisistestcontent')
-        response = self.otherclient.get("/home/")
-        self.assertNotContains(response, 'thisistestcontent')
+
         
     def test_Image_Post(self):
-        response = self.client.get("/home/")
+        response = self.client.get("/view/")
         self.assertNotContains(response, 'addImage(contentBody);')
         
         img = SimpleUploadedFile("testimage.jpg", b"file_content", content_type="image/jpeg")
@@ -220,7 +227,7 @@ class TestMoment(TestCase):
         response = self.client.post(addr, data, content_type="application/x-www-form-urlencoded")
         self.assertEqual(response.status_code, 200)
         
-        response = self.client.get("/home/")
+        response = self.client.get("/view/")
         self.assertContains(response, 'addImage(contentBody);')
 
 
@@ -241,7 +248,12 @@ class TestCommentLike(TestCase):
         data = urlencode({"username": "other2", "email":"other2@ulaberta.ca", "password1":"Testuser2", "password2":"Testuser2"})
         response = self.otherclient2.post("/register/", data, content_type="application/x-www-form-urlencoded")
         self.otherclient2.login(username="other2", password="Testuser2")
-        
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
+        response = self.otherclient1.get('/home/')
+        response = self.otherclient2.get('/home/')
+                
     def test_Comment_to_other(self):
         data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
         id = User.objects.all()[0].localId
@@ -322,7 +334,11 @@ class TestProfile(TestCase):
         data = urlencode({"username": "yiyang9", "email":"yiyang9@ulaberta.ca", "password1":"Jackie608", "password2":"Jackie608"})
         response = self.client.post("/register/", data, content_type="application/x-www-form-urlencoded")
         self.client.login(username="yiyang9", password="Jackie608")
-        
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
+
+                
     def test_Edit_profile(self):
         data = urlencode({ "username":"yiyang9", "email":"yiyang9@ulaberta.ca","github":"https://github.com/CMPUT404F21-Project/glowing-palm-tree"})
         # mock user edit profile
@@ -349,7 +365,12 @@ class TestShare(TestCase):
         data = urlencode({"username": "other2", "email":"other2@ulaberta.ca", "password1":"Testuser2", "password2":"Testuser2"})
         response = self.otherclient2.post("/register/", data, content_type="application/x-www-form-urlencoded")
         self.otherclient2.login(username="other2", password="Testuser2")
-        
+        instance = Pending.objects.all()
+        instance.delete()
+        response = self.client.get('/home/')
+        response = self.otherclient1.get('/home/')
+        response = self.otherclient2.get('/home/')
+                
         
     def test_Share_Public(self):
         data = urlencode({ "title":"test", "content":"thisistestcontent", "visibility":"Public", "contentType":"text/plain"})
