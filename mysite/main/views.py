@@ -345,7 +345,7 @@ def view(response):
 
 
 def browseAuthors(response):
-    localAuthors = User.objects.filter(is_superuser = False)
+    localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
     localAuthors = localAuthors.order_by('displayName')
     return render(response, "main/browseAuthor.html", {"localAuthors":localAuthors})
 
