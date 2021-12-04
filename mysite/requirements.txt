@@ -16,7 +16,7 @@ Django==3.1.6
 django-cors-headers==3.10.0
 django-crispy-forms==1.13.0
 django-filter==2.1.0
-django-heroku==0.3.1
+
 django-on-heroku==1.1.2
 djangorestframework==3.12.4
 entrypoints==0.3

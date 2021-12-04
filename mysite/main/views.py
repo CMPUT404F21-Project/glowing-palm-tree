@@ -42,7 +42,7 @@ def remoteUserDetail(request):
     username = remoteUser['displayName']
     email = "None"
     github = remoteUser['github']
-    return render(request, "main/otherRemoteUser.html", {'github':github,"email":email, "username":username})
+    return render(request, "main/otherRemoteUser.html", {'id': remoteUser['id'], 'url': remoteUser['url'], 'host': remoteUser['host'], 'github': github, "email": email, "username": username, 'profileImage': remoteUser['profileImage']})
 
 def githubFlow(request, authorId):
     user = get_object_or_404(User, localId=authorId)
