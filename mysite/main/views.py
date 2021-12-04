@@ -110,6 +110,7 @@ def get_friends(user):
 def doMoment(response, authorId):
     # ls = Moment.objects.filter(id__exact=postId)
     #if(not ls.exists()):
+    
     if response.method == "POST":
         if authorId == response.user.localId:
             form = CreateNewMoment(response.POST)
@@ -124,12 +125,15 @@ def doMoment(response, authorId):
                 p.origin = p.id
                 p.count = 0
                 # p.comment = ""
-
+                categories = response.POST.getlist("Categories")
+                #p.categories = json.dumps(categories)
+                p.categories = categories
                 p.user = response.user
                 p.published = datetime.datetime.now()
                 p.save()
                 response.user.moment.add(p)
-
+                
+                
                 if p.visibility in ["Public", "Friend"]:
                     friend_list = get_friends(response.user)
                     inboxes = Inbox.objects.filter(author__in=friend_list)
@@ -590,7 +594,7 @@ def momentRepost(response, authorId, postId):
     #print(user)
     #print(ls)
     newLs = Moment.objects.create(id=newId, localId=uuid, content=ls.content, type="post", contentType=ls.contentType, user=response.user, origin = ls.origin,
-                                    source=ls.id, count=0, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility )
+                                    source=ls.id, count=0, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility, categories=ls.categories )
 
     # newLs.content = ls.content
     # newLs.contenType = ls.contentType

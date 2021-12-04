@@ -31,6 +31,8 @@ View
         }
     </script>
     {% for pl in showList %}
+
+    
     <div class="moment" style="margin-top:40pt;">
         
         <div class="panel panel-default">
@@ -57,8 +59,16 @@ View
                 counter += 1;
             </script>
         {% endif %}
+            <div class="panel-heading" >
+                {% for c in pl.categories %}
+                   
+                    {{c}} 
+                    
+                {% endfor %}
+            </div> 
         </div>
     </div> 
+     
     {% endfor %}
 
 
@@ -111,6 +121,9 @@ fetch(req)
 
                 let heading = newDiv.children[0].children[0];
                 let body = newDiv.children[0].children[1];
+                let tags = newDiv.children[0].children[3];
+                    //console.log(tags)
+                newDiv.children[0].removeChild(tags)
                 // let buttons = newDiv.children[1];
 
                 // let shareButton = buttons.children[0];
@@ -256,7 +269,10 @@ fetch(req)
     
                     let heading = newDiv.children[0].children[0];
                     let body = newDiv.children[0].children[1];
-    
+                    let tags = newDiv.children[0].children[3];
+                    //console.log(tags)
+                    newDiv.children[0].removeChild(tags)
+
                     newForm1 = document.createElement("form")
                     newForm1.setAttribute("action","/remoteUser/detail/")
                     newForm1.setAttribute("method","post")
@@ -338,10 +354,10 @@ fetch(req)
     // let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
     // let tokens = []
     // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
-    let h1 = new Headers();
+    h1 = new Headers();
     h1.append("Authorization", "Token 29ada9ea8c040ecf9874b549d9949a3e3748b62e");
-    let foreignAuthor = [];
-    let req = new Request(url12+"authors/", {
+    foreignAuthor = [];
+    req = new Request(url12+"authors/", {
         method: 'GET',
         mode: 'cors',
         headers: h1
@@ -381,6 +397,9 @@ fetch(req)
     
                     let heading = newDiv.children[0].children[0];
                     let body = newDiv.children[0].children[1];
+                    let tags = newDiv.children[0].children[3];
+                    //console.log(tags)
+                    newDiv.children[0].removeChild(tags)
                     // let buttons = newDiv.children[1];
     
                     // let shareButton = buttons.children[0];
