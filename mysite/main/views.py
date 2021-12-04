@@ -4,7 +4,7 @@ from django.http.response import Http404, HttpResponseForbidden, HttpResponseNot
 from django.shortcuts import get_object_or_404, render, redirect
 
 from django.http import HttpResponse, HttpResponseRedirect, request
-from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
+from .models import Inbox, Moment, Comment, Following, Likes, Liked, User, Pending
 from django.forms.models import model_to_dict
 from django.core import serializers
 from .forms import *
@@ -295,6 +295,13 @@ def userMoment(response, authorId, postId):
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
+    if(response.user.is_anonymous):
+        pass
+    elif(not response.user.pending.exists()):
+        response.user.authorized = True
+        response.user.save()
+    else:
+        pass
     moments = Moment.objects.filter(visibility__iexact="Public")
     moments = moments.order_by("-published")
     content = list(moments.values_list('content', flat=True))
@@ -402,6 +409,8 @@ def register(response):
             
             inbox = Inbox.objects.create(author=createdUser, type="inbox",items = initial_list)
             inbox.save()
+            pending = Pending.objects.create(pendingUser=createdUser)
+            pending.save()
             return redirect("/login/")
         else:
             print(form.errors)

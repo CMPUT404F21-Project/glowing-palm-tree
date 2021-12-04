@@ -40,6 +40,10 @@ Create new post
 
   {% if user.is_anonymous%}
     <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
+  
+  {% elif not user.authorized %}
+  <h1 style="text-align: center;">Your registration is still in process.</h1>
+
   {%else%}
   
     <h3>Create Post</h3>
@@ -68,36 +72,38 @@ Create new post
     contentBody.setAttribute('style', 'display:flex; justify-content: center');
   }
 </script>
-  {% for pl in moments%}
-    <div class="moment" style="margin-top:40pt;">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
-          <br>
-          At:{{pl.published}}
-          <br>
-          Title:{{pl.title}}
-        </div>
-        <div class="panel-body" id="content-body"></div>
-        {% if pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" or pl.contentType == "application/base64" %}
-          <script type="text/javascript">
+  {% if user.is_anonymous or not user.authorized%}
+  
+    {% for pl in moments%}
+      <div class="moment" style="margin-top:40pt;">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
+            <br>
+            At:{{pl.published}}
+            <br>
+            Title:{{pl.title}}
+          </div>
+          <div class="panel-body" id="content-body"></div>
+          {% if pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" or pl.contentType == "application/base64" %}
+            <script type="text/javascript">
 
+                contentBody = [...document.querySelectorAll('#content-body')][counter];
+                addImage(contentBody);
+                counter += 1;
+            </script>
+          {% else %}
+            <script type="text/javascript">
               contentBody = [...document.querySelectorAll('#content-body')][counter];
-              addImage(contentBody);
+              contentBody.innerHTML = src[counter];
               counter += 1;
-          </script>
-        {% else %}
-          <script type="text/javascript">
-            contentBody = [...document.querySelectorAll('#content-body')][counter];
-            contentBody.innerHTML = src[counter];
-            counter += 1;
-          </script>
-        {% endif %}
-      </div>  
-    </div>
-    
-  {% endfor %}
-
+            </script>
+          {% endif %}
+        </div>  
+      </div>
+      
+    {% endfor %}
+  {%endif%}
 <script>
 
   var typeSelector = document.getElementById("id_contentType");
