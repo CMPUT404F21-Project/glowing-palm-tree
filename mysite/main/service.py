@@ -468,8 +468,8 @@ def send_inbox(response, author_id):
             moment['userLink'] = moment['author']['url']
             send_to_inbox(moment, [inbox])
         elif data["type"] == "follow":
-            userId = data["data"]["object"]["id"]
-            follower = data["data"]["actor"]["id"]
+            userId = data["object"]["url"]
+            follower = data["actor"]["url"]
             inbox = get_object_or_404(Inbox, author=userId)
             following = Following.objects.create(user=follower, following_user=follower)
             following.save()
