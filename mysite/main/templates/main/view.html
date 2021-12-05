@@ -59,6 +59,13 @@ h1{
                         {%else%}
                         <input type="checkbox" name="Teams" value="Team10" > Team10<br> 
                         {%endif%}
+
+                        
+                        {%if team02%}
+                        <input type="checkbox" name="Teams" value="Team02" checked> Team02<br> 
+                        {%else%}
+                        <input type="checkbox" name="Teams" value="Team02" > Team02<br> 
+                        {%endif%}
                       </fieldset>
                       <br>
                       <input id="submitButton" class="btn btn-success" type="submit" value="apply">
@@ -141,7 +148,7 @@ h1{
              
             {% endfor %}
         
-        {%if team10 or team12 or team18%}
+        {%if team10 or team12 or team18 or team02%}
         <h1> Posts from other servers</h1>
         {%endif%}
         
@@ -529,6 +536,177 @@ h1{
                     .then(data =>{
                         let postData = data;
                         postData = postData["data"];
+                        if (!postData){
+                            return;
+                        }
+                        for (let post of postData){
+                            let oldDiv = document.querySelector(".moment");
+                            let newDiv = document.createElement("div");
+                            newDiv.innerHTML = oldDiv.innerHTML;
+                            newDiv.setAttribute("style","margin-top:40pt;");
+                            newDiv.setAttribute("class", "moment");
+                            oldDiv.parentElement.appendChild(newDiv);
+            
+                            let heading = newDiv.children[0].children[0];
+                            let body = newDiv.children[0].children[1];
+                            let tags = newDiv.children[0].children[3];
+                            let empty = document.createElement("div")
+                            //console.log(tags)
+                            thisCategories = post["categories"]
+                            let doIt = false
+                            
+                            newDiv.children[0].children[3].innerHTML = null
+                            if(thisCategories){
+                                for(cat of thisCategories){
+                                
+                                    if(cat){
+                                        newDiv.children[0].children[3].innerHTML += (' ' + cat)
+                                    }else{
+                                        newDiv.children[0].children[3].innerHTML = null
+                                    }
+                                }
+                            }
+                            
+                            // let buttons = newDiv.children[1];
+            
+                            // let shareButton = buttons.children[0];
+                            // let commentButton = buttons.children[1];
+                            // let likeButton = buttons.children[2];
+            
+                            // likeButton.herf = "#";
+                            // likeUrlT10 = post["author"]["id"] + "/inbox/";
+                            // objectUrlT10 = post["source"];
+                            // likeButton.setAttribute("onclick", 'sendLike(likeUrlT10, objectUrlT10)');
+                            // // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
+                            
+            
+                            newForm1 = document.createElement("form")
+                            newForm1.setAttribute("action","/remoteUser/detail/")
+                            newForm1.setAttribute("method","post")
+                            profileButton = document.createElement("button")
+            
+                            authorName = post["author"]['displayName']
+                            profileButton.innerText = "Posted by " + authorName
+                            profileButton.setAttribute("class", "btn btn-link btoa")
+                            profileButton.setAttribute("role", "link")
+            
+                            profileButton.setAttribute("type","submit")
+                            hiddenValue1 = document.createElement("input")
+                            hiddenValue1.setAttribute("type", "hidden")
+                            hiddenValue1.setAttribute("name", "data")
+                            hiddenValue1.setAttribute("value", JSON.stringify(post['author']))
+            
+                            newForm1.appendChild(profileButton)
+                            newForm1.appendChild(hiddenValue1)
+                            newForm1.innerHTML += '{% csrf_token %}'
+                            
+            
+                            heading.removeChild(heading.children[1])
+                            heading.appendChild(newForm1)
+            
+                            
+            
+                            newForm = document.createElement("form")
+                            newForm.setAttribute("action","/remotePost/detail/")
+                            newForm.setAttribute("method","post")
+                            titleButton = document.createElement("button")
+                            titleButton.setAttribute("class", "btn btn-link btoa")
+                            titleButton.setAttribute("role", "link")
+            
+            
+                            titleButton.innerText = post["title"]
+                            titleButton.setAttribute("type","submit")
+                            hiddenValue = document.createElement("input")
+                            hiddenValue.setAttribute("type", "hidden")
+                            hiddenValue.setAttribute("name", "data")
+                            hiddenValue.setAttribute("value", JSON.stringify(post))
+            
+                            newForm.appendChild(titleButton)
+                            newForm.appendChild(hiddenValue)
+                            newForm.innerHTML += '{% csrf_token %}'
+            
+                            newDiv1 = document.createElement("div")
+                            newDiv1.textContent = "At: " + post["published"];
+            
+            
+                            heading.innerHTML = ''
+            
+                            heading.appendChild(newForm1)
+                            heading.appendChild(newDiv1)
+                            heading.appendChild(newForm)
+            
+                            let text = post["contentType"];
+            
+                            let temp = body.children[0];
+                                if (temp){
+                                temp.parentElement.removeChild(temp);
+                                }
+                            if (['application/base64', 'image/png;base64', 'image/jpeg;base64'].includes(text)){
+                                
+                                let img = new Image();
+                                img.src = post["content"];
+                                body.appendChild(img);
+                            }else{
+                                body.textContent = post["content"];
+                                body.setAttribute("style", "");
+                            }
+                        }
+                    })
+                }
+            })
+            </script>
+        {% endif %}
+
+
+        {% if team02 %}
+        <script>
+            // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
+            let url02 = "https://ourbackend.herokuapp.com/";
+            // let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
+            // let tokens = []
+            // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
+            h1 = new Headers();
+            h1.append("Authorization", "Basic VDEyOkNNUFVUNDA0");
+            foreignAuthor = [];
+            req = new Request(url02+"authors/", {
+                method: 'GET',
+                mode: 'cors',
+                headers: h1
+            });
+
+
+            fetch(req)
+            .then(response => response.json())
+            .then(data => {
+
+                
+
+                
+
+                let jsonData = data;
+                jsonData = jsonData["authors"];
+                if (!jsonData){
+                    return;
+                }
+
+
+                
+
+                for (let author of jsonData){
+                    //let url = author['url'] + "/posts/";
+                    let url = "https://ourbackend.herokuapp.com/author/" + author['author_id'] + '/posts/'
+                    let h2 = new Headers();
+                    h2.append("Authorization", "Basic VDEyOkNNUFVUNDA0");
+                    let postReq = new Request(url,{
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: h2
+                    });
+                    fetch(postReq)
+                    .then(response => response.json())
+                    .then(data =>{
+                        let postData = data;
+                        postData = postData["posts"];
                         if (!postData){
                             return;
                         }
