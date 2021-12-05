@@ -38,7 +38,7 @@ class Moment(models.Model):
     count = models.PositiveIntegerField(null=True)
     comments = models.URLField(null=True)
     commentsSrc = models.JSONField(null=True)
-    published = models.DateTimeField(null=True)
+    published = models.CharField(max_length=2000,null=True)
     visibility = models.CharField(max_length=2000,null=True)
     unlisted = models.BooleanField(null=True)
     def __str__(self):
@@ -50,9 +50,11 @@ class Comment(models.Model):
     author =  models.ForeignKey(User, on_delete=models.CASCADE, related_name="comment", null=True)
     content = models.CharField(max_length=2000, null=True)
     contentType = models.CharField(max_length=2000, null=True)
-    published = models.DateTimeField(null=True)
+    published = models.CharField(max_length=2000,null=True)
     commentId = models.CharField(max_length=2000, null=True)
     localId = models.CharField(max_length=2000, null=True)
+    remote = models.BooleanField(default=False)
+    remote_author = models.JSONField(null=True)
 
     def __str__(self):
         return self.content

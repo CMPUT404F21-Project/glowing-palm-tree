@@ -1,33 +1,37 @@
 # from _typeshed import OpenTextModeWriting
+from django.contrib import auth
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, HttpResponseRedirect, request
-from datetime import datetime
+import datetime
 from main.views import following
 from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
 from django.forms.models import model_to_dict
 from django.core import serializers
 from .forms import *
-import datetime
 from django.views.decorators.csrf import csrf_protect
 import random
 import json
 from django.db import IntegrityError
-from uuid import uuid4
+from uuid import getnode, uuid4
 import math
 from urllib.parse import urlparse
 from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+import re
+import markdown
 
+@csrf_exempt
 def send_to_inbox(item, inboxes):
     for inbox in inboxes:
         items = inbox.items
         items = json.loads(items)
-        items.append(item)
         items = json.dumps(items, default=date_converter)
         inbox.items = items
         inbox.save()
     return
 
+@csrf_exempt
 def get_friends(user):
     followerList = Following.objects.filter(following_user__exact=user).values_list('user',flat=True)
     followingList = Following.objects.filter(user__exact=user).values_list('following_user',flat=True)
@@ -35,11 +39,12 @@ def get_friends(user):
     friendList = followerList.intersection(followingList)
     return friendList
 
-
+@csrf_exempt
 def date_converter(o):
     if isinstance(o, datetime.datetime):
         return o.__str__()
 
+@csrf_exempt
 def retrive_user_all(response):
     if response.method != "GET":
         return HttpResponseNotAllowed(permitted_methods=['GET'])
@@ -84,6 +89,7 @@ def retrive_user_all(response):
     temp['Access-Control-Allow-Origin'] = '*'
     return temp
 
+@csrf_exempt
 def retrive_user(response, author_id):
     if response.method == "GET":
         
@@ -124,6 +130,7 @@ def retrive_user(response, author_id):
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET', 'POST'])
 
+@csrf_exempt
 def retrive_followers(response, author_id):
     if response.method != "GET":
         return HttpResponseNotAllowed(permitted_methods=['GET'])
@@ -155,6 +162,7 @@ def retrive_followers(response, author_id):
     temp['Access-Control-Allow-Origin'] = '*'
     return temp
 
+@csrf_exempt
 def manage_followers(response, author_id, foreign_author_id):
     user = get_object_or_404(User, localId=author_id)
     if response.method == "GET":
@@ -190,6 +198,7 @@ def manage_followers(response, author_id, foreign_author_id):
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET', 'PUT', 'DELETE'])
 
+@csrf_exempt
 def manage_posts(response, author_id, post_id):
     if response.method == "GET":
         # url = response.build_absolute_uri()
@@ -263,7 +272,7 @@ def manage_posts(response, author_id, post_id):
                                             source=ls["source"], origin=ls["origin"], description=ls["description"],
                                             contentType=ls["contentType"], content=ls["content"], categories=ls["categories"],
                                             counts=ls["counts"], comments=ls["comments"], commentsSrc=ls["commentsSrc"],
-                                            published=datetime.strptime(ls["published"], '%H:%M:%S').time(), visibility=ls["visibility"], unlisted=ls["unlisted"]
+                                            published=ls["published"], visibility=ls["visibility"], unlisted=ls["unlisted"]
             )
         try:
             moment.save()
@@ -272,7 +281,8 @@ def manage_posts(response, author_id, post_id):
             return HttpResponseBadRequest("Can not parse some of the fields")
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET', 'POST','PUT', 'DELETE'])
-    
+
+@csrf_exempt
 def do_posts(response, author_id):
     if response.method == "POST":
         form = CreateNewMoment(response.POST)
@@ -363,6 +373,7 @@ def do_posts(response, author_id):
         temp['Access-Control-Allow-Origin'] = '*'
         return temp
 
+@csrf_exempt
 def manage_comments(response, author_id, post_id):
     moment = get_object_or_404(Moment, localId=post_id)
     if response.method == "GET":
@@ -417,31 +428,44 @@ def manage_comments(response, author_id, post_id):
         temp['Access-Control-Allow-Origin'] = '*'
         return temp
     elif response.method == "POST":
-        obj_type = response.data["type"]
+        data = json.loads(response.body)
+        obj_type = data['type']
+        temp = re.search('/comments(s?)/(?P<id>[^/]*)$', data['id']).group()
+        localId = temp.replace("/comments/", "")
+        commentId = data['id']
         if not obj_type == "comment":
-            return HttpResponseBadRequest
-        data = response.data["data"]
-        comment = Comment.objects.create(commentId=str(uuid4()), moment=moment.id, type="comment", user=data["author"]["id"], 
-                                            content=data["comment"], contentType=data["contentType"], published=data["published"]
+            return HttpResponseBadRequest("type must be comment")
+        print(data['published'])
+        comment = Comment.objects.create(commentId= commentId, localId=localId, moment=moment, type="comment", 
+                                            content=data["comment"], contentType=data["contentType"], published=data["published"],
+                                            remote=True, remote_author=data["author"]
                                         )
         comment.save()
+        return HttpResponse(status=201)
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET', 'POST'])
 
+@csrf_exempt
 def send_inbox(response, author_id):
     user = get_object_or_404(User, localId=author_id)
-    inbox = Inbox.objects.get(author=user.id)
+    inbox = get_object_or_404(Inbox, author=user.id)
     if response.method == "POST":
-        data = response.data
+        data = json.loads(response.body)
+        print(data)
         if data["type"] == "like":
-            like = Likes.objects.create(type="like", summary=data["summary"], author=data["author"], object=data["object"])
-            like.save()
-            send_to_inbox(like, [inbox])
+            like = Likes.objects.filter(author=data['author'])
+            if not like.exists():
+                like = Likes.objects.create(type="like", summary=data["summary"], author=data["author"], object=data["object"])
+                like.save()
+                like = model_to_dict(like)
+                send_to_inbox(like, [inbox])
             return HttpResponse(status=201)
         elif data["type"] == "post":
-            moment = data["data"]
-            moment["user"] = moment["author"]["displayName"]
-            moment["userLink"] = "foreign"
+            moment = data
+            if moment['contentType'] == "text/markdown":
+                moment["content"] =   markdown.markdown(moment["content"]).replace("\n", "<br>").replace("\"","").replace("\\","")
+            moment['user'] = moment['author']['displayName']
+            moment['userLink'] = moment['author']['url']
             send_to_inbox(moment, [inbox])
         elif data["type"] == "follow":
             userId = data["data"]["object"]["id"]
@@ -453,6 +477,10 @@ def send_inbox(response, author_id):
             send_to_inbox(following, [inbox])
         else:
             return HttpResponseBadRequest
+        temp = HttpResponse(status=204)
+        temp['Access-Control-Allow-Origin'] = '*'
+        return temp
+
     elif response.method == "GET":
         items = inbox.items
         items = json.loads(items)
@@ -476,6 +504,7 @@ def send_inbox(response, author_id):
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET', 'POST', 'DELETE'])
 
+@csrf_exempt
 def get_likes_post(response, author_id, post_id):
     user = get_object_or_404(User, localId=author_id)
     moment = get_object_or_404(Moment, localId=post_id, user=user.id)
@@ -551,6 +580,7 @@ def get_likes_post(response, author_id, post_id):
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET'])
 
+@csrf_exempt
 def get_likes_comment(response, author_id, post_id, comment_id):
     user = get_object_or_404(User, localId=author_id)
     moment = get_object_or_404(Moment, localId=post_id, user=user.id)
@@ -624,6 +654,7 @@ def get_likes_comment(response, author_id, post_id, comment_id):
     else:
         return HttpResponseNotAllowed(permitted_methods=['GET'])
 
+@csrf_exempt
 def get_liked(response, author_id):
     user = get_object_or_404(User, localId=author_id)
     if response.method == "GET":
