@@ -92,7 +92,13 @@ Create new post
       <div class="moment" style="margin-top:40pt;">
         <div class="panel panel-default">
           <div class="panel-heading">
+            {% if user.is_anonymous%}
+            Posted by  <a href="/login">{{pl.user.displayName}}</a>
+            {% else %}
             Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
+
+            {%endif%}
+
             <br>
             At:{{pl.published}}
             <br>
