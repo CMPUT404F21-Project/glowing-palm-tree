@@ -7,8 +7,8 @@ User Center
 {% endblock %}
 
 {% block content %}
-    <div class="row">                                  
-        <div class="container">
+    <div class="container">                                  
+        <div class="row">
             <div class="col-sm-4" >{% if profileImage%}
                 <img style=" width: 80%; border-radius: 50%; 
                     margin-bottom: 30pt;display: block;
@@ -28,6 +28,7 @@ User Center
             <div class="col-sm-8">
                     {% if following %}
                         <a href="/unfollow/{{otherUser.localId}}" class="btn btn-success" type="submit"> Unfollow</a>
+                        <br>
                     {% else %}
                         <a href="/friendRequest/{{user.localId}}/{{otherUser.localId}}" class="btn btn-success" type="submit">Follow</a>
                         <br>
@@ -68,9 +69,9 @@ User Center
     </script>
     <!-- {% for pl in otherUser.moment.all %} -->
         <!-- <div class="moment" style="margin-top:40pt;">
-        <div class="panel panel-default">
-            <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
-            <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
+        <div class="card ">
+            <div class="card-header" style="font-size:x-large">{{pl.title}}</div>
+            <div class="card-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
 
             {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
             <script type="text/javascript">

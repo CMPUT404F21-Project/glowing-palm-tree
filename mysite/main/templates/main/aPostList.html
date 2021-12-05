@@ -5,6 +5,17 @@
 View
 {% endblock %}
 
+{% block style %}
+<style>
+#submitButton {
+    margin-top: 10pt;
+    margin-bottom: 5pt;
+    margin-left: 10pt;
+    float: right;
+}
+</style>
+{% endblock %}
+
 
 
 {% block content %}
@@ -27,8 +38,8 @@ View
     {% for pl in showList %}
     <div class="moment" style="margin-top:40pt;">
         
-        <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="card ">
+            <div class="card-header">
                 Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
                 <br>
                 At:{{pl.published}}
@@ -36,7 +47,7 @@ View
                 Title:{{pl.title}}
             </div>
             
-            <div class="panel-body"><a id="content-body" href="{{pl.id}}"></a></div>
+            <div class="card-body"><a id="content-body" href="{{pl.id}}"></a></div>
 
             {% if pl.contentType == "image/jpeg;base64" or pl.contentType == "image/png;base64" or pl.contentType == "application/base64" %}
               <script type="text/javascript">
@@ -53,12 +64,6 @@ View
                 </script>
             {% endif %}
         </div>
-        <div class="btn-group btn-group-justified">
-            <a href="#" class="btn btn-default " type="Share">Share</a>
-            <a href="{{pl.id}}" class="btn btn-default " type="Share">Comment</a>
-            <a href="#" class="btn btn-default " type="Share">Like</a>   
-        </div>  
-      
     </div> 
     {% endfor %}
     

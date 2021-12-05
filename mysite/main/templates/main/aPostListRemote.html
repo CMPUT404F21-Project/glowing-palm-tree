@@ -5,14 +5,23 @@
 View
 {% endblock %}
 
-
+{% block style %}
+<style>
+#submitButton {
+    margin-top: 10pt;
+    margin-bottom: 5pt;
+    margin-left: 10pt;
+    float: right;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 
     <div class="old" style="margin-top:40pt;">
         
-        <div class="panel panel-default">
-            <div class="panel-heading">
+        <div class="card ">
+            <div class="card-header">
                 Posted by  <a href="#"></a>
                 <br>
                 At:
@@ -20,15 +29,8 @@ View
                 Title:
             </div>
             
-            <div class="panel-body"><a id="content-body" href="#"></a></div>
+            <div class="card-body"><a id="content-body" href="#"></a></div>
         </div>
-
-        <div class="btn-group btn-group-justified">
-            <a href="#" class="btn btn-default " type="Share">Share</a>
-            <a href="#" class="btn btn-default " type="Share">Comment</a>
-            <a href="#" class="btn btn-default " type="Share">Like</a>   
-        </div>  
-      
     </div> 
     
 
@@ -144,6 +146,8 @@ View
             oldDiv.innerHTML = '';
             let pervButton = document.createElement('a');
             let nextButton = document.createElement('a');
+            pervButton.setAttribute("id", "submitButton");
+            nextButton.setAttribute("id", "submitButton");
             pervButton.value 
             oldDiv.parentElement.appendChild(pervButton);
             oldDiv.parentElement.appendChild(nextButton);

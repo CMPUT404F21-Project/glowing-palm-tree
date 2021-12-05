@@ -2,12 +2,7 @@
 {% extends 'main/base.html' %}
 {% block style %}
 <style>
-    a{
-      /* float: right; */
-      padding-left: 10px;
-      padding-right: 10px;
-    }
-  </style>
+</style>
 {% endblock %}
 
 {% block title %}
@@ -31,30 +26,28 @@ User Center
                         
                         
     <h4 style="text-align: center;"> Message Box </h4>                    
-    <div class="row">                                  
-        <div class="container">
+    <div class="container">                                  
+        <div class="row">
             <div class="col-sm-3" >
              </div>
             
             <div class="col-sm-6">
                 
                 {% for lp in items %}
-                <div class="moment">
-                    <div class="panel panel-default">
-                        <div class="panel-heading" style="font-size:large"></div>
+                <div class="moment item">
+                    <div class="card" style="margin-bottom: 30pt;">
                         {%if lp.type == "like"%}
-                        <div class="panel-body" style="font-size:medium">{{lp.summary}} <a href="{{lp.object}}">View</a><br>
+                        <div class="card-header" style="font-size:large"></div>
+                        <div class="card-body" style="font-size:medium">{{lp.summary}} <a href="{{lp.object}}" style="float: right;">View</a><br></div>
                         {%elif lp.type == "follow"%}
-                        <div class="panel-body" style="font-size:medium">{{lp.user}} just followed you!<a href="{{lp.userId}}">View</a><br>
+                        <div class="card-header" style="font-size:large"></div>
+                        <div class="card-body" style="font-size:medium">{{lp.user}} just followed you!<a href="{{lp.userId}}" style="float: right;">View</a><br></div>
                         {%elif lp.type == "post"%}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <a href="{{lp.userLink}}">{{lp.user}}</a> shared a post to you
-                                <br>
-                                <h2 st>{{lp.title}}</h1>
+                            <div class="card-header">
+                                <a href="{{lp.userLink}}">{{lp.user}}</a> <span>shared a post to you</span>
+                                <div>{{lp.title}}</div>
                             </div>
-                            
-                          <div class="panel-body"><a href="{{lp.id}}" id="content-body"></a></div>
+                          <div class="card-body"><a href="{{lp.id}}" id="content-body"></a></div>
                             {% if lp.contentType == "image/jpeg;base64" or lp.contentType == "image/png;base64" or lp.contentType == "application/base64" %}
                             <script type="text/javascript">
                                 contentBody = [...document.querySelectorAll('#content-body')][counter];                  
@@ -67,11 +60,9 @@ User Center
                                 contentBody.innerHTML = "{{lp.content|safe}}";
                                 counter += 1;
                             </script>
-                            {% endif %}
-                                            
+                            {% endif %}                
                         {%endif%}
-                           </div>
-                </div>
+                    </div>
  
                 {% endfor %}   
         

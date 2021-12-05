@@ -20,11 +20,11 @@ View List
 {% endblock %}
 
 {% block content %}
-    <div class="moment" id="contentPanel" style="margin-top:40pt;">
+    <div class="moment" id="contentCard" style="margin-top:40pt;">
 
-        <div class="panel panel-default">
-            <div class="panel-heading" style="font-size:x-large">{{ls.title}} <span class="likeCount">Liked by {{ls.count}} users</span></div>
-            <div class="panel-body" id='content-body'></div>
+        <div class="card ">
+            <div class="card-header" style="font-size:x-large">{{ls.title}} <span class="likeCount">Liked by {{ls.count}} users</span></div>
+            <div class="card-body" id='content-body'></div>
             
             {% if ls.contentType == "image/jpeg;base64" or ls.contentType == "image/png;base64" or ls.contentType == "application/base64" %}
                 <script type="text/javascript">
@@ -48,7 +48,7 @@ View List
             {% endif %}
             
         <div style="padding-bottom: 50pt;">   </div>
-        <div class="panel-heading" >
+        <div class="card-header" >
             {% for c in ls.categories %}
                
                 {{c}} 
@@ -103,7 +103,7 @@ View List
                 let idList = JSON.parse(data["idList"])
                 let br = document.createElement("br")
                 let section = document.getElementById("section")
-                let contentPanel = document.getElementById("contentPanel")
+                let contentCard = document.getElementById("contentCard")
                 for(let i=0; i < nameList.length; i++){
                     let checkbox = document.createElement("input")
                     let label = document.createElement("label")
@@ -127,9 +127,9 @@ View List
     {% if ls.visibility == "Friend" %}
         {% if ls.user.id == user.id %}
             {% for comment in ls.comment_set.all %}
-                <div class="panel panel-default" style="margin-top: 30pt;">
-                    <div class="panel-heading">{{comment.author.displayName}} <br> {{comment.published}}</div>
-                    <div class="panel-body">{{comment.content}}</div>
+                <div class="card " style="margin-top: 30pt;">
+                    <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
+                    <div class="card-body">{{comment.content}}</div>
                     <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                         {% csrf_token %}
                         <input type="hidden" name="type" value="commentLike">
@@ -143,9 +143,9 @@ View List
         {% else %}
             {% for comment in ls.comment_set.all %} 
                 {% if comment.author.id == user.id %}
-                    <div class="panel panel-default" style="margin-top: 30pt;">
-                        <div class="panel-heading">{{comment.author.displayName}} <br> {{comment.published}}</div>
-                        <div class="panel-body">{{comment.content}}</div>
+                    <div class="card " style="margin-top: 30pt;">
+                        <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
+                        <div class="card-body">{{comment.content}}</div>
                         <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                             {% csrf_token %}
                             <input type="hidden" name="type" value="commentLike">
@@ -160,9 +160,9 @@ View List
         {% endif %}
     {% else %}
         {% for comment in ls.comment_set.all %}
-            <div class="panel panel-default" style="margin-top: 30pt;">
-                <div class="panel-heading">{{comment.author.displayName}} <br> {{comment.published}}</div>
-                <div class="panel-body">{{comment.content}}</div>
+            <div class="card " style="margin-top: 30pt;">
+                <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
+                <div class="card-body">{{comment.content}}</div>
                 <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                     {% csrf_token %}
                     <input type="hidden" name="type" value="commentLike">

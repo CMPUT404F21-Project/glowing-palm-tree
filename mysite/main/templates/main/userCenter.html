@@ -56,8 +56,8 @@ User Center
                         
                         
                         
-    <div class="row">                                  
-        <div class="container">
+    <div class="container">                                  
+        <div class="row">
             <div class="col-sm-2" ></div>
             <div class="col-sm-8">
                 <table class="table table-striped">
@@ -80,9 +80,9 @@ User Center
                 <a style="float: right;" href="{{user.id}}/githubFlow" class="btn btn-success">Github Flow</a> <br>
                 {% for pl in showList %}
                     <div class="moment" style="margin-top:40pt;">
-                    <div class="panel panel-default">
-                        <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
-                        <div class="panel-body"><a id="content-body" href="{{pl.id}}"></a></div>
+                    <div class="card ">
+                        <div class="card-header" style="font-size:x-large">{{pl.title}}</div>
+                        <div class="card-body"><a id="content-body" href="{{pl.id}}"></a></div>
                         {% if pl.contentType == "application/base64" or pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" %}
                             <script type="text/javascript">
                                 contentBody = [...document.querySelectorAll('#content-body')][counter];

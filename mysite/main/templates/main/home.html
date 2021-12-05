@@ -3,10 +3,12 @@
 {% block style %}
 <style>
   a.buttons{
-    margin-left: 35%;
     font-size: x-large;
     padding-left: 10px;
     padding-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   a.username{
     
@@ -39,7 +41,7 @@ Create new post
 {% block content %}
 
   {% if user.is_anonymous%}
-    <a class="buttons" href="/login/" class="btn btn-success">Login To Share Your Posts!</a>
+    <a href="/login/" class="btn btn-success buttons">Login To Share Your Posts!</a>
   
   {% elif not user.authorized %}
   <h1 style="text-align: center;">Your registration is still in process.</h1>
@@ -90,8 +92,8 @@ Create new post
   
     {% for pl in moments%}
       <div class="moment" style="margin-top:40pt;">
-        <div class="panel panel-default">
-          <div class="panel-heading">
+        <div class="card ">
+          <div class="card-header">
             {% if user.is_anonymous%}
             Posted by  <a href="/login">{{pl.user.displayName}}</a>
             {% else %}
@@ -104,7 +106,7 @@ Create new post
             <br>
             Title:{{pl.title}}
           </div>
-          <div class="panel-body" id="content-body"></div>
+          <div class="card-body" id="content-body"></div>
           {% if pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" or pl.contentType == "application/base64" %}
             <script type="text/javascript">
 
