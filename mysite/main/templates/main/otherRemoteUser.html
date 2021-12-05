@@ -7,8 +7,8 @@ User Center
 {% endblock %}
 
 {% block content %}
-    <div class="row">                                  
-        <div class="container">
+    <div class="container">                                  
+        <div class="row">
             <div class="col-sm-4" ><img style=" width: 80%; border-radius: 50%; 
                 margin-bottom: 30pt;display: block;
                 margin-left: 0" 
@@ -18,6 +18,7 @@ User Center
             <div class="col-sm-8">
                     {% if following %}
                         <a href="#" id='unfollow' class="btn btn-success" type="submit"  style="margin-bottom: 20pt;"> Unfollow</a>
+                        <br>
                     {% else %}
                         <a href="#" id='follow' class="btn btn-success" type="submit"  style="margin-bottom: 20pt;">Follow</a>
                         <br>
@@ -38,7 +39,7 @@ User Center
                     </tr>
                     </tbody>
                 </table>
-                <a href="/remote/{{team}}/author/{{idOnly}}/posts" id="post" class="btn-lg btn-success">Post List</a>
+                <a href="/remote/{{team}}/author/{{idOnly}}/posts" id="post" class="btn btn-success">Post List</a>
             </div>
         </div>
     </div>
@@ -125,9 +126,9 @@ User Center
 
     <!-- {% for pl in otherUser.moment.all %} -->
         <!-- <div class="moment" style="margin-top:40pt;">
-        <div class="panel panel-default">
-            <div class="panel-heading" style="font-size:x-large">{{pl.title}}</div>
-            <div class="panel-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
+        <div class="card ">
+            <div class="card-header" style="font-size:x-large">{{pl.title}}</div>
+            <div class="card-body"><a id="content-body" href="{{pl.id}}">{{pl.content}}</a></div>
 
             {% if pl.contentType == "JPEG" or pl.contentType == "PNG" or pl.contentType == "application" %}
             <script type="text/javascript">

@@ -53,21 +53,22 @@ fetch(req)
         let createdAt = oneData["created_at"]
         let repoName = oneData["repo"]["name"]
         
-        let panelDiv = document.createElement("div")
-        let panelHeader = document.createElement("div")
-        let panelBody = document.createElement("div")
+        let cardDiv = document.createElement("div")
+        let cardHeader = document.createElement("div")
+        let cardBody = document.createElement("div")
 
-        panelDiv.setAttribute("class", "panel panel-default")
-        panelHeader.setAttribute("class", "panel-heading")
-        panelBody.setAttribute("class", "panel-body")
+        cardDiv.setAttribute("class", "card ")
+        cardDiv.setAttribute("style", "margin-bottom: 40pt;")
+        cardHeader.setAttribute("class", "card-header")
+        cardBody.setAttribute("class", "card-body")
 
-        panelDiv.appendChild(panelHeader)
-        panelDiv.appendChild(panelBody)
+        cardDiv.appendChild(cardHeader)
+        cardDiv.appendChild(cardBody)
 
-        contentList.appendChild(panelDiv)
+        contentList.appendChild(cardDiv)
 
-        panelHeader.innerHTML = "Time: " + createdAt;
-        panelBody.innerHTML = displayLogin + "   made   " + type + "   in   " + repoName
+        cardHeader.innerHTML = "Time: " + createdAt;
+        cardBody.innerHTML = displayLogin + "   made   " + type + "   in   " + repoName
         
 
     }
