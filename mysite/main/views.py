@@ -321,6 +321,13 @@ def home(response):
 
 
 def view(response):
+
+    categoriesNeeded = response.POST.getlist("Categories")
+
+    teams = response.POST.getlist("Teams")
+
+    print(teams)
+
     publicMoments = Moment.objects.filter(visibility__iexact="Public")
     selfMoments = response.user.moment.all()
     followerList = Following.objects.filter(following_user__exact=response.user).values_list('user',flat=True)
@@ -334,19 +341,53 @@ def view(response):
     friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
     showList = publicMoments.union(selfMoments).union(friendPost)
     showList = showList.order_by('-published')
-    content = list(showList.values_list('content', flat=True))
-    contentType = list(showList.values_list('contentType', flat=True))
+
     
+
+    content1 = showList.values_list('id','content','contentType','categories')
+        
+    content = [x[1] for x in content1 ]
+    contentType =  [x[2] for x in content1 ]
+    categories =  [x[3] for x in content1 ]
+    showList = list(showList)
     for i in range(len(contentType)):
         if contentType[i] == 'text/markdown':
             content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
             #for JSON.parse to run I have to do this
     
 
-    content = json.dumps(content)
+    if(len(categoriesNeeded) == 0):
+        content = json.dumps(content)    
+    else:
+        showListFiltered = []
+        contentFiltered = []
+        for i in range(len(showList)):
+            included = True
+            for category in categoriesNeeded:
+                if category not in categories[i]:
+                    
+                    included = False
+            if included:
+                contentFiltered.append(content[i])
+                showListFiltered.append(showList[i])
+        content = json.dumps(contentFiltered)   
+        showList = showListFiltered 
 
-    return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content})
+    team12 = False
+    team18 = False
+    team10 = False
 
+    if "Team12" in teams:
+        team12 = True
+    if "Team18" in teams:
+        team18 = True
+    if "Team10" in teams:
+        team10 = True
+
+
+    return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content, 
+                                                "categoriesNeeded": json.dumps(categoriesNeeded),
+                                                "team12": team12, "team10": team10, "team18":team18})
 
 def browseAuthors(response):
     localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
