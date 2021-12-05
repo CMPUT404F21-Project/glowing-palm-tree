@@ -165,13 +165,22 @@ View List
             });
             return uuid;
         }
-        token10 = "29ada9ea8c040ecf9874b549d9949a3e3748b62e";
+        token10 = "2dc59103754a77ac6a2de5a43fd9f994dc52e32a";
         token18 = "dDEyOkNNUFVUNDA0";
+        token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
+        token02 = "VDEyOkNNUFVUNDA0";
 
         function sendLike(object, team){
+            let url;
+            if (team == 17){
+                
+                url = object
+                console.log(url);
+            }else{
+                url = "{{author.url}}" + "/inbox/";
+            }
 
-            url = "{{author.url}}" + "/inbox/";
-            console.log(url);
+
             console.log(object);
             let host = "{{user.host}}"
             let user_url = "{{user.id}}".replace(host, "")
@@ -179,20 +188,18 @@ View List
             let like = {
                 "type": "like",
                 "@context": "https://www.w3.org/ns/activitystreams",
-                "summary": "{{user.displayName}}" + "likes your post",
+                "summary": "{{user.displayName}}" + " likes your post",
                 "author": {
                     "type": "author",
-                    "id": "{{user.id}}",
+                    "id": user_url,
                     "host":"{{user.host}}",
-                    "displayName": "{{user.diaplayName}}",
+                    "displayName": "{{user.displayName}}",
                     "url": user_url,
                     "github": "{{user.github}}",
                     "profileImage": "{{user.profileImage}}"
                 },
                 "object": object
             };
-
-            
 
             like = JSON.stringify(like);
             let h = new Headers();
@@ -201,6 +208,10 @@ View List
             }
             else if (team == 18){
                 h.append("Authorization", "Basic " + token18);
+            }else if(team == 17){
+                h.append("Authorization", "Basic " + token17);
+            }else if(team == 02){
+                h.append("Authorization", "Basic " + token02);
             }
             h.append("Content-Type", "application/json");
 
@@ -219,14 +230,20 @@ View List
 
 
         function sendComment(object, team){
-            let url = "{{source}}" + "/comments";
+            alert("comment")
+            let url;
+            if (team == 17){
+                url = object
+            }else{
+                url = "{{source}}" + "/comments";
+            }
             console.log(url);
             let id = "{{source}}" + "/comments/"
 
             let content = document.getElementById("comment").value;
             let comment = {
                 "type": "comment",
-                "actor": {
+                "author": {
                     "type": "author",
                     "id": "{{author.id}}",
                     "host":"{{author.host}}",
@@ -236,10 +253,17 @@ View List
                     "profileImage": "{{author.profileImage}}"
                 },
                 "comment": content,
+                "text": content,
                 "contentType": "text/plain",
                 "published": (new Date).toString(),
                 "id" : id,
             };
+
+            if (team == 17){
+                let url = '{{author.host}}' + 'author/' + '{{author.id}}';
+                comment['url'] = url;
+            }
+
             comment = JSON.stringify(comment);
             let h = new Headers();
             if (team == 10){
@@ -247,6 +271,12 @@ View List
             }
             else if (team == 18){
                 h.append("Authorization", "Basic " + token18);
+            }
+            else if(team == 17){
+                h.append("Authorization", "Basic " + token17);
+            }
+            else if(team == 02){
+                h.append("Authorization", "Basic " + token02);
             }
             h.append("Content-Type", "application/json");
 
@@ -265,8 +295,16 @@ View List
 
         let likeButton = document.getElementsByName("likeButton")[0];
         objectUrl = "{{source}}";
+        t17urlLike = "https://cmput404f21t17.herokuapp.com/service" + "/post/" + '{{id}}' + "/like/";
+        t17urlComment = "https://cmput404f21t17.herokuapp.com/service" + "/post/" + '{{id}}' + "/comments/";
         if ("{{author.host}}" == "https://cmput404-socialdistributio-t18.herokuapp.com"){
             likeButton.setAttribute('onclick', 'sendLike(objectUrl, 18)');
+        }
+        else if("{{author.host}}" == "https://cmput404f21t17.herokuapp.com/"){
+            likeButton.setAttribute('onclick', 'sendLike(t17urlLike, 17)');
+        }
+        else if("{{author.host}}" == "https://ourbackend.herokuapp.com/"){
+            likeButton.setAttribute('onclick', 'sendLike(objectUrl, 02)');
         }else{
             likeButton.setAttribute('onclick', 'sendLike(objectUrl, 10)');
         }
@@ -275,6 +313,12 @@ View List
         
         if ("{{author.host}}" == "https://cmput404-socialdistributio-t18.herokuapp.com"){
             commentButton.setAttribute('onclick', 'sendComment(objectUrl, 18)');
+        }
+        else if("{{author.host}}" == "https://cmput404f21t17.herokuapp.com/"){
+            commentButton.setAttribute('onclick', 'sendComment(t17urlComment, 17)');
+        }
+        else if("{{author.host}}" == "https://ourbackend.herokuapp.com/"){
+            commentButton.setAttribute('onclick', 'sendComment(objectUrl, 02)');
         }else{
             commentButton.setAttribute('onclick', 'sendComment(objectUrl, 10)');
         }

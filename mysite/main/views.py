@@ -57,12 +57,13 @@ def remotePostDetail(request):
     content = data['content']
     contentType = data['contentType']
     source = data['source']
+    id = data['id']
     print(content)
     print("+++++++++++++")
     if(contentType == "text/markdown"):
         #content = markdown.markdown(content).replace("\r", "<br>")
         content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
-    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType, "source":source}) 
+    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType, "source":source, "id":id}) 
 
 def remoteUserDetail(request):
     remoteUser = json.loads(request.POST.get("data"))
@@ -72,6 +73,8 @@ def remoteUserDetail(request):
         team = 10
     elif (remoteUser['host'] == "https://glowing-palm-tree1.herokuapp.com/home"): 
         team = 12
+    elif (remoteUser['host'] == "https://cmput404f21t17.herokuapp.com/"): 
+        team = 17
     else:
         team = 0
     username = remoteUser['displayName']
@@ -82,7 +85,12 @@ def remoteUserDetail(request):
 
     email = "None"
     github = remoteUser['github']
-    return render(request, "main/otherRemoteUser.html", {"team": team, 'idOnly': idOnly, 'id': remoteUser['id'], 'url': remoteUser['url'], 'host': remoteUser['host'], 'github': github, "email": email, "username": username, 'profileImage': remoteUser['profileImage']})
+
+    try:
+        profileImage = remoteUser["profileimage"]
+    except:
+        profileImage = None
+    return render(request, "main/otherRemoteUser.html", {"team": team, 'idOnly': idOnly, 'id': remoteUser['id'], 'url': remoteUser['url'], 'host': remoteUser['host'], 'github': github, "email": email, "username": username, 'profileImage': profileImage})
 
 def githubFlow(request, authorId):
     user = get_object_or_404(User, localId=authorId)
@@ -431,6 +439,7 @@ def view(response):
     team18 = False
     team10 = False
     team02 = False
+    team03 = False
 
     if "Team12" in teams:
         team12 = True
@@ -440,11 +449,13 @@ def view(response):
         team10 = True
     if "Team02" in teams:
         team02 = True
+    if "Team03" in teams:
+        team03 = True
 
 
     return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content, 
                                                 "categoriesNeeded": json.dumps(categoriesNeeded),
-                                                "team12": team12, "team10": team10, "team18":team18, "team02":team02})
+                                                "team12": team12, "team10": team10, "team18":team18, "team02":team02, "team03":team03})
 
 def browseAuthors(response):
     localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)

@@ -57,8 +57,10 @@ User Center
     <script>
         token10 = "2dc59103754a77ac6a2de5a43fd9f994dc52e32a";
         token18 = "dDEyOkNNUFVUNDA0";
+        token02 = "VDEyOkNNUFVUNDA0";
 
         let followButton = document.getElementById('follow');
+
         function sendFollow(url, team) {
             let host = "{{user.host}}"
             let user_url = "{{user.url}}".replace(host, "")
@@ -92,6 +94,8 @@ User Center
             }
             else if (team == 18){
                 h.append("Authorization", "Basic " + token18);
+            }else if(team == 02){
+                h.append("Authorization", "Basic " + token02);
             }
             h.append("Content-Type", "application/json");
 
@@ -107,10 +111,14 @@ User Center
                 console.log(response.status);
             });
         }
+        console.log("{{host}}");
         objectUrl = "{{url}}" + '/inbox/';
         if ("{{host}}" == "https://cmput404-socialdistributio-t18.herokuapp.com"){
             followButton.setAttribute('onclick', 'sendFollow(objectUrl, 18)');
-        }else{
+        }else if("{{host}}" == "https://ourbackend.herokuapp.com/"){
+            followButton.setAttribute('onclick', 'sendFollow(objectUrl, 02)');
+        }
+        else{
             followButton.setAttribute('onclick', 'sendFollow(objectUrl, 10)');
         }
     </script>
