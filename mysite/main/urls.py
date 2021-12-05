@@ -29,6 +29,8 @@ urlpatterns = [
     path("author/<str:authorId>/githubFlow", views.githubFlow, name="githubFlow"),
     path("author/<str:authorId>/posts/<str:postId>/comments/<str:commentId>/", views.commentToPost, name="commentToPost"),
     path("", views.redirectToHome, name = "redirectToHome"),
+    path("remote/<int:team>/author/<str:authorId>/posts", views.remoteAuthorPosts, name="remoteAuthorPosts"),
+
 
 
     # GET: retrieve all profiles on the server paginated
@@ -59,7 +61,7 @@ urlpatterns = [
 
     # GET get comments of the post
     # POST if you post an object of “type”:”comment”, it will add your comment to the post
-    path("service/author/<str:author_id>/posts/<str:post_id>/commentsaccess", service.manage_comments, name="manage_comments"),
+    path("service/author/<str:author_id>/posts/<str:post_id>/comments", service.manage_comments, name="manage_comments"),
 
     # GET: if authenticated get a list of posts sent to {AUTHOR_ID}
     # POST: send a post to the author

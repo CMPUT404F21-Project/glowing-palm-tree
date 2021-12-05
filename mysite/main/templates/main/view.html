@@ -334,14 +334,14 @@ fetch(req)
 
 <script>
     // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
-    let url12 = "https://glowing-palm-tree1.herokuapp.com/service/";
+    let url12 = "https://glowing-palm-tree2.herokuapp.com/service/";
     // let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
     // let tokens = []
     // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
-    let h1 = new Headers();
+    h1 = new Headers();
     h1.append("Authorization", "Token 29ada9ea8c040ecf9874b549d9949a3e3748b62e");
-    let foreignAuthor = [];
-    let req = new Request(url12+"authors/", {
+    foreignAuthor = [];
+    req = new Request(url12+"authors/", {
         method: 'GET',
         mode: 'cors',
         headers: h1
@@ -356,7 +356,7 @@ fetch(req)
         }
         for (let author of jsonData){
             let url = author['id'] + "/posts/";
-            let h2 = new Headers();
+            h2 = new Headers();
             h2.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
             let postReq = new Request(url,{
                 method: 'GET',

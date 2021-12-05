@@ -1,0 +1,154 @@
+{% extends 'main/base.html' %}
+
+
+{% block title %}
+View
+{% endblock %}
+
+
+
+{% block content %}
+
+    <div class="old" style="margin-top:40pt;">
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Posted by  <a href="#"></a>
+                <br>
+                At:
+                <br>
+                Title:
+            </div>
+            
+            <div class="panel-body"><a id="content-body" href="#"></a></div>
+        </div>
+
+        <div class="btn-group btn-group-justified">
+            <a href="#" class="btn btn-default " type="Share">Share</a>
+            <a href="#" class="btn btn-default " type="Share">Comment</a>
+            <a href="#" class="btn btn-default " type="Share">Like</a>   
+        </div>  
+      
+    </div> 
+    
+
+    <script>
+        let team = '{{team}}';
+        let id = '{{id}}';
+        let url;
+        if (team == 10){
+            url = "https://social-distribution-t10.herokuapp.com/api/author/" + id + '/posts/';
+        }else if(team == 18){
+            url = "https://cmput404-socialdistributio-t18.herokuapp.com/author/" + id + '/posts/';
+        }
+        
+        let req = new Request(url);
+        fetch(req)
+        .then(response => response.json())
+        .then(data => {
+            let postData = data["data"];
+            let oldDiv = document.querySelector(".old");
+            for (let post of postData){
+                let newDiv = document.createElement("div");
+                newDiv.innerHTML = oldDiv.innerHTML;
+                newDiv.setAttribute("style","margin-top:40pt;");
+                newDiv.setAttribute("class", "moment");
+                oldDiv.parentElement.appendChild(newDiv);
+
+                let heading = newDiv.children[0].children[0];
+                let body = newDiv.children[0].children[1];
+                // let buttons = newDiv.children[1];
+
+                // let shareButton = buttons.children[0];
+                // let commentButton = buttons.children[1];
+                // let likeButton = buttons.children[2];
+
+                // likeButton.herf = "#";
+                // likeUrlT10 = post["author"]["id"] + "/inbox/";
+                // objectUrlT10 = post["source"];
+                // likeButton.setAttribute("onclick", 'sendLike(likeUrlT10, objectUrlT10)');
+                // // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
+                
+
+                newForm1 = document.createElement("form")
+                newForm1.setAttribute("action","/remoteUser/detail/")
+                newForm1.setAttribute("method","post")
+                profileButton = document.createElement("button")
+
+                authorName = post["author"]['displayName']
+                profileButton.innerText = "Posted by " + authorName
+                profileButton.setAttribute("class", "btn btn-link btoa")
+                profileButton.setAttribute("role", "link")
+
+                profileButton.setAttribute("type","submit")
+                hiddenValue1 = document.createElement("input")
+                hiddenValue1.setAttribute("type", "hidden")
+                hiddenValue1.setAttribute("name", "data")
+                hiddenValue1.setAttribute("value", JSON.stringify(post['author']))
+
+                newForm1.appendChild(profileButton)
+                newForm1.appendChild(hiddenValue1)
+                newForm1.innerHTML += '{% csrf_token %}'
+                
+
+                heading.removeChild(heading.children[1])
+                heading.appendChild(newForm1)
+
+                
+
+                newForm = document.createElement("form")
+                newForm.setAttribute("action","/remotePost/detail/")
+                newForm.setAttribute("method","post")
+                titleButton = document.createElement("button")
+                titleButton.setAttribute("class", "btn btn-link btoa")
+                titleButton.setAttribute("role", "link")
+
+
+                titleButton.innerText = post["title"]
+                titleButton.setAttribute("type","submit")
+                hiddenValue = document.createElement("input")
+                hiddenValue.setAttribute("type", "hidden")
+                hiddenValue.setAttribute("name", "data")
+                hiddenValue.setAttribute("value", JSON.stringify(post))
+
+                newForm.appendChild(titleButton)
+                newForm.appendChild(hiddenValue)
+                newForm.innerHTML += '{% csrf_token %}'
+
+                newDiv1 = document.createElement("div")
+                newDiv1.textContent = "At: " + post["published"];
+
+
+                heading.innerHTML = ''
+
+                heading.appendChild(newForm1)
+                heading.appendChild(newDiv1)
+                heading.appendChild(newForm)
+
+                let text = post["contentType"];
+
+                let temp = body.children[0];
+                    if (temp){
+                    temp.parentElement.removeChild(temp);
+                    }
+                if (['application/base64', 'image/png;base64', 'image/jpeg;base64'].includes(text)){
+                    
+                    let img = new Image();
+                    img.src = post["content"];
+                    body.appendChild(img);
+                }else{
+                    body.textContent = post["content"];
+                    body.setAttribute("style", "");
+                }
+            }
+            oldDiv.innerHTML = '';
+            let pervButton = document.createElement('a');
+            let nextButton = document.createElement('a');
+            pervButton.value 
+            oldDiv.parentElement.appendChild(pervButton);
+            oldDiv.parentElement.appendChild(nextButton);
+        })
+
+        
+    </script>
+{% endblock %}

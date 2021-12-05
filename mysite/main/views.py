@@ -4,7 +4,7 @@ from django.http.response import Http404, HttpResponseForbidden, HttpResponseNot
 from django.shortcuts import get_object_or_404, render, redirect
 
 from django.http import HttpResponse, HttpResponseRedirect, request
-from .models import Inbox, Moment, Comment, Following, Likes, Liked, User
+from .models import Inbox, Moment, Comment, Following, Likes, Liked, User, Pending
 from django.forms.models import model_to_dict
 from django.core import serializers
 from .forms import *
@@ -39,10 +39,23 @@ def remotePostDetail(request):
 
 def remoteUserDetail(request):
     remoteUser = json.loads(request.POST.get("data"))
+    if (remoteUser['host'] == "https://cmput404-socialdistributio-t18.herokuapp.com"):
+        team = 18
+    elif (remoteUser['host'] == "https://social-distribution-t10.herokuapp.com/api/"):
+        team = 10
+    elif (remoteUser['host'] == "https://glowing-palm-tree1.herokuapp.com/home"): 
+        team = 12
+    else:
+        team = 0
     username = remoteUser['displayName']
+
+    host = remoteUser['host']
+    url = remoteUser['url']
+    idOnly = url.replace(host+'/author/', '')
+
     email = "None"
     github = remoteUser['github']
-    return render(request, "main/otherRemoteUser.html", {'id': remoteUser['id'], 'url': remoteUser['url'], 'host': remoteUser['host'], 'github': github, "email": email, "username": username, 'profileImage': remoteUser['profileImage']})
+    return render(request, "main/otherRemoteUser.html", {"team": team, 'idOnly': idOnly, 'id': remoteUser['id'], 'url': remoteUser['url'], 'host': remoteUser['host'], 'github': github, "email": email, "username": username, 'profileImage': remoteUser['profileImage']})
 
 def githubFlow(request, authorId):
     user = get_object_or_404(User, localId=authorId)
@@ -110,6 +123,7 @@ def get_friends(user):
 def doMoment(response, authorId):
     # ls = Moment.objects.filter(id__exact=postId)
     #if(not ls.exists()):
+    
     if response.method == "POST":
         if authorId == response.user.localId:
             form = CreateNewMoment(response.POST)
@@ -124,12 +138,15 @@ def doMoment(response, authorId):
                 p.origin = p.id
                 p.count = 0
                 # p.comment = ""
-
+                categories = response.POST.getlist("Categories")
+                #p.categories = json.dumps(categories)
+                p.categories = categories
                 p.user = response.user
                 p.published = datetime.datetime.now()
                 p.save()
                 response.user.moment.add(p)
-
+                
+                
                 if p.visibility in ["Public", "Friend"]:
                     friend_list = get_friends(response.user)
                     inboxes = Inbox.objects.filter(author__in=friend_list)
@@ -295,6 +312,13 @@ def userMoment(response, authorId, postId):
     return render(response, "main/list.html", {"ls":ls})
 
 def home(response):
+    if(response.user.is_anonymous):
+        pass
+    elif(not response.user.pending.exists()):
+        response.user.authorized = True
+        response.user.save()
+    else:
+        pass
     moments = Moment.objects.filter(visibility__iexact="Public")
     moments = moments.order_by("-published")
     content = list(moments.values_list('content', flat=True))
@@ -338,7 +362,7 @@ def view(response):
 
 
 def browseAuthors(response):
-    localAuthors = User.objects.filter(is_superuser = False)
+    localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
     localAuthors = localAuthors.order_by('displayName')
     return render(response, "main/browseAuthor.html", {"localAuthors":localAuthors})
 
@@ -402,6 +426,8 @@ def register(response):
             
             inbox = Inbox.objects.create(author=createdUser, type="inbox",items = initial_list)
             inbox.save()
+            pending = Pending.objects.create(pendingUser=createdUser)
+            pending.save()
             return redirect("/login/")
         else:
             print(form.errors)
@@ -565,7 +591,7 @@ def createComment(response, authorId, postId):
         comment.content = response.POST.get("content")
         comment.author = response.user
         comment.type = "comment"
-        comment.published = datetime.datetime.now()
+        comment.published = str(datetime.datetime.now())
         comment.save()
     url = response.POST.get("url")
     return HttpResponseRedirect(url)
@@ -581,7 +607,7 @@ def momentRepost(response, authorId, postId):
     #print(user)
     #print(ls)
     newLs = Moment.objects.create(id=newId, localId=uuid, content=ls.content, type="post", contentType=ls.contentType, user=response.user, origin = ls.origin,
-                                    source=ls.id, count=0, published=datetime.datetime.now(), title=ls.title,visibility=ls.visibility )
+                                    source=ls.id, count=0, published=str(datetime.datetime.now()), title=ls.title,visibility=ls.visibility, categories=ls.categories )
 
     # newLs.content = ls.content
     # newLs.contenType = ls.contentType
@@ -615,6 +641,8 @@ def getFriend(response):
 
     return JsonResponse({"nameList":nameListJs, "idList":idListJs})
 
+def remoteAuthorPosts(response, team, authorId):
+    return render(response, "main/aPostListRemote.html", {"id": authorId, "team":team})
 
 # def getForm(response, formType):
 #     if formType == "file":
