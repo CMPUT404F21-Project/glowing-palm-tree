@@ -29,6 +29,8 @@ urlpatterns = [
     path("author/<str:authorId>/githubFlow", views.githubFlow, name="githubFlow"),
     path("author/<str:authorId>/posts/<str:postId>/comments/<str:commentId>/", views.commentToPost, name="commentToPost"),
     path("", views.redirectToHome, name = "redirectToHome"),
+    path("author/<str:userId>/addProfileImage/", views.addProfileImage, name="addProfileImage"),
+    
 
 
     # GET: retrieve all profiles on the server paginated

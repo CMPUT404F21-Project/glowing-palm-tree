@@ -1,0 +1,48 @@
+{% extends 'main/base.html' %}
+{% block style %}
+<style>
+    a{
+      float: right;
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+User Center
+{% endblock %}
+
+{% block content %}
+    
+                    
+                        
+                        
+                        
+    <div class="row">                                  
+        <div class="container">
+            <div class="col-sm-2" >
+             </div>
+            
+            <div class="col-sm-9">
+                
+                <form method="post" action="{{user.id}}/addProfileImage/" id="filterForm">
+                    {% csrf_token %}
+                      <br>
+                      <fieldset id="categoriesFilter">  
+                        <legend>Please input the URL of you image</legend>  
+                        <input  name="img" > <br>  
+                      </fieldset>
+                      <br>
+                      <input id="submitButton" class="btn btn-success" type="submit" value="apply">
+                </form>
+                
+            </div>
+            <div class="col-sm-1" >
+             </div>
+        </div>
+        
+    </div>
+      
+    
+{% endblock %}

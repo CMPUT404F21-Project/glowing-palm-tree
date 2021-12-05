@@ -1,3 +1,4 @@
+from django.core.exceptions import RequestAborted
 from django.db.models import base
 
 from django.http.response import Http404, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
@@ -19,6 +20,32 @@ from urllib.parse import urlparse
 from django.template.loader import render_to_string
 import markdown
 # Create your views here.
+import mimetypes, urllib3
+
+def is_url_image(url):    
+    mimetype,encoding = mimetypes.guess_type(url)
+    return (mimetype and mimetype.startswith('image'))
+
+def check_url(url):
+    """Returns True if the url returns a response code between 200-300,
+       otherwise return False.
+    """
+    try:
+        headers = {
+            "Range": "bytes=0-10",
+            "User-Agent": "MyTestAgent",
+            "Accept": "*/*"
+        }
+
+        req = urllib3.Request(url, headers=headers)
+        response = urllib3.urlopen(req)
+        return response.code in range(200, 209)
+    except Exception:
+        return False
+
+def is_image_and_ready(url):
+    return is_url_image(url) and check_url(url)
+
 
 def redirectToHome(request):
     return HttpResponseRedirect("/home")
@@ -48,6 +75,7 @@ def githubFlow(request, authorId):
     user = get_object_or_404(User, localId=authorId)
     github = user.github
     if(github):
+        
         name = github.replace("https://github.com/",'')
         
     else:
@@ -85,6 +113,19 @@ def commentToPost(response, authorId, postId, commentId):
     
 def flat(arg):
     return arg[0]
+
+def addProfileImage(request, userId):
+    if(request.method == "GET"):
+        return render(request, "main/editProfileImage.html")
+    if(request.method == "POST"):
+        url = request.POST.get("img", None)
+        user = User.objects.get(id=request.user.id)
+        if(url):
+            #if(is_image_and_ready(url)):
+            user.profileImage = url
+            user.save()
+        return HttpResponseRedirect("/author/" + userId)
+
 
 def date_converter(o):
     if isinstance(o, datetime.datetime):
@@ -403,15 +444,24 @@ def userCenter(response, id):
         for i in range(len(contentType)):
             if contentType[i] == 'text/markdown':
                 content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
-    
+        profileImage = False
+
+        if response.user.profileImage != None:
+            profileImage = True
+      
         content = json.dumps(content)
-        return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content},)
+        return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content, "profileImage": profileImage},)
     else:
         otherUser = User.objects.get(localId=id)
         user = response.user
         followList = Following.objects.filter(user__exact=user, following_user__exact=otherUser)
         following = followList.exists()
-        return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following})
+
+        profileImage = False
+        if otherUser.profileImage != None:
+            profileImage = True
+     
+        return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following, "profileImage":profileImage})
 
 def userCenterEdit(response):
     if response.method == "POST":
