@@ -19,10 +19,10 @@ h1{
 {% block content %}
     
 
-<div class="row">                                  
-    <div class="container">
-        <div class="col-sm-3" >
-            <div class="w3-sidebar w3-light-grey w3-bar-block" style="position: fixed;">
+<div class="container">                                  
+    <div class="row">
+        <div class="col-3" >
+            <div style="position: fixed;">
                 <form method="post" action="/view/" class="form-group" id="filterForm">
                     {% csrf_token %}
                       <br>
@@ -74,7 +74,7 @@ h1{
 
         </div>
         
-        <div class="col-sm-7">
+        <div class="col-7">
             
             
 
@@ -112,8 +112,8 @@ h1{
             
             <div class="moment" style="margin-top:40pt;">
                 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
                         <br>
                         At:{{pl.published}}
@@ -121,7 +121,7 @@ h1{
                         <a href="{{pl.id}}">{{pl.title}}</a>
                     </div>
                     
-                  <div class="panel-body"><a id="content-body" href="{{pl.id}}"></a></div>
+                  <div class="card-body"><a id="content-body" href="{{pl.id}}"></a></div>
         
                 {% if pl.contentType == "application/base64" or pl.contentType == "image/png;base64" or pl.contentType == "image/jpeg;base64" %}
                   <script type="text/javascript">
@@ -136,7 +136,7 @@ h1{
                         counter += 1;
                     </script>
                 {% endif %}
-                    <div class="panel-heading" >
+                    <div class="card-footer" >
                         {% for c in pl.categories %}
                            
                             {{c}} 
@@ -831,7 +831,7 @@ h1{
         
             
         </div>
-        <div class="col-sm-2" >
+        <div class="col-2" >
 
 
             
