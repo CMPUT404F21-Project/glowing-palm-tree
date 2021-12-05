@@ -61,7 +61,7 @@ View List
         <div id="likeShare">
             {% csrf_token %}
             <input type="hidden" name="url" value="{{ls.id}}">
-            <a  class="btn btn-success " onclick="shareOnClick()" >Share</a>
+            <a style="color: white;" class="btn btn-success " onclick="shareOnClick()" >Share</a>
             {% if liked %}
             <button  value="{{ls.id}}" name="cantlike" class="btn btn-success " type="submit" disabled>Like</button>
             {% else %}

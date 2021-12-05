@@ -51,12 +51,12 @@ View List
         <div id="likeShare">
             {% csrf_token %}
             <input type="hidden" name="url" value="{{ls.id}}">
-            <a  class="btn btn-success " onclick="shareOnClick()" >Share</a>
+            <a style="color: white;" class="btn btn-success " onclick="shareOnClick()" >Share</a>
             {% if liked %}
-            <a  value="{{ls.id}}" name="cantlike" class="btn btn-success"  disabled>Like</a>
+            <a style="color: white;" value="{{ls.id}}" name="cantlike" class="btn btn-success"  disabled>Like</a>
             {% else %}
             <input type="hidden" name="type" value="like">
-            <a  value="{{ls.id}}" name="likeButton" class="btn btn-success">Like</a>
+            <a style="color: white;" value="{{ls.id}}" name="likeButton" class="btn btn-success">Like</a>
             {% endif %}
         </div>
         </form>
@@ -149,7 +149,7 @@ View List
             <label for="comment">Comment:</label>
             <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
         </div>
-        <a type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</a>
+        <a style="color: white; float: right;" type="submit", name="newComment", value="newComment", class="btn btn-success">Post comment</a>
     </form>
         </div>
     </div>

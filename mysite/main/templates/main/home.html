@@ -50,7 +50,7 @@ Create new post
     <form method="post" action="{{user.id}}/posts/" class="form-group" id="contentForm" onsubmit="post()">
         {% csrf_token %}
         {{form|crispy}}
-          <input id="submitButton" class="btn btn-success" type="submit" value="post">
+          <input id="submitButton" class="btn btn-success" type="submit" value="Post">
           <br>
           <fieldset>  
             <legend>Categories</legend>  
