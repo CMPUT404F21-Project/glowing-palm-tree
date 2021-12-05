@@ -31,6 +31,8 @@ urlpatterns = [
     path("", views.redirectToHome, name = "redirectToHome"),
     path("remote/<int:team>/author/<str:authorId>/posts", views.remoteAuthorPosts, name="remoteAuthorPosts"),
 
+    path("author/<str:userId>/addProfileImage/", views.addProfileImage, name="addProfileImage"),
+    
 
 
     # GET: retrieve all profiles on the server paginated

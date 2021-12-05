@@ -33,9 +33,15 @@ Browse Author
     <div class="mt-4">Authors of T12 (Local Authors)</div>
     <hr class="mt-2 mb-2 divider">
     {% for au in localAuthors %}
-    <div>
-        <a class="button btn btn-primary" href="{{au.id}}">{{au.displayName}}</a>
-    </div>
+        {% if au.authorized%}
+            <div>
+                <a class="button btn btn-primary" href="{{au.id}}">{{au.displayName}}</a>
+            </div>
+        {% else %}
+            <div>
+                <a class="button btn btn-primary" href="{{au.id}}">{{au.displayName}} (pending)</a>
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
 

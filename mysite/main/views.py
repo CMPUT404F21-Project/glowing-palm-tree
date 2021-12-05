@@ -1,3 +1,4 @@
+from django.core.exceptions import RequestAborted
 from django.db.models import base
 
 from django.http.response import Http404, HttpResponseForbidden, HttpResponseNotAllowed, HttpResponseNotFound, HttpResponseNotModified, HttpResponseRedirect, JsonResponse
@@ -19,6 +20,32 @@ from urllib.parse import urlparse
 from django.template.loader import render_to_string
 import markdown
 # Create your views here.
+import mimetypes, urllib3
+
+def is_url_image(url):    
+    mimetype,encoding = mimetypes.guess_type(url)
+    return (mimetype and mimetype.startswith('image'))
+
+def check_url(url):
+    """Returns True if the url returns a response code between 200-300,
+       otherwise return False.
+    """
+    try:
+        headers = {
+            "Range": "bytes=0-10",
+            "User-Agent": "MyTestAgent",
+            "Accept": "*/*"
+        }
+
+        req = urllib3.Request(url, headers=headers)
+        response = urllib3.urlopen(req)
+        return response.code in range(200, 209)
+    except Exception:
+        return False
+
+def is_image_and_ready(url):
+    return is_url_image(url) and check_url(url)
+
 
 def redirectToHome(request):
     return HttpResponseRedirect("/home")
@@ -61,6 +88,7 @@ def githubFlow(request, authorId):
     user = get_object_or_404(User, localId=authorId)
     github = user.github
     if(github):
+        
         name = github.replace("https://github.com/",'')
         
     else:
@@ -98,6 +126,19 @@ def commentToPost(response, authorId, postId, commentId):
     
 def flat(arg):
     return arg[0]
+
+def addProfileImage(request, userId):
+    if(request.method == "GET"):
+        return render(request, "main/editProfileImage.html")
+    if(request.method == "POST"):
+        url = request.POST.get("img", None)
+        user = User.objects.get(id=request.user.id)
+        if(url):
+            #if(is_image_and_ready(url)):
+            user.profileImage = url
+            user.save()
+        return HttpResponseRedirect("/author/" + userId)
+
 
 def date_converter(o):
     if isinstance(o, datetime.datetime):
@@ -334,6 +375,13 @@ def home(response):
 
 
 def view(response):
+
+    categoriesNeeded = response.POST.getlist("Categories")
+
+    teams = response.POST.getlist("Teams")
+
+    print(teams)
+
     publicMoments = Moment.objects.filter(visibility__iexact="Public")
     selfMoments = response.user.moment.all()
     followerList = Following.objects.filter(following_user__exact=response.user).values_list('user',flat=True)
@@ -347,19 +395,53 @@ def view(response):
     friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
     showList = publicMoments.union(selfMoments).union(friendPost)
     showList = showList.order_by('-published')
-    content = list(showList.values_list('content', flat=True))
-    contentType = list(showList.values_list('contentType', flat=True))
+
     
+
+    content1 = showList.values_list('id','content','contentType','categories')
+        
+    content = [x[1] for x in content1 ]
+    contentType =  [x[2] for x in content1 ]
+    categories =  [x[3] for x in content1 ]
+    showList = list(showList)
     for i in range(len(contentType)):
         if contentType[i] == 'text/markdown':
             content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
             #for JSON.parse to run I have to do this
     
 
-    content = json.dumps(content)
+    if(len(categoriesNeeded) == 0):
+        content = json.dumps(content)    
+    else:
+        showListFiltered = []
+        contentFiltered = []
+        for i in range(len(showList)):
+            included = True
+            for category in categoriesNeeded:
+                if category not in categories[i]:
+                    
+                    included = False
+            if included:
+                contentFiltered.append(content[i])
+                showListFiltered.append(showList[i])
+        content = json.dumps(contentFiltered)   
+        showList = showListFiltered 
 
-    return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content})
+    team12 = False
+    team18 = False
+    team10 = False
 
+    if "Team12" in teams:
+        team12 = True
+    if "Team18" in teams:
+        team18 = True
+    if "Team10" in teams:
+        team10 = True
+
+
+    return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content, 
+                                                "categoriesNeeded": json.dumps(categoriesNeeded),
+                                                "team12": team12, "team10": team10, "team18":team18})
 
 def browseAuthors(response):
     localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
@@ -375,15 +457,24 @@ def userCenter(response, id):
         for i in range(len(contentType)):
             if contentType[i] == 'text/markdown':
                 content[i] = markdown.markdown(content[i]).replace("\n", "<br>").replace("\"","").replace("\\","")
-    
+        profileImage = False
+
+        if response.user.profileImage != None:
+            profileImage = True
+      
         content = json.dumps(content)
-        return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content},)
+        return render(response, "main/userCenter.html", {"user":response.user,"showList":showList, "content":content, "profileImage": profileImage},)
     else:
         otherUser = User.objects.get(localId=id)
         user = response.user
         followList = Following.objects.filter(user__exact=user, following_user__exact=otherUser)
         following = followList.exists()
-        return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following})
+
+        profileImage = False
+        if otherUser.profileImage != None:
+            profileImage = True
+     
+        return render(response, "main/otherUser.html", {"otherUser":otherUser, "following":following, "profileImage":profileImage})
 
 def userCenterEdit(response):
     if response.method == "POST":

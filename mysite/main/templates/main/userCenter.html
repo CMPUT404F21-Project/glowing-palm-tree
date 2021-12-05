@@ -30,16 +30,29 @@ User Center
                 let img = new Image();
                 img.src = src[counter];
                 console.log(img.src);
+
                 contentBody.appendChild(img);
                 contentBody.setAttribute('style', 'display:flex; justify-content: center');
             }
     </script>
     <div class="container"></div>
+        <a href="{{user.id}}/addProfileImage/">
+        {% if profileImage%}
+        <img style=" width: 25%; border-radius: 50%; 
+            margin-bottom: 30pt;display: block;
+            margin-left: auto;
+            margin-right: auto;" 
+            src="{{user.profileImage}}">
+        {%else%}
         <img style=" width: 25%; border-radius: 50%; 
                     margin-bottom: 30pt;display: block;
                     margin-left: auto;
                     margin-right: auto;" 
-                    src="https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg"> 
+                    src="https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg">
+        
+        {%endif%}
+        <div style="text-align: center;">Profile Image</div>
+        </a>
                     
                         
                         

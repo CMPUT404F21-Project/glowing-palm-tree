@@ -9,10 +9,20 @@ User Center
 {% block content %}
     <div class="row">                                  
         <div class="container">
-            <div class="col-sm-4" ><img style=" width: 80%; border-radius: 50%; 
-                margin-bottom: 30pt;display: block;
-                margin-left: 0" 
-                src="https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg">
+            <div class="col-sm-4" >{% if profileImage%}
+                <img style=" width: 80%; border-radius: 50%; 
+                    margin-bottom: 30pt;display: block;
+                    margin-left: auto;
+                    margin-right: auto;" 
+                    src="{{otherUser.profileImage}}">
+                {%else%}
+                <img style=" width: 80%; border-radius: 50%; 
+                            margin-bottom: 30pt;display: block;
+                            margin-left: auto;
+                            margin-right: auto;" 
+                            src="https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg">
+                
+                {%endif%}
              </div>
             
             <div class="col-sm-8">
