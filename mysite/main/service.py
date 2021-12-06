@@ -184,11 +184,15 @@ def manage_followers(response, author_id, foreign_author_id):
         type = response.data["type"]
         if not type == "follower":
             return HttpResponseBadRequest("Data must be of type 'follower'.")
-        data = response.data["data"][0]
-        foreign_user_id = data["id"]
+        data = json.loads(response.data)
+        foreign_user_id = data["actor"]["id"]
+        user_id = data["object"]["id"]
 
-        
-        following = Following.objects.create(user=user.id, following_user=foreign_user_id)
+        if (data["actor"]["host"] == "https://ourbackend.herokuapp.com/"):
+            following = Following.objects.create(user=foreign_user_id, following_user=user_id)
+        else:
+            following = Following.objects.create(user=user_id, following_user=foreign_user_id)
+            
         following.save()
         return HttpResponse(status=204)
 
@@ -402,12 +406,27 @@ def manage_comments(response, author_id, post_id):
         }
 
         for comment in comments:
-            host = user.host
-            user_url = user.id.replace(host, "")
-            user_url = host + 'service/' +user_url
+            if not comment.remote:
+                user = comment.author
+
+                host = user.host
+                user_url = user.id.replace(host, "")
+                user_url = host + 'service/' +user_url
+                user_host = user.host
+                user_displayName = user.displayName
+                user_github = user.github
+                user_profileImage = user.profileImage
+            else:
+                user = json.loads(comment.remote_author)
+                user_url = user["url"]
+                user_host = user["host"]
+                user_displayName = user["displayName"]
+                user_github = user["github"]
+                user_profileImage = user["profileImage"]
 
             post_url = comment.commentId.replace(host, "")
             post_url = host + 'service/' + post_url
+
 
             obj = {
                 "type": "comment",
@@ -415,10 +434,10 @@ def manage_comments(response, author_id, post_id):
                     "type": "author",
                     "id": user_url,
                     "url": user_url,
-                    "host": user.host,
-                    "displayName": user.displayName,
-                    "github": user.github,
-                    "profileImage": user.profileImage
+                    "host": user_host,
+                    "displayName": user_displayName,
+                    "github": user_github,
+                    "profileImage": user_profileImage
                 },
                 "comment":comment.content,
                 "contentType":comment.contentType,
@@ -431,14 +450,16 @@ def manage_comments(response, author_id, post_id):
         temp['Access-Control-Allow-Origin'] = '*'
         return temp
     elif response.method == "POST":
+        print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
         data = json.loads(response.body)
+        print(data)
         obj_type = data['type']
         temp = re.search('/comments(s?)/(?P<id>[^/]*)$', data['id']).group()
         localId = temp.replace("/comments/", "")
         commentId = data['id']
         if not obj_type == "comment":
             return HttpResponseBadRequest("type must be comment")
-        print(data['published'])
+        
         comment = Comment.objects.create(commentId= commentId, localId=localId, moment=moment, type="comment", 
                                             content=data["comment"], contentType=data["contentType"], published=data["published"],
                                             remote=True, remote_author=data["author"]
@@ -455,14 +476,15 @@ def send_inbox(response, author_id):
     if response.method == "POST":
         data = json.loads(response.body)
         # print(data)
-        if data["type"] == "like":
+        if data["type"] == "like" or data["type"] == "Like":
             like = Likes.objects.filter(author=data['author'])
             if not like.exists():
-                # like = Likes.objects.create(context=data["@context"], type="like", summary=data["summary"], author=data["author"], object=data["object"])
-                # like.save()
-                # like = model_to_dict(like)
+                like = Likes.objects.create(context=data["@context"], type="like", summary=data["summary"], author=data["author"], object=data["object"])
+                like.save()
+                like = model_to_dict(like)
                 send_to_inbox(data, [inbox])
-            return HttpResponse(status=201)
+            temp = HttpResponse(status=201)
+            return temp
         elif data["type"] == "post":
             moment = data
             if moment['contentType'] == "text/markdown":
@@ -470,6 +492,7 @@ def send_inbox(response, author_id):
             moment['user'] = moment['author']['displayName']
             moment['userLink'] = moment['author']['url']
             send_to_inbox(moment, [inbox])
+            return HttpResponse(status=201)
         elif data["type"] == "follow":
             userId = data["object"]["url"]
             follower = data["actor"]["url"]
@@ -478,11 +501,30 @@ def send_inbox(response, author_id):
             following.save()
             following = model_to_dict(following)
             send_to_inbox(following, [inbox])
+            return HttpResponse(status=201)
+        elif data["type"] == "comment":
+            a = str(data["id"])
+            temp = re.search('/comments(s?)/(?P<id>[^/]*)$', a).group()
+            temp = a.replace(temp, "")
+            temp = re.search('/posts(s?)/(?P<id>[^/]*)$', temp).group()
+            localId = temp.replace("/posts/", "")
+
+            moment = get_object_or_404(Moment, localId=localId)
+            data = json.loads(response.body)
+            obj_type = data['type']
+            temp = re.search('/comments(s?)/(?P<id>[^/]*)$', data['id']).group()
+            localId = temp.replace("/comments/", "")
+            commentId = data['id']
+            if not obj_type == "comment":
+                return HttpResponseBadRequest("type must be comment")
+            comment = Comment.objects.create(commentId= commentId, localId=localId, moment=moment, type="comment", 
+                                                content=data["comment"], contentType=data["contentType"], published=data["published"],
+                                                remote=True, remote_author=data["author"]
+                                            )
+            comment.save()
+            return HttpResponse(status=201)
         else:
-            return HttpResponseBadRequest
-        temp = HttpResponse(status=204)
-        temp['Access-Control-Allow-Origin'] = '*'
-        return temp
+            return HttpResponseBadRequest()
 
     elif response.method == "GET":
         items = inbox.items

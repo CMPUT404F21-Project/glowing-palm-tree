@@ -281,6 +281,63 @@ Browse Author
     })
 </script>
 
+<script>
+    // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
+    t23Token = btoa("team12:team12");
+    // console.log(t18Token);
+    // let url10 = "https://social-distribution-t10.herokuapp.com/api/";
+    let url23 = "https://project-api-404.herokuapp.com/api/"
+    // let tokens = []
+    // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
+    let h5 = new Headers();
+    h5.append("Authorization", "Basic " + t23Token);
+    let foreignAuthor5 = [];
+    let req5 = new Request(url23+"authors/", {
+        method: 'GET',
+        mode: 'cors',
+        headers: h5
+    });
+    fetch(req5)
+    .then(response => response.json())
+    .then(data => {
+        let containerDiv1 = document.querySelector("#container");
+        let newDiv1 = document.createElement("div");
+        let newHr1 = document.createElement("hr");
+        newDiv1.innerText = "Author of T23 (Foreign Authors)";
+        newDiv1.setAttribute("class", "mt-4")
+        newHr1.setAttribute("class", "mt-2 mb-2 divider");
+        containerDiv1.appendChild(newDiv1);
+        containerDiv1.appendChild(newHr1);
+        let jsonData = data;;
+        if (!jsonData){
+            return;
+        }
+        for (let author of jsonData){
+            if (author["displayName"] == "") {
+                continue
+            }
+            let containerDiv = document.querySelector("#container");
+            let newDiv = document.createElement("div");
+            let newForm = document.createElement("form");
+            let newButton = document.createElement("button");
+            let newInput = document.createElement("input");
+            newForm.setAttribute("action", "/remoteUser/detail/");
+            newForm.setAttribute("method", "post");
+            newForm.innerHTML += '{% csrf_token %}';
+            newInput.setAttribute("type", "hidden");
+            newInput.setAttribute("name", "data");
+            newInput.setAttribute("value", JSON.stringify(author));
+            newButton.innerText = author["displayName"];
+            newButton.setAttribute("type", "submit");
+            newButton.setAttribute("class", "button btn btn-primary");
+            newForm.appendChild(newInput);
+            newForm.appendChild(newButton);
+            newDiv.appendChild(newForm);
+            containerDiv.appendChild(newDiv);
+        }
+    })
+</script>
+
 
 {% endblock %}
 

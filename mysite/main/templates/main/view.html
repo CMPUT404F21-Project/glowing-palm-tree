@@ -20,6 +20,10 @@ a#content-body{
     color: black;
     text-decoration: none;
 }
+a#title{
+    font-size: large;
+    text-decoration: none;
+}
 </style>
 {% endblock %}
 
@@ -101,6 +105,14 @@ a#content-body{
                                 <input type="checkbox" class="btn-check" id="btncheck19" autocomplete="off" name="Teams" value="Team17">
                                 <label class="btn btn-outline-secondary" for="btncheck19">Team17</label>
                                 {%endif%}
+
+                                {%if team23%}
+                                <input type="checkbox" class="btn-check" id="btncheck20" autocomplete="off" name="Teams" value="Team23" checked>
+                                <label class="btn btn-outline-secondary" for="btncheck20">Team23</label>  
+                                {%else%}
+                                <input type="checkbox" class="btn-check" id="btncheck21" autocomplete="off" name="Teams" value="Team23">
+                                <label class="btn btn-outline-secondary" for="btncheck21">Team23</label>
+                                {%endif%}
                             </div>
                         </fieldset>
                         <br>
@@ -151,11 +163,11 @@ a#content-body{
                 
                 <div class="card">
                     <div class="card-header">
-                        Posted by  <a href="{{pl.user.id}}">{{pl.user.displayName}}</a>
+                        Posted by  <a style="text-decoration: none;font-size: large;" href="{{pl.user.id}}">{{pl.user.displayName}}</a>
                         <br>
                         At:{{pl.published}}
                         <br>
-                        <a href="{{pl.id}}">{{pl.title}}</a>
+                        <a id="title" href="{{pl.id}}">{{pl.title}}</a>
                     </div>
                     
                   <div class="card-body"><a id="content-body" href="{{pl.id}}"></a></div>
@@ -216,12 +228,12 @@ a#content-body{
     
                 
                 let jsonData = data;
-                jsonData = [jsonData["data"][0]];
+                jsonData = jsonData["data"];
                 if (!jsonData){
                     return;
                 }
                 for (let author of jsonData){
-                    sleep(200);
+                    sleep(1100);
                     let url = author['id'] + "/posts/";
                     let h2 = new Headers();
                     h2.append("Authorization", "Basic dDEyOkNNUFVUNDA0");
@@ -295,6 +307,7 @@ a#content-body{
                             profileButton.innerText = "Posted by " + authorName
                             profileButton.setAttribute("class", "btn btn-link btoa")
                             profileButton.setAttribute("role", "link")
+                            profileButton.setAttribute("style", "text-decoration:none;font-size:large")
             
                             profileButton.setAttribute("type","submit")
                             hiddenValue1 = document.createElement("input")
@@ -318,6 +331,7 @@ a#content-body{
                             titleButton = document.createElement("button")
                             titleButton.setAttribute("class", "btn btn-link btoa")
                             titleButton.setAttribute("role", "link")
+                            titleButton.setAttribute("style", "text-decoration:none;font-size:large")
             
             
                             titleButton.innerText = post["title"]
@@ -326,6 +340,7 @@ a#content-body{
                             hiddenValue.setAttribute("type", "hidden")
                             hiddenValue.setAttribute("name", "data")
                             hiddenValue.setAttribute("value", JSON.stringify(post))
+
             
                             newForm.appendChild(titleButton)
                             newForm.appendChild(hiddenValue)
@@ -351,6 +366,7 @@ a#content-body{
                                 let img = new Image();
                                 img.src = post["content"];
                                 body.appendChild(img);
+                                body.setAttribute("style", "justify-content:center;display:flex;");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -463,6 +479,7 @@ a#content-body{
                             profileButton.innerText = "Posted by " + authorName
                             profileButton.setAttribute("class", "btn btn-link btoa")
                             profileButton.setAttribute("role", "link")
+                            profileButton.setAttribute("style", "text-decoration:none;font-size:large")
         
                             profileButton.setAttribute("type","submit")
                             hiddenValue1 = document.createElement("input")
@@ -486,6 +503,7 @@ a#content-body{
                             titleButton = document.createElement("button")
                             titleButton.setAttribute("class", "btn btn-link btoa")
                             titleButton.setAttribute("role", "link")
+                            titleButton.setAttribute("style", "text-decoration:none;font-size:large")
         
                             titleButton.innerText = post["title"]
                             titleButton.setAttribute("type","submit")
@@ -520,6 +538,7 @@ a#content-body{
                                 let img = new Image();
                                 img.src = post["content"];
                                 body.appendChild(img);
+                                body.setAttribute("style", "justify-content:center;display:flex;");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -639,7 +658,8 @@ a#content-body{
                             profileButton.innerText = "Posted by " + authorName
                             profileButton.setAttribute("class", "btn btn-link btoa")
                             profileButton.setAttribute("role", "link")
-            
+                            profileButton.setAttribute("style", "text-decoration:none;font-size:large")
+                            
                             profileButton.setAttribute("type","submit")
                             hiddenValue1 = document.createElement("input")
                             hiddenValue1.setAttribute("type", "hidden")
@@ -662,6 +682,8 @@ a#content-body{
                             titleButton = document.createElement("button")
                             titleButton.setAttribute("class", "btn btn-link btoa")
                             titleButton.setAttribute("role", "link")
+                            titleButton.setAttribute("style", "text-decoration:none;font-size:large")
+                            
             
             
                             titleButton.innerText = post["title"]
@@ -696,6 +718,7 @@ a#content-body{
                                 let img = new Image();
                                 img.src = post["content"];
                                 body.appendChild(img);
+                                body.setAttribute("style", "justify-content:center;display:flex;");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -813,6 +836,8 @@ a#content-body{
                             profileButton.innerText = "Posted by " + authorName
                             profileButton.setAttribute("class", "btn btn-link btoa")
                             profileButton.setAttribute("role", "link")
+                            profileButton.setAttribute("style", "text-decoration:none;font-size:large")
+                            
             
                             profileButton.setAttribute("type","submit")
                             hiddenValue1 = document.createElement("input")
@@ -836,6 +861,7 @@ a#content-body{
                             titleButton = document.createElement("button")
                             titleButton.setAttribute("class", "btn btn-link btoa")
                             titleButton.setAttribute("role", "link")
+                            titleButton.setAttribute("style", "text-decoration:none;font-size:large")
             
             
                             titleButton.innerText = post["title"]
@@ -870,6 +896,7 @@ a#content-body{
                                 let img = new Image();
                                 img.src = post["content"];
                                 body.appendChild(img);
+                                body.setAttribute("style", "justify-content:center;display:flex;");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -980,6 +1007,7 @@ a#content-body{
                             profileButton.innerText = "Posted by " + authorName
                             profileButton.setAttribute("class", "btn btn-link btoa")
                             profileButton.setAttribute("role", "link")
+                            profileButton.setAttribute("style", "text-decoration:none;font-size:large")
             
                             profileButton.setAttribute("type","submit")
                             hiddenValue1 = document.createElement("input")
@@ -1003,6 +1031,7 @@ a#content-body{
                             titleButton = document.createElement("button")
                             titleButton.setAttribute("class", "btn btn-link btoa")
                             titleButton.setAttribute("role", "link")
+                            titleButton.setAttribute("style", "text-decoration:none;font-size:large")
             
             
                             titleButton.innerText = post["title"]
@@ -1011,6 +1040,7 @@ a#content-body{
                             hiddenValue.setAttribute("type", "hidden")
                             hiddenValue.setAttribute("name", "data")
                             hiddenValue.setAttribute("value", JSON.stringify(post))
+                            console.log(post);
             
                             newForm.appendChild(titleButton)
                             newForm.appendChild(hiddenValue)
@@ -1037,6 +1067,173 @@ a#content-body{
                                 let img = new Image();
                                 img.src = post["content"];
                                 body.appendChild(img);
+                                body.setAttribute("style", "justify-content:center;display:flex;");
+                            }else{
+                                body.textContent = post["content"];
+                                body.setAttribute("style", "");
+                            }
+                        }
+                    })
+                }
+            })
+            </script>
+        {% endif %}
+
+
+        {% if team23 %}
+        <script>
+            // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
+            let url23 = "https://project-api-404.herokuapp.com/api/";
+            // let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
+            // let tokens = []
+            // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
+            h1 = new Headers();
+            h1.append("Authorization", "Basic dGVhbTEyOnRlYW0xMg==");
+            foreignAuthor = [];
+            req = new Request(url23 +"authors/", {
+                method: 'GET',
+                headers: h1
+            });
+
+
+            fetch(req)
+            .then(response => response.json())
+            .then(data => {
+                let jsonData = data;;
+                if (!jsonData){
+                    return;
+                }
+                for (let author of jsonData){                    
+                    let url = author['url'] + "/posts/";
+                    // let url = "https://ourbackend.herokuapp.com/author/" + author['author_id'] + '/posts/'
+                    h2 = new Headers();
+                    h2.append("Authorization", "Basic dGVhbTEyOnRlYW0xMg==");
+                    let postReq = new Request(url,{
+                        method: 'GET',
+                        headers: h2
+                    });
+                    fetch(postReq)
+                    .then(response => response.json())
+                    .then(data =>{
+                        let postData = data;
+                        postData = postData["items"];
+                        if (!postData){
+                            return;
+                        }
+                        for (let post of postData){
+                            let oldDiv = document.querySelector(".moment");
+                            let newDiv = document.createElement("div");
+                            newDiv.innerHTML = oldDiv.innerHTML;
+                            newDiv.setAttribute("style","margin-top:40pt;");
+                            newDiv.setAttribute("class", "moment");
+                            oldDiv.parentElement.appendChild(newDiv);
+            
+                            let heading = newDiv.children[0].children[0];
+                            let body = newDiv.children[0].children[1];
+                            let tags = newDiv.children[0].children[3];
+                            let empty = document.createElement("div")
+                            //console.log(tags)
+                            thisCategories = post["categories"]
+                            let doIt = false
+                            
+                            newDiv.children[0].children[3].innerHTML = null
+                            if(thisCategories){
+                                for(cat of thisCategories){
+                                
+                                    if(cat){
+                                        let badge = document.createElement("span");
+                                        badge.setAttribute("class", "badge bg-secondary foreignBadge");
+                                        badge.innerHTML = cat;
+                                        newDiv.children[0].children[3].appendChild(badge)
+                                    }else{
+                                        newDiv.children[0].children[3].innerHTML = null
+                                    }
+                                }
+                            }
+                            
+                            // let buttons = newDiv.children[1];
+            
+                            // let shareButton = buttons.children[0];
+                            // let commentButton = buttons.children[1];
+                            // let likeButton = buttons.children[2];
+            
+                            // likeButton.herf = "#";
+                            // likeUrlT10 = post["author"]["id"] + "/inbox/";
+                            // objectUrlT10 = post["source"];
+                            // likeButton.setAttribute("onclick", 'sendLike(likeUrlT10, objectUrlT10)');
+                            // // likeButton.addEventListener('click', sendLike(url10 + "author/" + post["author"]["id"] + "/inbox/"));
+                            
+            
+                            newForm1 = document.createElement("form")
+                            newForm1.setAttribute("action","/remoteUser/detail/")
+                            newForm1.setAttribute("method","post")
+                            profileButton = document.createElement("button")
+            
+                            authorName = post["author"]['displayName']
+                            profileButton.innerText = "Posted by " + authorName
+                            profileButton.setAttribute("class", "btn btn-link btoa")
+                            profileButton.setAttribute("role", "link")
+                            profileButton.setAttribute("style", "text-decoration:none;font-size:large")
+            
+                            profileButton.setAttribute("type","submit")
+                            hiddenValue1 = document.createElement("input")
+                            hiddenValue1.setAttribute("type", "hidden")
+                            hiddenValue1.setAttribute("name", "data")
+                            hiddenValue1.setAttribute("value", JSON.stringify(post['author']))
+            
+                            newForm1.appendChild(profileButton)
+                            newForm1.appendChild(hiddenValue1)
+                            newForm1.innerHTML += '{% csrf_token %}'
+                            
+            
+                            heading.removeChild(heading.children[1])
+                            heading.appendChild(newForm1)
+            
+                            
+            
+                            newForm = document.createElement("form")
+                            newForm.setAttribute("action","/remotePost/detail/")
+                            newForm.setAttribute("method","post")
+                            titleButton = document.createElement("button")
+                            titleButton.setAttribute("class", "btn btn-link btoa")
+                            titleButton.setAttribute("role", "link")
+                            titleButton.setAttribute("style", "text-decoration:none;font-size:large")
+            
+            
+                            titleButton.innerText = post["title"]
+                            titleButton.setAttribute("type","submit")
+                            hiddenValue = document.createElement("input")
+                            hiddenValue.setAttribute("type", "hidden")
+                            hiddenValue.setAttribute("name", "data")
+                            hiddenValue.setAttribute("value", JSON.stringify(post))
+                            console.log(post);
+            
+                            newForm.appendChild(titleButton)
+                            newForm.appendChild(hiddenValue)
+                            newForm.innerHTML += '{% csrf_token %}'
+            
+                            newDiv1 = document.createElement("div")
+                            newDiv1.textContent = "At: " + post["published"];
+            
+            
+                            heading.innerHTML = ''
+            
+                            heading.appendChild(newForm1)
+                            heading.appendChild(newDiv1)
+                            heading.appendChild(newForm)
+            
+                            let text = post["contentType"];
+            
+                            let temp = body.children[0];
+                                if (temp){
+                                temp.parentElement.removeChild(temp);
+                                }
+                            if (['application/base64', 'image/png;base64', 'image/jpeg;base64'].includes(text)){
+                                
+                                let img = new Image();
+                                img.src = post["content"];
+                                body.appendChild(img);
+                                body.setAttribute("style", "justify-content:center;display:flex;");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -1061,4 +1258,31 @@ a#content-body{
 </div>
   
 {% endblock %}
+{
+    "type":"comment",
+    "author":{
+        "type":"author",
+        "id":"0fbc1b88-2d7c-44a4-83b9-ef5b1198f692",
+        "host":"https://cmput404f21t17.herokuapp.com/",
+        "displayName":"",
+        "url":"https://cmput404f21t17.herokuapp.com/service/author/0fbc1b88-2d7c-44a4-83b9-ef5b1198f692",
+        "github":"https://github.com/xingjiehe",
+        "profileImage":""
+    },
+    "comment":"COMMENT",
+    "text":"COMMENT",
+    "contentType":"text/plain",
+    "published":"Sun Dec 05 2021 21:17:15 GMT-0700 (Mountain Standard Time)",
+    "id":"http://localhost:8000/service/post/025bdeef-e3c0-4195-a1dc-0ced6571992e/comments/140bd85d-93de-4301-8fac-0343bd36f88f",
+    "url":"https://cmput404f21t17.herokuapp.com/author/0fbc1b88-2d7c-44a4-83b9-ef5b1198f692"
+}
 
+{
+    "type":"comment",
+    "author":{
+        "type":"author",
+        "id":"0fbc1b88-2d7c-44a4-83b9-ef5b1198f692",
+        "host":"https://cmput404f21t17.herokuapp.com/",
+        "displayName":"",
+        "url":"https://cmput404f21t17.herokuapp.com/service/author/0fbc1b88-2d7c-44a4-83b9-ef5b1198f692","github":"https://github.com/xingjiehe","profileImage":""},"comment":"comment from t12","text":"comment from t12","contentType":"text/plain","published":"Sun Dec 05 2021 21:25:23 GMT-0700 (Mountain Standard Time)","id":"http://localhost:8000/service/post/025bdeef-e3c0-4195-a1dc-0ced6571992e/comments/2b1d31ea-2305-4105-9141-01ce711b803b","url":"https://cmput404f21t17.herokuapp.com/author/0fbc1b88-2d7c-44a4-83b9-ef5b1198f692","display name":"comment from t12"
+}

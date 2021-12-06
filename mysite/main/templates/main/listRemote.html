@@ -188,7 +188,7 @@ View List
                 url = "{{author.url}}" + "/inbox/";
             }
 
-            // url = "http://127.0.0.1:8000/service/author/f1a516d6-9d24-4750-a22b-3145e50f368a/inbox/";
+            
             console.log(url);
             let host = "{{user.host}}"
             let user_url = "{{user.id}}".replace(host, "")
@@ -212,7 +212,7 @@ View List
             like = JSON.stringify(like);
             let h = new Headers();
             if (team == 10){
-                h.append("Authorization", "Token " + token10);
+                h.append("Authorization", "Basic " + token10);
             }
             else if (team == 18){
                 h.append("Authorization", "Basic " + token18);
@@ -245,18 +245,27 @@ View List
             }else{
                 url = "{{source}}" + "/comments";
             }
+            // url = "http://127.0.0.1:8000/service/author/f1a516d6-9d24-4750-a22b-3145e50f368a/posts/d7082f74-edba-4255-b347-370a281535f7/comments";
+            
+            // url = "http://127.0.0.1:8000/service/author/f1a516d6-9d24-4750-a22b-3145e50f368a/inbox/";
             console.log(url);
             let id = "{{source}}" + "/comments/" + uuid();
 
             let content = document.getElementById("comment").value;
+
+            let host = "{{user.host}}";
+            let temp = "{{user.url}}".replace("host", "");
+            let authorUrl = host + "service/" + temp
+
+
             let comment = {
                 "type": "comment",
                 "author": {
                     "type": "author",
-                    "id": "{{author.id}}",
-                    "host":"{{author.host}}",
-                    "displayName": "{{author.diaplayName}}",
-                    "url": "{{author.url}}",
+                    "id": authorUrl,
+                    "host": host,
+                    "displayName": "{{user.displayName}}",
+                    "url": authorUrl,
                     "github": "{{author.github}}",
                     "profileImage": "{{author.profileImage}}"
                 },
@@ -270,6 +279,7 @@ View List
             if (team == 17){
                 let url = '{{author.host}}' + 'author/' + '{{author.id}}';
                 comment['url'] = url;
+                comment['display name'] = content;
             }
 
             comment = JSON.stringify(comment);

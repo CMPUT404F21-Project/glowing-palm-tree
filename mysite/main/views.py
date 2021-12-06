@@ -55,15 +55,14 @@ def remotePostDetail(request):
     data = json.loads(request.POST.get("data"))
     remoteUser = data['author']
     content = data['content']
+    displayName = remoteUser["displayName"]
     contentType = data['contentType']
     source = data['source']
     id = data['id']
-    print(content)
-    print("+++++++++++++")
     if(contentType == "text/markdown"):
         #content = markdown.markdown(content).replace("\r", "<br>")
         content = markdown.markdown(content).replace("\n", "<br>").replace("\"", "")
-    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "content":content, "contentType": contentType, "source":source, "id":id}) 
+    return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "displayName":displayName, "content":content, "contentType": contentType, "source":source, "id":id}) 
 
 def remoteUserDetail(request):
     remoteUser = json.loads(request.POST.get("data"))
@@ -232,9 +231,9 @@ def doMoment(response, authorId):
         # friendList = followerList.intersection(followingList)
         
         showListFull = publicMoments
-        if followerList.exists() and followingList.exists():
-            friendMoments = Moment.objects.filter(visibility__iexact="Friend", user__exact=user)
-            showListFull = publicMoments.union(friendMoments)
+        # if followerList.exists() and followingList.exists():
+        #     friendMoments = Moment.objects.filter(visibility__iexact="Friend", user__exact=user)
+        #     showListFull = publicMoments.union(friendMoments)
 
         # friendPost = Moment.objects.filter(user_id__in = friendList, visibility__in = ["Friend"] )
         # showList = publicMoments.union(ls).union(friendPost)
@@ -440,6 +439,7 @@ def view(response):
     team10 = False
     team02 = False
     team17 = False
+    team23 = False
 
     if "Team12" in teams:
         team12 = True
@@ -451,11 +451,13 @@ def view(response):
         team02 = True
     if "Team17" in teams:
         team17 = True
+    if "Team23" in teams:
+        team23 = True
 
 
     return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content, 
                                                 "categoriesNeeded": json.dumps(categoriesNeeded),
-                                                "team12": team12, "team10": team10, "team18":team18, "team02":team02, "team17":team17})
+                                                "team12": team12, "team10": team10, "team18":team18, "team02":team02, "team17":team17, "team23":team23})
 
 def browseAuthors(response):
     localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
@@ -494,8 +496,10 @@ def userCenterEdit(response):
     if response.method == "POST":
         form = UserProfileEdit(response.POST, instance=response.user)
         if form.is_valid():
-            #raise Exception         
-            form.save()
+            #raise Exception     
+            user = form.save()
+            user.displayName = user.username
+            user.save()
             return HttpResponseRedirect("/author/%s" %response.user.localId)
     else:
         form = UserProfileEdit(instance=response.user)

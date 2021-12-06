@@ -65,7 +65,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django_referrer_policy.middleware.ReferrerPolicyMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -150,6 +149,6 @@ AUTH_USER_MODEL = "main.User"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
 CORS_REPLACE_HTTPS_REFERER = True
 CORS_ORIGIN_ALLOW_ALL = True
-REFERRER_POLICY = 'strict-origin-when-cross-origin'
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 
 django_on_heroku.settings(locals()) # bottom of the file
