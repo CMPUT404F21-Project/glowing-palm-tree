@@ -434,7 +434,7 @@ def manage_comments(response, author_id, post_id):
                 user_displayName = user["displayName"]
                 user_github = user["github"]
                 user_profileImage = user["profileImage"]
-                post_url = comment.id
+                post_url = comment.commentId
             
 
 

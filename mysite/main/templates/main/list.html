@@ -20,6 +20,63 @@ View List
 {% endblock %}
 
 {% block content %}
+<script>
+    counter = 0;
+    sendCommentLike = function (comment1){
+        token10 = "dDEyOkNNUFVUNDA0";
+        token18 = "dDEyOkNNUFVUNDA0";
+        token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
+        token02 = "VDEyOkNNUFVUNDA0";
+        
+
+        let url = comment1["author"]["url"] + "/inbox/";
+
+        let host = "{{user.host}}"
+        let user_url = "{{user.id}}".replace(host, "")
+        user_url = host + 'service/' +user_url
+        let like = {
+            "type": "like",
+            "@context": "https://www.w3.org/ns/activitystreams",
+            "summary": "{{user.displayName}}" + " likes your post",
+            "author": {
+                "type": "author",
+                "id": user_url,
+                "host":"{{user.host}}",
+                "displayName": "{{user.displayName}}",
+                "url": user_url,
+                "github": "{{user.github}}",
+                "profileImage": "{{user.profileImage}}"
+            },
+            "object": comment1["id"]
+        };
+
+        like = JSON.stringify(like);
+        let h = new Headers();
+        if (team == 10){
+            h.append("Authorization", "Basic " + token10);
+        }
+        else if (team == 18){
+            h.append("Authorization", "Basic " + token18);
+        }else if(team == 17){
+            h.append("Authorization", "Basic " + token17);
+        }else if(team == 02){
+            h.append("Authorization", "Basic " + token02);
+        }
+        h.append("Content-Type", "application/json");
+
+        let req = new Request(url, {
+            method: "POST",
+            mode: "cors",
+            headers: h,
+            body: like,
+        });
+
+        fetch(req)
+        .then(response => {
+            console.log(response.status);
+        });
+    }
+</script>
     <div class="moment" id="contentCard" style="margin-top:40pt;">
 
         <div class="card ">
@@ -69,7 +126,7 @@ View List
         </div>
         </form>
         <div><br>
-            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post" onsubmit="alert('succeed!')">
+            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post" >
                 {% csrf_token %}
                 <input type="hidden" name="url" value="{{ls.id}}">
                 <input type="hidden" name="type" value="share">
@@ -140,14 +197,91 @@ View List
                     <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
                     {%endif%}
                     <div class="card-body">{{comment.content}}</div>
+                    {%if comment.remote%}
+
+                    <form method="post" name="remoteCommentLike" style="margin-top: 30pt;" action="#">
+                        {% csrf_token %}
+                        <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
+                    </form>
+                    <script>
+                        
+                        likeComment = [...document.getElementsByName("likeComment")][counter];
+                        likeComment.addEventListener("click", function(){
+                            token10 = "dDEyOkNNUFVUNDA0";
+                            token18 = "dDEyOkNNUFVUNDA0";
+                            token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
+                            token02 = "VDEyOkNNUFVUNDA0";
+
+                            let team;
+                            if ('{{comment.remote_author.host}}' == "https://cmput404-socialdistributio-t18.herokuapp.com"){
+                                team = 18;
+                            }else if('{{comment.remote_author.host}}' == "https://cmput404f21t17.herokuapp.com/"){
+                                team = 17;
+                            }else if('{{comment.remote_author.host}}' == "https://ourbackend.herokuapp.com/"){
+                                team = 02;
+                            }else{
+                                team = 10;
+                            }
+                            
+                            let url = '{{comment.remote_author.url}}'
+
+                            let host = "{{user.host}}"
+                            let user_url = "{{user.id}}".replace(host, "")
+                            user_url = host + 'service/' +user_url
+                            let like = {
+                                "type": "like",
+                                "@context": "https://www.w3.org/ns/activitystreams",
+                                "summary": "{{user.displayName}}" + " likes your post",
+                                "author": {
+                                    "type": "author",
+                                    "id": user_url,
+                                    "host":"{{user.host}}",
+                                    "displayName": "{{user.displayName}}",
+                                    "url": user_url,
+                                    "github": "{{user.github}}",
+                                    "profileImage": "{{user.profileImage}}"
+                                },
+                                "object": '{{comment.commentId}}'
+                            };
+
+                            like = JSON.stringify(like);
+                            let h = new Headers();
+                            if (team == 10){
+                                h.append("Authorization", "Basic " + token10);
+                            }
+                            else if (team == 18){
+                                h.append("Authorization", "Basic " + token18);
+                            }else if(team == 17){
+                                h.append("Authorization", "Basic " + token17);
+                            }else if(team == 02){
+                                h.append("Authorization", "Basic " + token02);
+                            }
+                            h.append("Content-Type", "application/json");
+
+                            let req = new Request(url, {
+                                method: "POST",
+                                mode: "cors",
+                                headers: h,
+                                body: like,
+                            });
+
+                            fetch(req)
+                            .then(response => {
+                                console.log(response.status);
+                            });
+                        });
+                        counter = counter + 1;
+                    </script>
+                    {%else%}
+    
                     <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                         {% csrf_token %}
                         <input type="hidden" name="type" value="commentLike">
                         <input type="hidden" name="url" value="{{ls.id}}">
                         <input type="hidden" name="id" value="{{comment.localId}}">
                         <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
-                    
                     </form>
+                    {%endif%}
                 </div>
             {% endfor %}
         {% else %}
@@ -161,14 +295,90 @@ View List
                         {%endif%}
                         
                         <div class="card-body">{{comment.content}}</div>
+                        {%if comment.remote%}
+
+                        <form method="post" name="remoteCommentLike" style="margin-top: 30pt;" action="#">
+                            {% csrf_token %}
+                            <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
+                        </form>
+                        <script>
+                            likeComment = [...document.getElementsByName("likeComment")][counter];
+                            likeComment.addEventListener("click", function(){
+                                token10 = "dDEyOkNNUFVUNDA0";
+                                token18 = "dDEyOkNNUFVUNDA0";
+                                token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
+                                token02 = "VDEyOkNNUFVUNDA0";
+
+                                let url = '{{comment.remote_author.url}}'
+                                let team;
+                                if ('{{comment.remote_author.host}}' == "https://cmput404-socialdistributio-t18.herokuapp.com"){
+                                    team = 18;
+                                }else if('{{comment.remote_author.host}}' == "https://cmput404f21t17.herokuapp.com/"){
+                                    team = 17;
+                                }else if('{{comment.remote_author.host}}' == "https://ourbackend.herokuapp.com/"){
+                                    team = 02;
+                                }else{
+                                    team = 10;
+                                }
+                            
+
+                                let host = "{{user.host}}"
+                                let user_url = "{{user.id}}".replace(host, "")
+                                user_url = host + 'service/' +user_url
+                                let like = {
+                                    "type": "like",
+                                    "@context": "https://www.w3.org/ns/activitystreams",
+                                    "summary": "{{user.displayName}}" + " likes your post",
+                                    "author": {
+                                        "type": "author",
+                                        "id": user_url,
+                                        "host":"{{user.host}}",
+                                        "displayName": "{{user.displayName}}",
+                                        "url": user_url,
+                                        "github": "{{user.github}}",
+                                        "profileImage": "{{user.profileImage}}"
+                                    },
+                                    "object": '{{comment.commentId}}'
+                                };
+
+                                like = JSON.stringify(like);
+                                let h = new Headers();
+                                if (team == 10){
+                                    h.append("Authorization", "Basic " + token10);
+                                }
+                                else if (team == 18){
+                                    h.append("Authorization", "Basic " + token18);
+                                }else if(team == 17){
+                                    h.append("Authorization", "Basic " + token17);
+                                }else if(team == 02){
+                                    h.append("Authorization", "Basic " + token02);
+                                }
+                                h.append("Content-Type", "application/json");
+
+                                let req = new Request(url, {
+                                    method: "POST",
+                                    mode: "cors",
+                                    headers: h,
+                                    body: like,
+                                });
+
+                                fetch(req)
+                                .then(response => {
+                                    console.log(response.status);
+                                });
+                            });
+                            counter = counter + 1;
+                        </script>
+                        {%else%}
+
                         <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                             {% csrf_token %}
                             <input type="hidden" name="type" value="commentLike">
                             <input type="hidden" name="url" value="{{ls.id}}">
                             <input type="hidden" name="id" value="{{comment.localId}}">
                             <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
-                        
                         </form>
+                        {%endif%}
                     </div>
                 {% endif %}
             {% endfor %}
@@ -184,7 +394,80 @@ View List
                 <div class="card-body">{{comment.content}}</div>
 
                 {%if comment.remote%}
+                <form method="post" name="remoteCommentLike" style="margin-top: 30pt;" action="#">
+                    {% csrf_token %}
+                    <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
+                </form>
+                <script>
+                    
+                    likeComment = [...document.getElementsByName("likeComment")][counter];
+                    likeComment.addEventListener("click", function(){
+                        token10 = "dDEyOkNNUFVUNDA0";
+                        token18 = "dDEyOkNNUFVUNDA0";
+                        token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
+                        token02 = "VDEyOkNNUFVUNDA0";
+                        
+                        let url = '{{comment.remote_author.url}}' + '/inbox/'
+                        let host = "{{user.host}}"
+                        let user_url = "{{user.id}}".replace(host, "")
+                        user_url = host + 'service/' +user_url
 
+
+                        let team;
+                        if ('{{comment.remote_author.host}}' == "https://cmput404-socialdistributio-t18.herokuapp.com"){
+                            team = 18;
+                        }else if('{{comment.remote_author.host}}' == "https://cmput404f21t17.herokuapp.com/"){
+                            team = 17;
+                        }else if('{{comment.remote_author.host}}' == "https://ourbackend.herokuapp.com/"){
+                            team = 02;
+                        }else{
+                            team = 10;
+                        }
+                        
+                        let like = {
+                            "type": "like",
+                            "@context": "https://www.w3.org/ns/activitystreams",
+                            "summary": "{{user.displayName}}" + " likes your post",
+                            "author": {
+                                "type": "author",
+                                "id": user_url,
+                                "host":"{{user.host}}",
+                                "displayName": "{{user.displayName}}",
+                                "url": user_url,
+                                "github": "{{user.github}}",
+                                "profileImage": "{{user.profileImage}}"
+                            },
+                            "object": '{{comment.commentId}}'
+                        };
+
+                        like = JSON.stringify(like);
+                        let h = new Headers();
+                        if (team == 10){
+                            h.append("Authorization", "Basic " + token10);
+                        }
+                        else if (team == 18){
+                            h.append("Authorization", "Basic " + token18);
+                        }else if(team == 17){
+                            h.append("Authorization", "Basic " + token17);
+                        }else if(team == 02){
+                            h.append("Authorization", "Basic " + token02);
+                        }
+                        h.append("Content-Type", "application/json");
+
+                        let req = new Request(url, {
+                            method: "POST",
+                            mode: "cors",
+                            headers: h,
+                            body: like,
+                        });
+
+                        fetch(req)
+                        .then(response => {
+                            console.log(response.status);
+                        });
+                    });
+                    counter = counter + 1;
+                </script>
                 {%else%}
 
                 <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
@@ -202,13 +485,17 @@ View List
     {% endif %}
     
     <script>
-        let likeDict = '{{likeDict|safe}}'
-        likeDict = JSON.parse(likeDict)
-        let likeCommets = document.getElementsByName("commentLike")
-        for(item of likeCommets){
-            let children = item.children
-            if( likeDict[children[3].value]){
-                children[4]. disabled = true;
+        let likeDict = '{{likeDict|safe}}';
+        if(likeDict != ""){
+            likeDict = JSON.parse(likeDict)
+            alert(likeDict);
+            let likeCommets = document.getElementsByName("commentLike")
+            for(item of likeCommets){
+                let children = item.children
+                console.log(children);
+                if( likeDict[children[3].value]){
+                    children[4]. disabled = true;
+                }
             }
         }
     </script>
