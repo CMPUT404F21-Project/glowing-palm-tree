@@ -23,8 +23,9 @@ import markdown
 
 @csrf_exempt
 def send_to_inbox(item, inboxes):
+    print("++++++++++++++++++++++")
     for inbox in inboxes:
-
+        print("----------------------",inbox.author)
         items = inbox.items
         print(items)
         items = json.loads(items)
@@ -192,7 +193,7 @@ def manage_followers(response, author_id, foreign_author_id):
             following = Following.objects.create(user=foreign_user_id, following_user=user_id)
         else:
             following = Following.objects.create(user=user_id, following_user=foreign_user_id)
-            
+
         following.save()
         return HttpResponse(status=204)
 
@@ -417,7 +418,9 @@ def manage_comments(response, author_id, post_id):
                 user_github = user.github
                 user_profileImage = user.profileImage
             else:
-                user = json.loads(comment.remote_author)
+                user = comment.remote_author
+                print("comment++++++++++++++++++++++++++")
+                print(type(user))
                 user_url = user["url"]
                 user_host = user["host"]
                 user_displayName = user["displayName"]
@@ -472,9 +475,19 @@ def manage_comments(response, author_id, post_id):
 @csrf_exempt
 def send_inbox(response, author_id):
     user = get_object_or_404(User, localId=author_id)
-    inbox = get_object_or_404(Inbox, author=user.id)
+    print("finding")
+    inbox = get_object_or_404(Inbox, author=user)
+    
+    print("found")
     if response.method == "POST":
         data = json.loads(response.body)
+        a = str(data["id"])
+        temp = re.search('/comments(s?)/(?P<id>[^/]*)$', a).group()
+        temp = a.replace(temp, "")
+        temp = re.search('/posts(s?)/(?P<id>[^/]*)$', temp).group()
+        localId = temp.replace("/posts/", "")
+
+        moment = get_object_or_404(Moment, localId=localId)
         # print(data)
         if data["type"] == "like" or data["type"] == "Like":
             like = Likes.objects.filter(author=data['author'])
@@ -484,6 +497,7 @@ def send_inbox(response, author_id):
                 like = model_to_dict(like)
                 send_to_inbox(data, [inbox])
             temp = HttpResponse(status=201)
+            moment.count = moment.count + 1
             return temp
         elif data["type"] == "post":
             moment = data
@@ -493,23 +507,22 @@ def send_inbox(response, author_id):
             moment['userLink'] = moment['author']['url']
             send_to_inbox(moment, [inbox])
             return HttpResponse(status=201)
-        elif data["type"] == "follow":
+        elif data["type"] == "follow" or data["type"] == "Follow":
             userId = data["object"]["url"]
             follower = data["actor"]["url"]
-            inbox = get_object_or_404(Inbox, author=userId)
-            following = Following.objects.create(user=follower, following_user=follower)
+            remoteUser = User.objects.filter(type__exact="remote", id__exact=follower)
+            if remoteUser.exists():
+                remoteUser = remoteUser[0]
+            else:
+                remoteUser = User.objects.create(type="remote", id=follower, username=data["actor"]["displayName"]+"remote")
+                remoteUser.save()
+            following = Following.objects.create(user=user, following_user=remoteUser)
             following.save()
-            following = model_to_dict(following)
+            following = {"user":data["actor"]["displayName"], "userId":data["actor"]["url"], "type":"follow"}
             send_to_inbox(following, [inbox])
             return HttpResponse(status=201)
         elif data["type"] == "comment":
-            a = str(data["id"])
-            temp = re.search('/comments(s?)/(?P<id>[^/]*)$', a).group()
-            temp = a.replace(temp, "")
-            temp = re.search('/posts(s?)/(?P<id>[^/]*)$', temp).group()
-            localId = temp.replace("/posts/", "")
-
-            moment = get_object_or_404(Moment, localId=localId)
+            
             data = json.loads(response.body)
             obj_type = data['type']
             temp = re.search('/comments(s?)/(?P<id>[^/]*)$', data['id']).group()
@@ -522,6 +535,7 @@ def send_inbox(response, author_id):
                                                 remote=True, remote_author=data["author"]
                                             )
             comment.save()
+
             return HttpResponse(status=201)
         else:
             return HttpResponseBadRequest()
@@ -555,7 +569,9 @@ def get_likes_post(response, author_id, post_id):
     moment = get_object_or_404(Moment, localId=post_id, user=user.id)
     
     if response.method == "GET":
-        likes = Likes.objects.filter(object__exact=moment.id).exclude(userId__exact=user.id)
+        object = moment.id.replace(user.host, "")
+        object = user.host + 'service/' + object
+        likes = Likes.objects.filter(object__exact=object).exclude(userId__exact=user.id)
 
         page  = response.GET.get("page", 1)
         size = response.GET.get("size", len(likes))

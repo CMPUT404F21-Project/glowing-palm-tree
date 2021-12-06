@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Inbox, Liked, Likes, Moment, Comment, User, Pending
+from .models import Following, Inbox, Liked, Likes, Moment, Comment, User, Pending
 from django.contrib.auth.admin import UserAdmin
 from rest_framework.authtoken.admin import TokenAdmin
 
