@@ -16,6 +16,10 @@ h1{
 .foreignBadge {
     margin-right: 3pt;
 }
+a#content-body{
+    color: black;
+    text-decoration: none;
+}
 </style>
 {% endblock %}
 
@@ -90,12 +94,12 @@ h1{
                                 <label class="btn btn-outline-secondary" for="btncheck17">Team02</label>
                                 {%endif%}
 
-                                {%if team03%}
-                                <input type="checkbox" class="btn-check" id="btncheck18" autocomplete="off" name="Teams" value="Team03" checked>
-                                <label class="btn btn-outline-secondary" for="btncheck18">Team03</label>  
+                                {%if team17%}
+                                <input type="checkbox" class="btn-check" id="btncheck18" autocomplete="off" name="Teams" value="Team17" checked>
+                                <label class="btn btn-outline-secondary" for="btncheck18">Team17</label>  
                                 {%else%}
-                                <input type="checkbox" class="btn-check" id="btncheck19" autocomplete="off" name="Teams" value="Team03">
-                                <label class="btn btn-outline-secondary" for="btncheck19">Team03</label>
+                                <input type="checkbox" class="btn-check" id="btncheck19" autocomplete="off" name="Teams" value="Team17">
+                                <label class="btn btn-outline-secondary" for="btncheck19">Team17</label>
                                 {%endif%}
                             </div>
                         </fieldset>
@@ -179,7 +183,7 @@ h1{
              
             {% endfor %}
         
-        {%if team10 or team12 or team18 or team02 or team03%}
+        {%if team10 or team12 or team18 or team02 or team17%}
         <h4 style="text-align: center; margin-top: 30pt;"> Posts from other servers</h4>
         <hr class="" style="margin-left: auto; margin-right: auto;">
         {%endif%}
@@ -878,17 +882,17 @@ h1{
         {% endif %}
 
 
-        {% if team03 %}
+        {% if team17 %}
         <script>
             // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
-            let url03 = "https://cmput404f21t17.herokuapp.com/service/";
+            let url17 = "https://cmput404f21t17.herokuapp.com/service/";
             // let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
             // let tokens = []
             // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
             h1 = new Headers();
             h1.append("Authorization", "Basic NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng==");
             foreignAuthor = [];
-            req = new Request(url03+"authors/", {
+            req = new Request(url17 +"authors/", {
                 method: 'GET',
                 headers: h1
             });

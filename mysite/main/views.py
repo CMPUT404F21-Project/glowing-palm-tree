@@ -439,7 +439,7 @@ def view(response):
     team18 = False
     team10 = False
     team02 = False
-    team03 = False
+    team17 = False
 
     if "Team12" in teams:
         team12 = True
@@ -449,13 +449,13 @@ def view(response):
         team10 = True
     if "Team02" in teams:
         team02 = True
-    if "Team03" in teams:
-        team03 = True
+    if "Team17" in teams:
+        team17 = True
 
 
     return render(response, "main/view.html", {"showList":showList, 'user':response.user, 'content':content, 
                                                 "categoriesNeeded": json.dumps(categoriesNeeded),
-                                                "team12": team12, "team10": team10, "team18":team18, "team02":team02, "team03":team03})
+                                                "team12": team12, "team10": team10, "team18":team18, "team02":team02, "team17":team17})
 
 def browseAuthors(response):
     localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
