@@ -223,8 +223,8 @@ View List
                                 team = 10;
                             }
                             
-                            let url = '{{comment.remote_author.url}}'
-
+                            let url = '{{comment.remote_author.url}}' +'/inbox/'
+                            console.log(url);
                             let host = "{{user.host}}"
                             let user_url = "{{user.id}}".replace(host, "")
                             user_url = host + 'service/' +user_url
@@ -309,7 +309,8 @@ View List
                                 token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
                                 token02 = "VDEyOkNNUFVUNDA0";
 
-                                let url = '{{comment.remote_author.url}}'
+                                let url = '{{comment.remote_author.url}}' +'/inbox/'
+                                console.log(url);
                                 let team;
                                 if ('{{comment.remote_author.host}}' == "https://cmput404-socialdistributio-t18.herokuapp.com"){
                                     team = 18;
@@ -411,6 +412,7 @@ View List
                         let host = "{{user.host}}"
                         let user_url = "{{user.id}}".replace(host, "")
                         user_url = host + 'service/' +user_url
+                        console.log(url);
 
 
                         let team;
