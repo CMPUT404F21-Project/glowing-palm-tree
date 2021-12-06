@@ -24,8 +24,11 @@ import markdown
 @csrf_exempt
 def send_to_inbox(item, inboxes):
     for inbox in inboxes:
+
         items = inbox.items
+        print(items)
         items = json.loads(items)
+        items.append(item)
         items = json.dumps(items, default=date_converter)
         inbox.items = items
         inbox.save()
@@ -451,14 +454,14 @@ def send_inbox(response, author_id):
     inbox = get_object_or_404(Inbox, author=user.id)
     if response.method == "POST":
         data = json.loads(response.body)
-        print(data)
+        # print(data)
         if data["type"] == "like":
             like = Likes.objects.filter(author=data['author'])
             if not like.exists():
-                like = Likes.objects.create(type="like", summary=data["summary"], author=data["author"], object=data["object"])
-                like.save()
-                like = model_to_dict(like)
-                send_to_inbox(like, [inbox])
+                # like = Likes.objects.create(context=data["@context"], type="like", summary=data["summary"], author=data["author"], object=data["object"])
+                # like.save()
+                # like = model_to_dict(like)
+                send_to_inbox(data, [inbox])
             return HttpResponse(status=201)
         elif data["type"] == "post":
             moment = data
