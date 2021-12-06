@@ -70,25 +70,25 @@ View
     <form method="get" action="/author/{{authorId}}/posts/" class="form-group">
         {% csrf_token %}
           {% if page == maxPage %}
-          <input id="submitButton" class="btn btn-success" type="submit" value="Next page" disabled> 
+          <input id="submitButton" class="btn btn-primary" type="submit" value="Next page" disabled> 
         {% else %}
 
           <input type="hidden" name="page" value={{page|add:1}}>
           <input type="hidden" name="size" value={{size}}>
           <input type="hidden" name="type" value="next">
-          <input id="submitButton" class="btn btn-success" type="submit" value="Next page"> 
+          <input id="submitButton" class="btn btn-primary" type="submit" value="Next page"> 
         {%endif%}
     </form>
 
     <form method="get" action="/author/{{authorId}}/posts/" class="form-group">
         {% csrf_token %}
         {% if page == 1 %}
-        <input id="submitButton" class="btn btn-success" type="submit" value="Previous page" disabled> 
+        <input id="submitButton" class="btn btn-primary" type="submit" value="Previous page" disabled> 
         {% else %}
         <input type="hidden" name="page" value={{page|add:-1}}>
         <input type="hidden" name="size" value={{size}}>
         <input type="hidden" name="type" value="previous">
-        <input id="submitButton" class="btn btn-success" type="submit" value="Previous page"> 
+        <input id="submitButton" class="btn btn-primary" type="submit" value="Previous page"> 
         {%endif%}
 
 

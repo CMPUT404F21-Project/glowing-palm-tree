@@ -47,16 +47,16 @@ View List
             <div style="padding-bottom: 50pt;">   </div>
         </div>
         <form id="LikeForm" action="#" method="post">
-        <a style="color: white; margin-top: 10pt;" class="btn btn-success" href="{{ls.id}}/share">repost Post</a>
+        <a style="color: white; margin-top: 10pt;" class="btn btn-primary" href="{{ls.id}}/share">repost Post</a>
         <div id="likeShare">
             {% csrf_token %}
             <input type="hidden" name="url" value="{{ls.id}}">
-            <a style="color: white; margin-top: 10pt;" class="btn btn-success " onclick="shareOnClick()" >Share</a>
+            <a style="color: white; margin-top: 10pt;" class="btn btn-primary " onclick="shareOnClick()" >Share</a>
             {% if liked %}
-            <a style="color: white; margin-top: 10pt;" value="{{ls.id}}" name="cantlike" class="btn btn-success"  disabled>Like</a>
+            <a style="color: white; margin-top: 10pt;" value="{{ls.id}}" name="cantlike" class="btn btn-primary"  disabled>Like</a>
             {% else %}
             <input type="hidden" name="type" value="like">
-            <a style="color: white; margin-top: 10pt;" value="{{ls.id}}" name="likeButton" class="btn btn-success">Like</a>
+            <a style="color: white; margin-top: 10pt;" value="{{ls.id}}" name="likeButton" class="btn btn-primary">Like</a>
             {% endif %}
         </div>
         </form>
@@ -66,7 +66,7 @@ View List
                 <input type="hidden" name="url" value="{{ls.id}}">
                 <input type="hidden" name="type" value="share">
                 <section id="section"></section>
-                <button value="confirm" name="confirm" class="btn btn-success" id="confirmButton" type="submit" hidden style="float: right;">confirm</button>
+                <button value="confirm" name="confirm" class="btn btn-primary" id="confirmButton" type="submit" hidden style="float: right;">confirm</button>
             </form>
         </div>
         
@@ -157,7 +157,7 @@ View List
         <div class="input-group mb-3">
             <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
         </div>
-        <a style="color: white; float: right;" type="submit", name="newComment", value="newComment", class="btn btn-success">Post comment</a>
+        <a style="color: white; float: right;" type="submit", name="newComment", value="newComment", class="btn btn-primary">Post comment</a>
     </form>
         </div>
     </div>

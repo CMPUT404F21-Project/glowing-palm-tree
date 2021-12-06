@@ -44,7 +44,7 @@ Create new post
 {% block content %}
 
   {% if user.is_anonymous%}
-    <a href="/login/" class="btn btn-success buttons">Login To Share Your Posts!</a>
+    <a href="/login/" class="btn btn-primary buttons">Login To Share Your Posts!</a>
   
   {% elif not user.authorized %}
   <h1 style="text-align: center;">Your registration is still in process.</h1>
@@ -55,7 +55,6 @@ Create new post
     <form method="post" action="{{user.id}}/posts/" class="form-group" id="contentForm" onsubmit="post()">
         {% csrf_token %}
         {{form|crispy}}
-          <input id="submitButton" class="btn btn-success" type="submit" value="Post">
           <br>
           <fieldset>  
             <legend>Categories</legend>  
@@ -81,7 +80,8 @@ Create new post
               <input type="checkbox" class="btn-check" id="btncheck10" autocomplete="off" name="Categories" value="Politics">
               <label class="btn btn-outline-secondary" for="btncheck10">Politics</label>  
             </div>
-          </fieldset>  
+          </fieldset>
+          <input id="submitButton" class="btn btn-primary" type="submit" value="Post" style="margin-top: 30pt;">  
     </form>
   {%endif%}
 <br>
