@@ -155,7 +155,7 @@ def retrive_followers(response, author_id):
             user_url = host + 'service/' +user_url
 
         user_object = {
-            "type": user.type,
+            "type": "author",
             "id": user_url,
             "url": user_url,
             "host": user.host,
@@ -523,7 +523,7 @@ def send_inbox(response, author_id):
             if remoteUser.exists():
                 remoteUser = remoteUser[0]
             else:
-                remoteUser = User.objects.create(type="remote", host=data["actor"]["host"], id=follower, username=data["actor"]["displayName"]+"remote", displayName=data["actor"]["displayName"])
+                remoteUser = User.objects.create(type="remote", profileImage=data["actor"]["profileImage"], github=data["actor"]["github"], host=data["actor"]["host"], id=follower, username=data["actor"]["displayName"]+"remote", displayName=data["actor"]["displayName"])
                 remoteUser.save()
             following = Following.objects.create(user=user, following_user=remoteUser)
             following.save()
