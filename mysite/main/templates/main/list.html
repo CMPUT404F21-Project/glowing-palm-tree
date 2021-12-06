@@ -134,7 +134,11 @@ View List
         {% if ls.user.id == user.id %}
             {% for comment in ls.comment_set.all %}
                 <div class="card " style="margin-top: 30pt;">
+                    {% if comment.remote%}
+                    <div class="card-header">{{comment.remote_author.displayName}} <br> {{comment.published}}</div>
+                    {%else%}
                     <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
+                    {%endif%}
                     <div class="card-body">{{comment.content}}</div>
                     <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                         {% csrf_token %}
@@ -150,7 +154,12 @@ View List
             {% for comment in ls.comment_set.all %} 
                 {% if comment.author.id == user.id %}
                     <div class="card " style="margin-top: 30pt;">
+                        {% if comment.remote%}
+                        <div class="card-header">{{comment.remote_author.displayName}} <br> {{comment.published}}</div>
+                        {%else%}
                         <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
+                        {%endif%}
+                        
                         <div class="card-body">{{comment.content}}</div>
                         <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                             {% csrf_token %}
@@ -167,16 +176,25 @@ View List
     {% else %}
         {% for comment in ls.comment_set.all %}
             <div class="card " style="margin-top: 30pt;">
+                {% if comment.remote%}
+                <div class="card-header">{{comment.remote_author.displayName}} <br> {{comment.published}}</div>
+                {%else%}
                 <div class="card-header">{{comment.author.displayName}} <br> {{comment.published}}</div>
+                {%endif%}
                 <div class="card-body">{{comment.content}}</div>
+
+                {%if comment.remote%}
+
+                {%else%}
+
                 <form method="post" name="commentLike" style="margin-top: 30pt;" action="{{comment.author.id}}/commentLike/">
                     {% csrf_token %}
                     <input type="hidden" name="type" value="commentLike">
                     <input type="hidden" name="url" value="{{ls.id}}">
                     <input type="hidden" name="id" value="{{comment.localId}}">
                     <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
-                
                 </form>
+                {%endif%}
             </div>
             
             
