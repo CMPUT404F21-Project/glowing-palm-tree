@@ -55,16 +55,16 @@ View List
         </div>
         </div>
         <form id="LikeForm" action="{{ls.user.id}}/inbox/" method="post">
-        <a style="color: white; margin-top: 10pt;" class="btn btn-success" href="{{ls.id}}/share">repost Post</a>
+        <a style="color: white; margin-top: 10pt;" class="btn btn-primary" href="{{ls.id}}/share">repost Post</a>
         <div id="likeShare" style="margin-top: 10pt;">
             {% csrf_token %}
             <input type="hidden" name="url" value="{{ls.id}}">
-            <a style="color: white;" class="btn btn-success " onclick="shareOnClick()" >Share</a>
+            <a style="color: white;" class="btn btn-primary " onclick="shareOnClick()" >Share</a>
             {% if liked %}
-            <button  value="{{ls.id}}" name="cantlike" class="btn btn-success " type="submit" disabled>Like</button>
+            <button  value="{{ls.id}}" name="cantlike" class="btn btn-primary " type="submit" disabled>Like</button>
             {% else %}
             <input type="hidden" name="type" value="like">
-            <button  value="{{ls.id}}" name="likeButton" class="btn btn-success " type="submit">Like</button>
+            <button  value="{{ls.id}}" name="likeButton" class="btn btn-primary " type="submit">Like</button>
             {% endif %}
         </div>
         </form>
@@ -74,7 +74,7 @@ View List
                 <input type="hidden" name="url" value="{{ls.id}}">
                 <input type="hidden" name="type" value="share">
                 <section id="section"></section>
-                <button value="confirm" name="confirm" class="btn btn-success" id="confirmButton" type="submit" hidden style="float: right;">confirm</button>
+                <button value="confirm" name="confirm" class="btn btn-primary" id="confirmButton" type="submit" hidden style="float: right;">confirm</button>
             </form>
         </div>
         
@@ -141,7 +141,7 @@ View List
                         <input type="hidden" name="type" value="commentLike">
                         <input type="hidden" name="url" value="{{ls.id}}">
                         <input type="hidden" name="id" value="{{comment.localId}}">
-                        <button type="submit", name="likeComment", value="likeComment", class="btn btn-success" style="float: right;">like</button>
+                        <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
                     
                     </form>
                 </div>
@@ -157,7 +157,7 @@ View List
                             <input type="hidden" name="type" value="commentLike">
                             <input type="hidden" name="url" value="{{ls.id}}">
                             <input type="hidden" name="id" value="{{comment.localId}}">
-                            <button type="submit", name="likeComment", value="likeComment", class="btn btn-success" style="float: right;">like</button>
+                            <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
                         
                         </form>
                     </div>
@@ -174,7 +174,7 @@ View List
                     <input type="hidden" name="type" value="commentLike">
                     <input type="hidden" name="url" value="{{ls.id}}">
                     <input type="hidden" name="id" value="{{comment.localId}}">
-                    <button type="submit", name="likeComment", value="likeComment", class="btn btn-success" style="float: right;">like</button>
+                    <button type="submit", name="likeComment", value="likeComment", class="btn btn-primary" style="float: right;">like</button>
                 
                 </form>
             </div>
@@ -202,7 +202,7 @@ View List
         <div class="input-group mb-3">
             <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
         </div>
-        <button type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</button>
+        <button type="submit", name="newComment", value="newComment", class="btn btn-primary" style="float: right;">Post comment</button>
     </form>
 
 {% endblock %}

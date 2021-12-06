@@ -28,7 +28,6 @@ h1{
             <div style="position: fixed;">
                 <form method="post" action="/view/" class="form-group" id="filterForm">
                     {% csrf_token %}
-                      <br>
                       <fieldset id="categoriesFilter">  
                         <legend>Categories Filter</legend>  
                         <div class="btn-group-vertical btn-group-sm" role="group" aria-label="Basic checkbox toggle button group" style="margin-left: 30pt;">
@@ -101,7 +100,7 @@ h1{
                             </div>
                         </fieldset>
                         <br>
-                      <input id="submitButton" class="btn btn-success" type="submit" value="apply" style="margin-left: 30pt;">
+                      <input id="submitButton" class="btn btn-primary" type="submit" value="apply" style="margin-left: 30pt;">
                 </form>
               </div>
 
@@ -123,7 +122,8 @@ h1{
                 src = JSON.parse(src);
                 categories = JSON.parse(categories);
                 
-                let fieldset = document.getElementById("categoriesFilter") 
+                let fieldset = document.getElementById("categoriesFilter")
+                fieldset = fieldset.children[1] 
                 
                 for(child of fieldset.children){
                     if(categories.includes(child.value)){
@@ -143,7 +143,7 @@ h1{
             {% for pl in showList %}
         
             
-            <div class="moment" style="margin-top:40pt;">
+            <div class="moment" style="margin-top:20pt;">
                 
                 <div class="card">
                     <div class="card-header">
@@ -180,7 +180,8 @@ h1{
             {% endfor %}
         
         {%if team10 or team12 or team18 or team02 or team03%}
-        <h1> Posts from other servers</h1>
+        <h4 style="text-align: center; margin-top: 30pt;"> Posts from other servers</h4>
+        <hr class="" style="margin-left: auto; margin-right: auto;">
         {%endif%}
         
         
