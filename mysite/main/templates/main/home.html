@@ -28,6 +28,9 @@
   #div_id_fileSelect{
     display: none;
   }
+  label {
+    width: 70pt;
+  }
 </style>
 {% endblock %}
 {% block title %}
@@ -56,16 +59,28 @@ Create new post
           <br>
           <fieldset>  
             <legend>Categories</legend>  
-            <input type="checkbox" name="Categories" value="Food" > Food<br>  
-            <input type="checkbox" name="Categories" value="News" > News<br>  
-            <input type="checkbox" name="Categories" value="Travel" > Travel<br> 
-            <input type="checkbox" name="Categories" value="Business" > Business<br>  
-            <input type="checkbox" name="Categories" value="Financial" > Financial<br>  
-            <input type="checkbox" name="Categories" value="Sports" > Sports<br> 
-            <input type="checkbox" name="Categories" value="Movies" > Movies<br>  
-            <input type="checkbox" name="Categories" value="Games" > Games<br>  
-            <input type="checkbox" name="Categories" value="ACG" > ACG<br>  
-            <input type="checkbox" name="Categories" value="Politics" > Politics<br>  
+            <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+              <input type="checkbox" class="btn-check" id="btncheck1" autocomplete="off" name="Categories" value="Food" >
+              <label class="btn btn-outline-secondary" for="btncheck1">Food</label>
+              <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" name="Categories" value="News" > 
+              <label class="btn btn-outline-secondary" for="btncheck2">News</label>
+              <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" name="Categories" value="Travel">
+              <label class="btn btn-outline-secondary" for="btncheck3">Travel</label>
+              <input type="checkbox" class="btn-check" id="btncheck4" autocomplete="off" name="Categories" value="Business">
+              <label class="btn btn-outline-secondary" for="btncheck4">Business</label>
+              <input type="checkbox" class="btn-check" id="btncheck5" autocomplete="off" name="Categories" value="Financial"> 
+              <label class="btn btn-outline-secondary" for="btncheck5">Financial</label>
+              <input type="checkbox" class="btn-check" id="btncheck6" autocomplete="off" name="Categories" value="Sports">
+              <label class="btn btn-outline-secondary" for="btncheck6">Sports</label>
+              <input type="checkbox" class="btn-check" id="btncheck7" autocomplete="off" name="Categories" value="Movies"> 
+              <label class="btn btn-outline-secondary" for="btncheck7">Movies</label>
+              <input type="checkbox" class="btn-check" id="btncheck8" autocomplete="off" name="Categories" value="Games"> 
+              <label class="btn btn-outline-secondary" for="btncheck8">Games</label>
+              <input type="checkbox" class="btn-check" id="btncheck9" autocomplete="off" name="Categories" value="ACG"> 
+              <label class="btn btn-outline-secondary" for="btncheck9">ACG</label>
+              <input type="checkbox" class="btn-check" id="btncheck10" autocomplete="off" name="Categories" value="Politics">
+              <label class="btn btn-outline-secondary" for="btncheck10">Politics</label>  
+            </div>
           </fieldset>  
     </form>
   {%endif%}

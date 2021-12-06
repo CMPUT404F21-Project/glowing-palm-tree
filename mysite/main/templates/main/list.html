@@ -50,15 +50,13 @@ View List
         <div style="padding-bottom: 50pt;">   </div>
         <div class="card-header" >
             {% for c in ls.categories %}
-               
-                {{c}} 
-                
+            <span class="badge bg-secondary">{{c}} </span>  
             {% endfor %}
         </div>
         </div>
         <form id="LikeForm" action="{{ls.user.id}}/inbox/" method="post">
-        <a style="color: white;" class="btn btn-success" href="{{ls.id}}/share">repost Post</a>
-        <div id="likeShare">
+        <a style="color: white; margin-top: 10pt;" class="btn btn-success" href="{{ls.id}}/share">repost Post</a>
+        <div id="likeShare" style="margin-top: 10pt;">
             {% csrf_token %}
             <input type="hidden" name="url" value="{{ls.id}}">
             <a style="color: white;" class="btn btn-success " onclick="shareOnClick()" >Share</a>
@@ -71,12 +69,12 @@ View List
         </div>
         </form>
         <div><br>
-            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post" onsubmit="alert('hahahaha')">
+            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post" onsubmit="alert('succeed!')">
                 {% csrf_token %}
                 <input type="hidden" name="url" value="{{ls.id}}">
                 <input type="hidden" name="type" value="share">
-                <button value="confirm" name="confirm" class="btn btn-success" id="confirmButton" type="submit" hidden>confirm</button>
                 <section id="section"></section>
+                <button value="confirm" name="confirm" class="btn btn-success" id="confirmButton" type="submit" hidden style="float: right;">confirm</button>
             </form>
         </div>
         
@@ -105,17 +103,25 @@ View List
                 let section = document.getElementById("section")
                 let contentCard = document.getElementById("contentCard")
                 for(let i=0; i < nameList.length; i++){
+                    let group = document.createElement("div")
                     let checkbox = document.createElement("input")
                     let label = document.createElement("label")
+                    group.setAttribute("class", "btn-group")
+                    group.setAttribute("role", "group")
+                    group.setAttribute("aria-label", "Basic checkbox toggle button group")
+                    group.setAttribute("style", "float: right;")
                     checkbox.setAttribute("type","checkbox")
                     checkbox.setAttribute("value", idList[i])
                     checkbox.setAttribute("name", "userSelect")
                     checkbox.setAttribute("id", "user"+ i)
+                    checkbox.setAttribute("class", "btn-check")
+                    checkbox.setAttribute("autocomplete", "off")
                     label.setAttribute("for", "user" + i)
+                    label.setAttribute("class", "btn btn-outline-secondary")
                     label.innerHTML = nameList[i]
-                    section.appendChild(checkbox)
-                    section.appendChild(label)
-                    section.appendChild(br)
+                    group.appendChild(checkbox)
+                    group.appendChild(label)
+                    section.appendChild(group)
 
                 }
                 let confirm = document.getElementById("confirmButton");
@@ -192,8 +198,8 @@ View List
     <form method="post" style="margin-top: 30pt;" action="{{ls.id}}/comments">
         {% csrf_token %}
         <input type="hidden" name="url" value={{ls.id}}>
+        <label for="comment">Comment:</label>
         <div class="input-group mb-3">
-            <label for="comment">Comment:</label>
             <textarea class="form-control" name="content" rows="5" id="comment"></textarea>
         </div>
         <button type="submit", name="newComment", value="newComment", class="btn btn-success" style="float: right;">Post comment</button>
