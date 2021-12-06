@@ -173,7 +173,7 @@ View List
             });
             return uuid;
         }
-        token10 = "dDEyOkNNUFVUNDA0";
+        token10 = "2dc59103754a77ac6a2de5a43fd9f994dc52e32a";
         token18 = "dDEyOkNNUFVUNDA0";
         token17 = "NmNmMGE1MDYtYWQ1Mi00YjNkLWEzMjMtMzRiOTc3NmNiYmE1OjEyMzQ1Ng=="
         token02 = "VDEyOkNNUFVUNDA0";
@@ -212,7 +212,7 @@ View List
             like = JSON.stringify(like);
             let h = new Headers();
             if (team == 10){
-                h.append("Authorization", "Basic " + token10);
+                h.append("Authorization", "Token " + token10);
             }
             else if (team == 18){
                 h.append("Authorization", "Basic " + token18);
@@ -242,14 +242,11 @@ View List
             let url;
             if (team == 17){
                 url = object
-            }
-            else if(team == 10){
-                url = "{{author.url}}" + '/inbox';
             }else{
                 url = "{{source}}" + "/comments";
             }
             console.log(url);
-            let id = "{{source}}" + "/comments/" + uuid()
+            let id = "{{source}}" + "/comments/"
 
             let content = document.getElementById("comment").value;
             let comment = {
@@ -273,15 +270,12 @@ View List
             if (team == 17){
                 let url = '{{author.host}}' + 'author/' + '{{author.id}}';
                 comment['url'] = url;
-            }else if(team == 10){
-                let id = "{{author.id}}".replace("{{author.host}}" + "author/", "");
-                comment['author'] = id;
             }
 
             comment = JSON.stringify(comment);
             let h = new Headers();
             if (team == 10){
-                h.append("Authorization", "Basic " + token10);
+                h.append("Authorization", "Token " + token10);
             }
             else if (team == 18){
                 h.append("Authorization", "Basic " + token18);
