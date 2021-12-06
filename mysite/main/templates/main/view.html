@@ -197,7 +197,7 @@ h1{
             // let tokens = []
             // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
             let h1 = new Headers();
-            h1.append("Authorization", "Basic dDEyOkNNUFVUNDA0");
+            h1.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
             let foreignAuthor = [];
             let req = new Request(url10+"authors/", {
                 method: 'GET',
@@ -207,7 +207,7 @@ h1{
             fetch(req)
             .then(response => response.json())
             .then(data => {
-                alert("success");
+    
     
                 
                 let jsonData = data;
@@ -216,10 +216,10 @@ h1{
                     return;
                 }
                 for (let author of jsonData){
-                    sleep(300);
+                    sleep(200);
                     let url = author['id'] + "/posts/";
                     let h2 = new Headers();
-                    h2.append("Authorization", "Basic dDEyOkNNUFVUNDA0");
+                    h2.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
                     let postReq = new Request(url,{
                         method: 'GET',
                         mode: 'cors',
@@ -362,14 +362,14 @@ h1{
         {% if team18 %}
         <script>
             // 2dc59103754a77ac6a2de5a43fd9f994dc52e32a  T10 Auth token
-            t18Token = btoa("t12:CMPUT404");
+            t18Token = btoa("Team12:CMPUT404");
             console.log(t18Token);
             // let url10 = "https://social-distribution-t10.herokuapp.com/api/";
             let url18 = "https://cmput404-socialdistributio-t18.herokuapp.com/"
             // let tokens = []
             // let url10 = "https://glowing-palm-tree1.herokuapp.com/service/authors/"
             let h3 = new Headers();
-            h3.append("Authorization", "Basic " + t18Token);
+            h3.append("Authorization", "Token " + t18Token);
             let foreignAuthor1 = [];
             let req1 = new Request(url18+"authors", {
                 method: 'GET',
@@ -396,7 +396,7 @@ h1{
                     // console.log(rest)
                     let url = api +'/author/' + rest + "/posts/";
                     let h2 = new Headers();
-                    h2.append("Authorization", "Basic " + t18Token);
+                    h2.append("Authorization", "Token " + t18Token);
                     let postReq = new Request(url,{
                         method: 'GET',
                         mode: 'cors',
@@ -567,7 +567,7 @@ h1{
                 for (let author of jsonData){
                     let url = author['id'] + "/posts/";
                     let h2 = new Headers();
-                    h2.append("Authorization", "Token 29ada9ea8c040ecf9874b549d9949a3e3748b62e");
+                    h2.append("Authorization", "Token 2dc59103754a77ac6a2de5a43fd9f994dc52e32a");
                     let postReq = new Request(url,{
                         method: 'GET',
                         mode: 'cors',
