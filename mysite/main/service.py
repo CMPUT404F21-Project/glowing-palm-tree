@@ -202,7 +202,9 @@ def manage_followers(response, author_id, foreign_author_id):
         return HttpResponse(status=204)
 
     elif response.method == "DELETE":
-        following = Following.objects.filter(user__exact=user.id, following_user__contains=foreign_author_id)
+        user = get_object_or_404(localId=author_id)
+        following_user = get_object_or_404(id__contains=foreign_author_id)
+        following = Following.objects.filter(user__exact=user, following_user=following_user)
         if not following.exists():
             return HttpResponseNotFound("No such follower")
         following[0].delete()
