@@ -10,8 +10,21 @@ View
 .btoa {
     padding-left: 0pt !important;
 }
-h1{
+/* h1{
     text-align: center;
+} */
+pre {
+    display: block !important;
+    padding: 9.5px  !important;
+    margin: 0 0 10px  !important;
+    font-size: 13px  !important;
+    line-height: 1.42857143  !important;
+    color: #333  !important;
+    word-break: break-all  !important;
+    word-wrap: break-word  !important;
+    background-color: #f5f5f5 !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
 }
 .foreignBadge {
     margin-right: 3pt;
@@ -43,22 +56,14 @@ a#title{
                             <label class="btn btn-outline-secondary" for="btncheck1">Food</label>
                             <input type="checkbox" class="btn-check" id="btncheck2" autocomplete="off" name="Categories" value="News" > 
                             <label class="btn btn-outline-secondary" for="btncheck2">News</label>
-                            <input type="checkbox" class="btn-check" id="btncheck3" autocomplete="off" name="Categories" value="Travel">
-                            <label class="btn btn-outline-secondary" for="btncheck3">Travel</label>
                             <input type="checkbox" class="btn-check" id="btncheck4" autocomplete="off" name="Categories" value="Business">
                             <label class="btn btn-outline-secondary" for="btncheck4">Business</label>
-                            <input type="checkbox" class="btn-check" id="btncheck5" autocomplete="off" name="Categories" value="Financial"> 
-                            <label class="btn btn-outline-secondary" for="btncheck5">Financial</label>
                             <input type="checkbox" class="btn-check" id="btncheck6" autocomplete="off" name="Categories" value="Sports">
                             <label class="btn btn-outline-secondary" for="btncheck6">Sports</label>
-                            <input type="checkbox" class="btn-check" id="btncheck7" autocomplete="off" name="Categories" value="Movies"> 
-                            <label class="btn btn-outline-secondary" for="btncheck7">Movies</label>
                             <input type="checkbox" class="btn-check" id="btncheck8" autocomplete="off" name="Categories" value="Games"> 
                             <label class="btn btn-outline-secondary" for="btncheck8">Games</label>
                             <input type="checkbox" class="btn-check" id="btncheck9" autocomplete="off" name="Categories" value="ACG"> 
                             <label class="btn btn-outline-secondary" for="btncheck9">ACG</label>
-                            <input type="checkbox" class="btn-check" id="btncheck10" autocomplete="off" name="Categories" value="Politics">
-                            <label class="btn btn-outline-secondary" for="btncheck10">Politics</label>  
                           </div>
                       </fieldset>
                       <br>
@@ -367,6 +372,11 @@ a#title{
                                 img.src = post["content"];
                                 body.appendChild(img);
                                 body.setAttribute("style", "justify-content:center;display:flex;");
+                            }else if (['text/markdown'].includes(text)){
+                                let converter = new showdown.Converter();
+                                html = converter.makeHtml(post["content"]);
+                                body.innerHTML = html;
+                                body.setAttribute("style", "");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -539,6 +549,11 @@ a#title{
                                 img.src = post["content"];
                                 body.appendChild(img);
                                 body.setAttribute("style", "justify-content:center;display:flex;");
+                            }else if (['text/markdown'].includes(text)){
+                                let converter = new showdown.Converter();
+                                html = converter.makeHtml(post["content"]);
+                                body.innerHTML = html;
+                                body.setAttribute("style", "");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -719,7 +734,12 @@ a#title{
                                 img.src = post["content"];
                                 body.appendChild(img);
                                 body.setAttribute("style", "justify-content:center;display:flex;");
-                            }else{
+                            }else if (['text/markdown'].includes(text)){
+                                let converter = new showdown.Converter();
+                                html = converter.makeHtml(post["content"]);
+                                body.innerHTML = html;
+                                body.setAttribute("style", "");
+                            }else {
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
                             }
@@ -897,6 +917,11 @@ a#title{
                                 img.src = post["content"];
                                 body.appendChild(img);
                                 body.setAttribute("style", "justify-content:center;display:flex;");
+                            }else if (['text/markdown'].includes(text)){
+                                let converter = new showdown.Converter();
+                                html = converter.makeHtml(post["content"]);
+                                body.innerHTML = html;
+                                body.setAttribute("style", "");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -1068,6 +1093,11 @@ a#title{
                                 img.src = post["content"];
                                 body.appendChild(img);
                                 body.setAttribute("style", "justify-content:center;display:flex;");
+                            }else if (['text/markdown'].includes(text)){
+                                let converter = new showdown.Converter();
+                                html = converter.makeHtml(post["content"]);
+                                body.innerHTML = html;
+                                body.setAttribute("style", "");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
@@ -1234,6 +1264,11 @@ a#title{
                                 img.src = post["content"];
                                 body.appendChild(img);
                                 body.setAttribute("style", "justify-content:center;display:flex;");
+                            }else if (['text/markdown'].includes(text)){
+                                let converter = new showdown.Converter();
+                                html = converter.makeHtml(post["content"]);
+                                body.innerHTML = html;
+                                body.setAttribute("style", "");
                             }else{
                                 body.textContent = post["content"];
                                 body.setAttribute("style", "");
