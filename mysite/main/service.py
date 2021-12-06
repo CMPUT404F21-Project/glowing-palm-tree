@@ -147,7 +147,7 @@ def retrive_followers(response, author_id):
         "data": [],
         }
     for user in followers:
-        if user.remote:
+        if user.type == "remote":
             user_url = user.id
         else:
             host = user.host
