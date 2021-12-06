@@ -61,7 +61,7 @@ View List
         </div>
         </form>
         <div><br>
-            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post" onsubmit="alert('hahahaha')">
+            <form id="shareFrom" action="{{ls.user.id}}/inbox/" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="url" value="{{ls.id}}">
                 <input type="hidden" name="type" value="share">
@@ -238,7 +238,6 @@ View List
 
 
         function sendComment(object, team){
-            // alert("comment")
             let url;
             if (team == 17){
                 url = object
