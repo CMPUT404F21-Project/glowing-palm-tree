@@ -496,6 +496,8 @@ def send_inbox(response, author_id):
         if data["type"] == "like" or data["type"] == "Like":
             temp = str(data["object"])
             temp = re.search('/posts(s?)/(?P<id>[^/]*)$', temp).group()
+            if not temp:
+                temp = re.search('/posts(s?)/(?P<id>[^/]*)/$', temp).group()
             localId = temp.replace("/posts/", "")
 
             moment = get_object_or_404(Moment, localId=localId)
@@ -510,10 +512,10 @@ def send_inbox(response, author_id):
             return temp
         elif data["type"] == "post":
             moment = data
-            if moment['contentType'] == "text/markdown":
+            if moment["contentType"] == "text/markdown":
                 moment["content"] =   markdown.markdown(moment["content"]).replace("\n", "<br>").replace("\"","").replace("\\","")
-            moment['user'] = moment['author']['displayName']
-            moment['userLink'] = moment['author']['url']
+            moment["user"] = moment["author"]["displayName"]
+            moment["userLink"] = moment['author']['url']
             send_to_inbox(moment, [inbox])
             return HttpResponse(status=201)
         elif data["type"] == "follow" or data["type"] == "Follow":
@@ -525,10 +527,13 @@ def send_inbox(response, author_id):
             else:
                 remoteUser = User.objects.create(type="remote", profileImage=data["actor"]["profileImage"], github=data["actor"]["github"], host=data["actor"]["host"], id=follower, username=data["actor"]["displayName"]+"remote", displayName=data["actor"]["displayName"])
                 remoteUser.save()
-            following = Following.objects.create(user=user, following_user=remoteUser)
-            following.save()
-            following = {"user":data["actor"]["displayName"], "userId":data["actor"]["url"], "type":"follow"}
-            send_to_inbox(following, [inbox])
+            following = Following.objects.filter(user=user, following_user=remoteUser)
+            if not following.exists():
+                following = Following.objects.create(user=user, following_user=remoteUser)
+                following.save()
+
+                following = {"user":data["actor"]["displayName"],"actor": data["actor"],"userId":data["actor"]["url"], "type":"follow", "remote":"true",}
+                send_to_inbox(following, [inbox])
             return HttpResponse(status=201)
         elif data["type"] == "comment":
             a = str(data["id"])

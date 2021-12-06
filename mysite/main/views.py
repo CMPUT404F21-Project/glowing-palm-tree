@@ -52,6 +52,7 @@ def redirectToHome(request):
 
 
 def remotePostDetail(request):
+
     data = json.loads(request.POST.get("data"))
     remoteUser = data['author']
     content = data['content']
@@ -65,7 +66,16 @@ def remotePostDetail(request):
     return render(request, "main/listRemote.html", {'title':data['title'],"author":remoteUser, "displayName":displayName, "content":content, "contentType": contentType, "source":source, "id":id}) 
 
 def remoteUserDetail(request):
-    remoteUser = json.loads(request.POST.get("data"))
+    data = request.POST.get("data")
+    print("\n\n\npppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\n\n\n")
+    print(type(data))
+    print("\n\n\npppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\n\n\n")
+    print(data)
+    print("\n\n\npppppppppppppppppppppppppppppppppppppppppppppppppppppppppp\n\n\n")
+
+    data = data.replace("'", '"')
+    remoteUser = json.loads(data)
+    
     if (remoteUser['host'] == "https://cmput404-socialdistributio-t18.herokuapp.com"):
         team = 18
     elif (remoteUser['host'] == "https://social-distribution-t10.herokuapp.com/api/"):
@@ -460,7 +470,7 @@ def view(response):
                                                 "team12": team12, "team10": team10, "team18":team18, "team02":team02, "team17":team17, "team23":team23})
 
 def browseAuthors(response):
-    localAuthors = User.objects.exclude(displayName=None).filter(is_superuser=False)
+    localAuthors = User.objects.exclude(displayName=None).exclude(type="remote").filter(is_superuser=False)
     localAuthors = localAuthors.order_by('displayName')
     return render(response, "main/browseAuthor.html", {"localAuthors":localAuthors})
 
@@ -551,7 +561,7 @@ def friendRequest(response, selfId, otherId):
         Following.objects.create(user=response.user, following_user=otherUser)
 
         inbox = Inbox.objects.get(author=otherUser)
-        item = {"user":response.user.displayName, "userId":response.user.id, "type":"follow"}
+        item = {"user":response.user.displayName, "userId":response.user.id, "type":"follow", "remote":"false"}
         send_to_inbox(item, [inbox])
 
     except IntegrityError:

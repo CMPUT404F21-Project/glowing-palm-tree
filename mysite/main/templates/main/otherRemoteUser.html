@@ -98,25 +98,25 @@ User Center
             let user_url = "{{user.url}}".replace(host, "")
             user_url = host + 'service/' + user_url
             let body = {
-                'type': 'follow',
-                'summary': '{{user.displayName}}' + ' wants to follow you',
-                'actor': {
-                    'type': 'author',
-                    'id': user_url,
-                    'url': user_url,
-                    'host': host,
-                    'displayName': '{{user.displayName}}',
-                    'github': '{{user.github}}',
-                    'profileImage': '{{user.profileImage}}'
+                "type": "follow",
+                "summary": "{{user.displayName}}" + " wants to follow you",
+                "actor": {
+                    "type": "author",
+                    "id": user_url,
+                    "url": user_url,
+                    "host": host,
+                    "displayName": "{{user.displayName}}",
+                    "github": "{{user.github}}",
+                    "profileImage": "{{user.profileImage}}"
                 },
-                'object': {
-                    'type': 'author',
-                    'id': '{{id}}',
-                    'url': '{{url}}',
-                    'host': '{{host}}',
-                    'displayName': '{{displayName}}',
-                    'github': '{{github}}',
-                    'profileImage': '{{profileImage}}'
+                "object": {
+                    "type": "author",
+                    "id": "{{id}}",
+                    "url": "{{url}}",
+                    "host": "{{host}}",
+                    "displayName": "{{displayName}}",
+                    "github": "{{github}}",
+                    "profileImage": "{{profileImage}}"
                 }
             }
             body = JSON.stringify(body)
@@ -148,25 +148,25 @@ User Center
             let user_url = "{{user.url}}".replace(host, "")
             user_url = host + 'service/' + user_url
             let body = {
-                'type': 'follow',
-                'summary': '{{user.displayName}}' + ' wants to follow you',
-                'actor': {
-                    'type': 'author',
-                    'id': user_url,
-                    'url': user_url,
-                    'host': host,
-                    'displayName': '{{user.displayName}}',
-                    'github': '{{user.github}}',
-                    'profileImage': '{{user.profileImage}}'
+                "type": "follow",
+                "summary": "{{user.displayName}}" + " wants to follow you",
+                "actor": {
+                    "type": "author",
+                    "id": user_url,
+                    "url": user_url,
+                    "host": host,
+                    "displayName": "{{user.displayName}}",
+                    "github": "{{user.github}}",
+                    "profileImage": "{{user.profileImage}}"
                 },
-                'object': {
-                    'type': 'author',
-                    'id': '{{id}}',
-                    'url': '{{url}}',
-                    'host': '{{host}}',
-                    'displayName': '{{displayName}}',
-                    'github': '{{github}}',
-                    'profileImage': '{{profileImage}}'
+                "object": {
+                    "type": "author",
+                    "id": "{{id}}",
+                    "url": "{{url}}",
+                    "host": "{{host}}",
+                    "displayName": "{{displayName}}",
+                    "github": "{{github}}",
+                    "profileImage": "{{profileImage}}"
                 }
             }
             body = JSON.stringify(body)
