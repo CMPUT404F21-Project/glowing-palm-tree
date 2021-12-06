@@ -28,14 +28,14 @@ User Center
     <h4 style="text-align: center;"> Message Box </h4>                    
     <div class="container">                                  
         <div class="row">
-            <div class="col-sm-3" >
+            <div class="col-sm-1" >
              </div>
             
-            <div class="col-sm-6">
+            <div class="col-sm-10">
                 
                 {% for lp in items %}
                 <div class="moment item">
-                    <div class="card" style="margin-bottom: 15pt;">
+                    <div class="card" style="margin-bottom: 15pt; width: 340pt;">
                         {%if lp.type == "like"%}
                         <div class="card-header" style="font-size:large"></div>
                         <div class="card-body" style="font-size:medium">{{lp.summary}} <a href="{{lp.object}}" style="float: right;">View</a><br></div>
@@ -44,11 +44,12 @@ User Center
                             {%if lp.remote == "false"%}
                             <div  class="card-body" style="font-size:medium">{{lp.user}} just followed you!<a href="{{lp.userId}}" style="float: right;">View</a><br></div>
                             {%else%}
-                            <div  class="card-body" style="font-size:medium">{{lp.user}} just followed you!
+                            <div  class="card-body" style="font-size:medium">
                                 <form action="/remoteUser/detail/" method="post">
                                     {%csrf_token%}
                                     <input value="{{lp.actor}}" name="data" hidden>
-                                    <button type="submit" class= "btn btn-link btoa" role="link" style="text-decoration:none;font-size:large">View</button>
+                                    <div>{{lp.user}} just followed you! <button type="submit" class= "btn btn-link btoa" role="link" style="text-decoration:none;font-size:large; float: right;">View</button></div>
+                                    
                                 </form>
 
                             </div>
@@ -78,7 +79,7 @@ User Center
                 {% endfor %}   
         
             </div>
-            <div class="col-sm-3" >
+            <div class="col-sm-1" >
             </div>
         </div>
     </div>
